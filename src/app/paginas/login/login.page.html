@@ -1,0 +1,49 @@
+<ion-content fullscreen class="sf-login">
+
+  <div class="container py-4">
+    <div class="sf-center">
+      <div class="sf-card shadow-lg rounded-4 overflow-hidden bg-white">
+        <div class="row g-0 h-100">
+
+          <!-- IZQUIERDA -->
+          <div class="col-md-7 sf-left">
+            <img
+              src="assets/img/login-hero.png"
+              alt="SmartFlet"
+              class="sf-hero"
+            />
+          </div>
+
+          <!-- DERECHA -->
+          <div class="col-md-5 sf-right text-white d-flex align-items-center justify-content-center">
+            <div class="sf-inner">
+
+              <div class="fw-bolder fs-4 mb-4">SmartFlet</div>
+
+              <h1 class="sf-title mb-4">Iniciar Sesión</h1>
+
+              <div class="mb-3">
+                <label class="form-label fw-bold small mb-1">E-mail</label>
+                <input type="email" class="form-control sf-input" />
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label fw-bold small mb-1">Contraseña</label>
+                <input type="password" class="form-control sf-input" />
+              </div>
+
+              <button class="btn w-100 sf-btn fw-bold mb-4" type="button">
+                Entrar
+              </button>
+
+              <a class="sf-link fw-bold" (click)="onRegister()">Registro</a>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+</ion-content>

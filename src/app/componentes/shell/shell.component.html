@@ -1,0 +1,82 @@
+<ion-split-pane contentId="main">
+  <ion-menu contentId="main" type="push" class="sf-menu">
+    <ion-content class="sf-menu__content">
+
+      <div class="sf-wrap">
+        <div class="sf-brand">SmartFlet</div>
+
+        <!-- Viajes -->
+        <div class="sf-section">
+          <div class="sf-title">Viajes</div>
+
+          <ion-menu-toggle auto-hide="false">
+            <a class="sf-item"
+              routerLink="/panel/viajes/detalles"
+              routerLinkActive="router-link-active"
+              routerDirection="root">
+              Detalles de Viaje
+            </a>
+          </ion-menu-toggle>
+
+          <ion-menu-toggle auto-hide="false">
+            <a class="sf-item"
+              routerLink="/panel/viajes/rutas"
+              routerLinkActive="router-link-active"
+              routerDirection="root">
+              Rutas
+            </a>
+          </ion-menu-toggle>
+        </div>
+
+        <!-- Operadores -->
+        <div class="sf-section">
+          <div class="sf-title">Operadores</div>
+
+          <ion-menu-toggle auto-hide="false">
+            <a class="sf-item"
+              routerLink="/panel/operadores/asignaciones"
+              routerLinkActive="router-link-active"
+              routerDirection="root">
+              Asignaciones
+            </a>
+          </ion-menu-toggle>
+
+          <ion-menu-toggle auto-hide="false">
+            <a class="sf-item"
+              routerLink="/panel/operadores/listado"
+              routerLinkActive="router-link-active"
+              routerDirection="root">
+              Listado de Operadores
+            </a>
+          </ion-menu-toggle>
+        </div>
+
+        <!-- Unidades -->
+        <div class="sf-section">
+          <div class="sf-title">Unidades</div>
+
+          <ion-menu-toggle auto-hide="false">
+            <a class="sf-item"
+              routerLink="/panel/unidades/reportes"
+              routerLinkActive="router-link-active"
+              routerDirection="root">
+              Reportes
+            </a>
+          </ion-menu-toggle>
+
+          <ion-menu-toggle auto-hide="false">
+            <a class="sf-item"
+              routerLink="/panel/unidades/detalle"
+              routerLinkActive="router-link-active"
+              routerDirection="root">
+              Detalle de Unidades
+            </a>
+          </ion-menu-toggle>
+        </div>
+      </div>
+
+    </ion-content>
+  </ion-menu>
+
+  <ion-router-outlet id="main"></ion-router-outlet>
+</ion-split-pane>

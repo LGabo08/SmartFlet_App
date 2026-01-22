@@ -1,0 +1,123 @@
+.sf-menu {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, Arial, sans-serif;
+}
+
+.sf-brand {
+  font-weight: 800;
+  letter-spacing: -0.5px; /* Inter se beneficia de esto */
+}
+
+.sf-title {
+  font-weight: 700;
+}
+
+.sf-item {
+  font-weight: 500;
+}
+
+
+.sf-menu {
+  --width: 280px;
+  --min-width: 280px;
+  --max-width: 280px;
+
+  --background: #062a57;
+  background: #062a57;
+}
+
+.sf-menu__content {
+  --background: #062a57 !important;
+  background: #062a57 !important;
+
+  padding: 18px 0 !important;
+}
+
+.sf-menu,
+.sf-menu * {
+  color: #fff !important;
+}
+
+/* ✅ Este wrapper es el que da el "aire" correcto */
+.sf-wrap {
+  padding-left: 26px;
+  padding-right: 18px;
+}
+
+/* SmartFlet */
+.sf-brand {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  line-height: 1.05;
+  margin: 4px 0 22px;
+}
+
+/* Secciones */
+.sf-section {
+  margin: 0 0 26px;
+}
+
+/* Títulos */
+.sf-title {
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.05;
+  margin: 0 0 10px;
+}
+
+/* Links con animación suave */
+.sf-item {
+  display: block;
+  text-decoration: none;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  padding: 6px 12px 6px 16px;
+  margin: 6px 0;
+
+  border-radius: 10px;
+  opacity: 0.92;
+
+  position: relative;
+  transform: translateX(0);
+
+  transition: transform 160ms ease, background-color 160ms ease, opacity 160ms ease;
+}
+
+/* Línea izquierda (hover/activo) */
+.sf-item::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 999px;
+  background: transparent;
+  transition: background-color 160ms ease;
+}
+
+.sf-item:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.10);
+  transform: translateX(6px);
+}
+
+.sf-item:hover::before {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.sf-item.router-link-active {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.sf-item.router-link-active::before {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+ion-menu-toggle {
+  display: block;
+}
