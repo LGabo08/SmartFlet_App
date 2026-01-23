@@ -1,13 +1,148 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>Panel</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="sf-panel" [fullscreen]="true">
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Panel</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div class="sf-topbar">
+    <div class="sf-topbar__left">
+  <div class="sf-topbar__title">Panel Operativo</div>
+      <div class="sf-topbar__sub">Vista general del día</div>
+    </div>
+
+    <div class="sf-topbar__right">
+      <button class="sf-btn ghost" type="button">Actualizar</button>
+    
+    <button class="sf-btn solid" type="button">Nueva asignación</button>
+    
+    
+    </div>
+  </div>
+
+  
+  <div class="sf-layout">
+    
+    <section class="sf-col sf-col--left">
+      
+      <div class="sf-kpis">
+        <div class="sf-kpi">
+          <div class="sf-kpi__label">Operadores disponibles</div>
+          
+      <div class="sf-kpi__value">12</div>
+          <div class="sf-kpi__meta">Activos: 18 · En viaje: 6</div>
+        </div>
+
+        <div class="sf-kpi">
+          <div class="sf-kpi__label">Viajes asignados</div>
+          <div class="sf-kpi__value">34</div>
+          <div class="sf-kpi__meta">Finalizados: 19 · En ruta: 8</div>
+        </div>
+
+        <div class="sf-kpi">
+          <div class="sf-kpi__label">Equilibrio general</div>
+          <div class="sf-kpi__value">78%</div>
+          <div class="sf-kpi__meta">$42,000 / $60,000 cuota</div>
+
+          <div class="sf-gauge" aria-label="Equilibrio general">
+            <div class="sf-gauge__fill" style="width:78%"></div>
+          </div>
+        </div>
+      </div>
+
+
+  <div class="sf-panels">
+    
+        <div class="sf-card sf-card--big">
+          <div class="sf-card__head">
+     <div class="sf-card__title">Evolución (día)</div>
+            <div class="sf-card__actions">
+              <button class="sf-chip is-active" type="button">Día</button>
+              <button class="sf-chip" type="button">Semana</button>
+              <button class="sf-chip" type="button">Mes</button>
+            </div>
+          </div>
+
+          <div class="sf-card__body sf-center">
+            <div class="sf-chart-placeholder">
+              <div class="sf-chart-placeholder__hint">
+                Aquí va una gráfica (Chart.js) sin romper el layout.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sf-card sf-card--big">
+      <div class="sf-card__head">
+            <div class="sf-card__title">Rezagados por cuota</div>
+      <div class="sf-card__subtitle">Menor % de cuota vs viajes</div>
+          </div>
+
+    <div class="sf-card__body sf-scroll">
+            <div class="sf-row" *ngFor="let r of [1,2,3,4,5,6,7,8]">
+              <div class="sf-row__left">
+                <div class="sf-row__name">Operador {{r}}</div>
+                <div class="sf-row__meta">Viajes: {{ (r+1) }} · ${{ (r*4500) | number:'1.0-0' }}</div>
+              </div>
+
+              <div class="sf-row__right">
+                <div class="sf-pill">Cuota  {{ 20 + r*6 }}%</div>
+                <button class="sf-btn xs solid" type="button">Sugerir</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="sf-col sf-col--right">
+      <div class="sf-stack">
+        <div class="sf-card">
+     <div class="sf-card__head">
+            <div class="sf-card__title">Viajes en proceso</div>
+            <div class="sf-card__subtitle">Monitoreo rápido</div>
+          </div>
+
+          <div class="sf-card__body sf-scroll">
+            <div class="sf-mini" *ngFor="let v of [1,2,3,4,5,6]">
+              <div class="sf-mini__top">
+                <div class="sf-mini__route">Veracruz → Xalapa</div>
+                <div class="sf-badge">En ruta</div>
+              </div>
+              <div class="sf-mini__meta">Unidad: T-0{{v}} · ETA: {{v}}h</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sf-card">
+          <div class="sf-card__head">
+            <div class="sf-card__title">Accesos rápidos</div>
+            <div class="sf-card__subtitle">Operación</div>
+          </div>
+
+          <div class="sf-card__body">
+            <div class="sf-quick">
+              <button class="sf-quick__btn" type="button">Asignaciones</button>
+              <button class="sf-quick__btn" type="button">Rutas</button>
+              <button class="sf-quick__btn" type="button">Operadores</button>
+              <button class="sf-quick__btn" type="button">Unidades</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="sf-card">
+          <div class="sf-card__head">
+            <div class="sf-card__title">Alertas</div>
+            <div class="sf-card__subtitle">Reglas operativas</div>
+          </div>
+
+          <div class="sf-card__body">
+            <div class="sf-alert">
+              <div class="sf-alert__dot"></div>
+              <div class="sf-alert__text">3 operadores por debajo del 40% de cuota.</div>
+            </div>
+            <div class="sf-alert">
+              <div class="sf-alert__dot"></div>
+              <div class="sf-alert__text">2 viajes sin confirmar > 30 min.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
 </ion-content>
