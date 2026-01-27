@@ -1,0 +1,31 @@
+<div class="detalle-viaje-container">
+  <h2 class="titulo">Detalle de Viaje</h2>
+
+  <div class="panel-viaje">
+    <div class="panel-header">Agregar Viaje</div>
+
+    <div class="panel-body">
+      <!-- Scroll X + Y -->
+      <div class="lista-viajes-scroll">
+        <div class="lista-viajes">
+          <div class="fila-viaje" *ngFor="let viaje of [1,2,3,4,5,6,7,8,9,10]">
+            <div class="icono-camion">🚚</div>
+            
+            <input type="text" placeholder="Cita de Carga">
+            <input type="text" placeholder="Tarifa">
+            <input type="text" placeholder="Unidad">
+            <input type="text" placeholder="Producto">
+            <input type="text" placeholder="Cliente">
+            <input type="text" placeholder="Origen">
+            <input type="text" placeholder="Destino">
+          </div>
+        </div>
+      </div>
+
+      <!-- botón fijo -->
+      <div class="contenedor-boton">
+        <button class="btn-agregar">+</button>
+      </div>
+    </div>
+  </div>
+</div>

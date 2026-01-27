@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { IonicModule, MenuController } from '@ionic/angular';
 // import { LoginCardComponent } from '../../componentes/login-card/login-card.component';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [IonicModule, ],
+  imports: [IonicModule,RouterLink ],
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
 })

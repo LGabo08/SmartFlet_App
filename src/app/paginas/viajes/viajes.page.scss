@@ -1,0 +1,116 @@
+.detalle-viaje-container{
+  font-family: "Segoe UI", sans-serif;
+  padding: 20px;
+  background: #f5f6f8;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+.titulo{
+  margin: 0 0 15px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.panel-viaje{
+  background: #0b2c5d;
+  border-radius: 8px;
+  padding: 18px;
+  height: calc(100vh - 110px);
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-header{
+  color: #fff;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.panel-body{
+  background: #fff;
+  border-radius: 8px;
+  padding: 14px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* IMPORTANT: permite que el scroll funcione dentro */
+}
+
+/* CONTENEDOR CON SCROLL X + Y */
+.lista-viajes-scroll{
+  flex: 1;
+  min-height: 0;
+  overflow: auto;              /* <- scroll vertical y horizontal */
+  padding-bottom: 8px;
+}
+
+/* Esto evita que el contenido se “encojA” y active el scroll horizontal */
+.lista-viajes{
+  min-width: 1200px;           /* <- AJUSTA según tu diseño */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* FILA ESTABLE */
+.fila-viaje{
+  display: grid;
+  align-items: center;
+  gap: 12px;
+
+  /* 1 icono + 7 campos con ancho fijo controlado */
+  grid-template-columns:
+    44px
+    170px 120px 120px 160px 160px 160px 160px;
+
+  background: #e9edf2;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+/* Icono fijo */
+.icono-camion{
+  font-size: 22px;
+  text-align: center;
+}
+
+/* Inputs sin deformarse */
+.fila-viaje input{
+  width: 100%;
+  min-width: 0;
+  border: none;
+  background: #fff;
+  border-radius: 14px;
+  padding: 8px 12px;
+  font-size: 13px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+/* (Opcional) enfoque */
+.fila-viaje input:focus{
+  box-shadow: 0 0 0 2px rgba(11,44,93,.15);
+}
+
+/* BOTÓN FIJO */
+.contenedor-boton{
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.btn-agregar{
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: none;
+  background: #0b2c5d;
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.btn-agregar:hover{
+  background: #123d7a;
+}
