@@ -15,6 +15,11 @@ export const routes: Routes = [
       { path: 'panel', loadComponent: () => import('./paginas/panel/panel.page').then(m => m.PanelPage) },
       {
     path: 'viajes', loadComponent: () => import('./paginas/viajes/viajes.page').then( m => m.ViajesPage)},
+
+    {
+    path: 'asignaciones',
+    loadComponent: () => import('./paginas/asignaciones/asignaciones.page').then( m => m.AsignacionesPage)
+  },
       { path: '', pathMatch: 'full', redirectTo: 'panel' },
     ],
   },
@@ -24,4 +29,5 @@ export const routes: Routes = [
 
 
   { path: '**', redirectTo: 'login' },
+  
 ];

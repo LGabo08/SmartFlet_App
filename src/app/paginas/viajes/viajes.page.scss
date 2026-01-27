@@ -1,22 +1,22 @@
 .detalle-viaje-container{
   font-family: "Segoe UI", sans-serif;
-  padding: 20px;
+  padding: 16px;
   background: #f5f6f8;
   height: 100vh;
   box-sizing: border-box;
 }
 
 .titulo{
-  margin: 0 0 15px;
-  font-size: 22px;
+  margin: 0 0 10px;
+  font-size: 20px;
   font-weight: 600;
 }
 
 .panel-viaje{
   background: #0b2c5d;
   border-radius: 8px;
-  padding: 18px;
-  height: calc(100vh - 110px);
+  padding: 14px;
+  height: calc(100vh - 90px);
   display: flex;
   flex-direction: column;
 }
@@ -24,90 +24,189 @@
 .panel-header{
   color: #fff;
   font-weight: 600;
-  margin-bottom: 10px;
+  font-size: 14px;
+  margin-bottom: 8px;
 }
 
 .panel-body{
   background: #fff;
   border-radius: 8px;
-  padding: 14px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0; /* IMPORTANT: permite que el scroll funcione dentro */
-}
-
-/* CONTENEDOR CON SCROLL X + Y */
-.lista-viajes-scroll{
-  flex: 1;
-  min-height: 0;
-  overflow: auto;              /* <- scroll vertical y horizontal */
-  padding-bottom: 8px;
-}
-
-/* Esto evita que el contenido se “encojA” y active el scroll horizontal */
-.lista-viajes{
-  min-width: 1200px;           /* <- AJUSTA según tu diseño */
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-/* FILA ESTABLE */
-.fila-viaje{
-  display: grid;
-  align-items: center;
-  gap: 12px;
-
-  /* 1 icono + 7 campos con ancho fijo controlado */
-  grid-template-columns:
-    44px
-    170px 120px 120px 160px 160px 160px 160px;
-
-  background: #e9edf2;
-  border-radius: 10px;
   padding: 10px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
-/* Icono fijo */
-.icono-camion{
-  font-size: 22px;
-  text-align: center;
+.barra-filtros{
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 1fr; /* 4 col, se acomoda en 2 filas */
+  gap: 10px;
+  padding: 8px;
+  border-radius: 8px;
+  background: #eef2f7;
+  margin-bottom: 10px;
 }
 
-/* Inputs sin deformarse */
-.fila-viaje input{
+.filtro-grupo label{
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #0b2c5d;
+}
+
+.filtro-grupo input,
+.filtro-grupo select{
   width: 100%;
-  min-width: 0;
   border: none;
   background: #fff;
-  border-radius: 14px;
-  padding: 8px 12px;
-  font-size: 13px;
+  border-radius: 10px;
+  padding: 7px 10px;
+  font-size: 12px;
   outline: none;
   box-sizing: border-box;
 }
 
-/* (Opcional) enfoque */
-.fila-viaje input:focus{
-  box-shadow: 0 0 0 2px rgba(11,44,93,.15);
+
+.lista-viajes{
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
-/* BOTÓN FIJO */
+
+.fila-header{
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: grid;
+  gap: 6px;
+  align-items: center;
+
+
+  grid-template-columns:
+    28px   /* icon */
+    80px   /* No. Viaje */
+    70px   /* Cita */
+    70px   /* Tarifa */
+    80px   /* Unidad */
+    90px   /* Operador */
+    90px   /* Producto */
+    90px   /* Cliente */
+    90px   /* Origen */
+    90px   /* Destino */
+    90px;  /* Estatus */
+
+  background: #0b2c5d;
+  color: #fff;
+  border-radius: 8px;
+  padding: 8px 6px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+/* evita "Estat/us" */
+.fila-header > div{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.h-icon{}
+
+/* FILAS */
+.fila-viaje{
+  display: grid;
+  gap: 6px;
+  align-items: center;
+
+  grid-template-columns:
+    28px 80px 70px 70px 80px 90px 90px 90px 90px 90px 90px;
+
+  background: #e9edf2;
+  border-radius: 8px;
+  padding: 6px;
+  margin-bottom: 6px;
+}
+
+.icono-camion{
+  font-size: 18px;
+  text-align: center;
+}
+
+.fila-viaje input{
+  width: 100%;
+  border: none;
+  background: #fff;
+  border-radius: 10px;
+  padding: 5px 8px;
+  font-size: 12px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+
+.estatus-badge{
+  width: 100%;
+  text-align: center;
+  border-radius: 999px;
+  padding: 6px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  background: #fff;
+  box-sizing: border-box;
+  user-select: none;
+  white-space: nowrap;
+}
+
+
+.estatus-badge.en-curso{
+  border: 1px solid rgba(11, 44, 93, 0.35);
+}
+
+.estatus-badge.finalizado{
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  opacity: 0.95;
+}
+
+
+.vista-compacta .fila-header,
+.vista-compacta .fila-viaje{
+  grid-template-columns: 28px 90px 120px 110px 110px 90px; 
+}
+
+
+.vista-compacta .fila-header > :nth-child(3),
+.vista-compacta .fila-header > :nth-child(4),
+.vista-compacta .fila-header > :nth-child(5),
+.vista-compacta .fila-header > :nth-child(6),
+.vista-compacta .fila-header > :nth-child(7),
+
+.vista-compacta .fila-viaje > :nth-child(3),
+.vista-compacta .fila-viaje > :nth-child(4),
+.vista-compacta .fila-viaje > :nth-child(5),
+.vista-compacta .fila-viaje > :nth-child(6),
+.vista-compacta .fila-viaje > :nth-child(7){
+  display: none;
+}
+
+/* BOTÓN */
 .contenedor-boton{
   display: flex;
   justify-content: flex-end;
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
 .btn-agregar{
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
   border-radius: 8px;
   border: none;
   background: #0b2c5d;
   color: #fff;
-  font-size: 22px;
+  font-size: 20px;
   cursor: pointer;
 }
 

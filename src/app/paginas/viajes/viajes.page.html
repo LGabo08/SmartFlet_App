@@ -5,27 +5,117 @@
     <div class="panel-header">Agregar Viaje</div>
 
     <div class="panel-body">
-      <!-- Scroll X + Y -->
-      <div class="lista-viajes-scroll">
-        <div class="lista-viajes">
-          <div class="fila-viaje" *ngFor="let viaje of [1,2,3,4,5,6,7,8,9,10]">
-            <div class="icono-camion">🚚</div>
-            
-            <input type="text" placeholder="Cita de Carga">
-            <input type="text" placeholder="Tarifa">
-            <input type="text" placeholder="Unidad">
-            <input type="text" placeholder="Producto">
-            <input type="text" placeholder="Cliente">
-            <input type="text" placeholder="Origen">
-            <input type="text" placeholder="Destino">
-          </div>
+
+      <!-- FILTROS -->
+      <div class="barra-filtros">
+
+        <div class="filtro-grupo">
+          <label>Buscar</label>
+          <input
+            type="text"
+            placeholder="No. viaje, cliente, origen, destino..."
+            [(ngModel)]="filtroTexto"
+          />
         </div>
+
+        <div class="filtro-grupo">
+          <label>Estatus</label>
+          <select [(ngModel)]="filtroEstado">
+            <option value="">Todos</option>
+            <option value="En curso">En curso</option>
+            <option value="Finalizado">Finalizado</option>
+          </select>
+        </div>
+
+        <div class="filtro-grupo">
+          <label>Cliente</label>
+          <select [(ngModel)]="filtroCliente">
+            <option value="">Todos</option>
+            <option *ngFor="let c of clientesDisponibles" [value]="c">{{ c }}</option>
+          </select>
+        </div>
+
+        <div class="filtro-grupo">
+          <label>No. Viaje</label>
+          <input
+            type="text"
+            placeholder="VJ-001"
+            [(ngModel)]="filtroNoViaje"
+          />
+        </div>
+
+        <div class="filtro-grupo">
+          <label>Tarifa (mín)</label>
+          <input
+            type="number"
+            placeholder="0"
+            [(ngModel)]="tarifaMin"
+          />
+        </div>
+
+        <div class="filtro-grupo">
+          <label>Tarifa (máx)</label>
+          <input
+            type="number"
+            placeholder="999999"
+            [(ngModel)]="tarifaMax"
+          />
+        </div>
+
       </div>
 
-      <!-- botón fijo -->
-      <div class="contenedor-boton">
-        <button class="btn-agregar">+</button>
+      <!-- LISTA (scroll vertical) -->
+      <div class="lista-viajes">
+
+        <!-- ENCABEZADO -->
+        <div class="fila-header">
+          <div class="h-icon"></div>
+          <div>No. Viaje</div>
+          <div>Cita</div>
+          <div>Tarifa</div>
+          <div>Unidad</div>
+          <div>Operador</div>
+          <div>Producto</div>
+          <div>Cliente</div>
+          <div>Origen</div>
+          <div>Destino</div>
+          <div class="col-estatus">Estatus</div>
+        </div>
+
+        <!-- FILAS -->
+        <div
+          class="fila-viaje"
+          *ngFor="let viaje of viajesFiltrados; trackBy: trackByNumeroViaje"
+        >
+          <div class="icono-camion">🚚</div>
+
+          <input [(ngModel)]="viaje.numeroViaje" placeholder="No. Viaje">
+          <input [(ngModel)]="viaje.cita" placeholder="Cita">
+          <input [(ngModel)]="viaje.tarifa" type="number" placeholder="Tarifa">
+          <input [(ngModel)]="viaje.unidad" placeholder="Unidad">
+          <input [(ngModel)]="viaje.operador" placeholder="Operador">
+          <input [(ngModel)]="viaje.producto" placeholder="Producto">
+          <input [(ngModel)]="viaje.cliente" placeholder="Cliente">
+          <input [(ngModel)]="viaje.origen" placeholder="Origen">
+          <input [(ngModel)]="viaje.destino" placeholder="Destino">
+
+          <!-- ESTATUS SOLO LECTURA -->
+          <div class="estatus-badge" [ngClass]="{
+            'en-curso': viaje.estado === 'En curso',
+            'finalizado': viaje.estado === 'Finalizado'
+          }">
+            {{ viaje.estado }}
+          </div>
+
+        </div>
+
       </div>
+
+      <!-- BOTÓN -->
+      <div class="contenedor-boton">
+        <button class="btn-agregar" type="button" (click)="agregarViaje()">+</button>
+      </div>
+
     </div>
   </div>
 </div>
