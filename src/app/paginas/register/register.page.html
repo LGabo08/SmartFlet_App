@@ -1,0 +1,66 @@
+<ion-content fullscreen class="sf-login">
+  <div class="container py-4">
+    <div class="sf-center">
+      <div class="sf-card shadow-lg rounded-4 overflow-hidden bg-white">
+        <div class="row g-0 h-100">
+
+          <!-- IZQUIERDA -->
+          <div class="col-md-7 sf-left">
+            <img
+              src="assets/img/logoHesa.jpg"
+              alt="SmartFlet"
+              class="sf-hero"
+            />
+          </div>
+
+          <!-- DERECHA -->
+          <div class="col-md-5 sf-right text-white d-flex align-items-center justify-content-center">
+            <div class="sf-inner">
+
+              <div class="fw-bolder fs-4 mb-4">SmartFlet</div>
+
+              <h1 class="sf-title mb-4">Registro de Usuario</h1>
+
+              <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+
+                <div class="mb-3">
+                  <label class="form-label fw-bold small mb-1">E-mail</label>
+                  <input formControlName="email" type="email" class="form-control sf-input" placeholder="Ingresa tu correo electrónico" />
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label fw-bold small mb-1">Apellidos</label>
+                  <input formControlName="apellidos" type="text" class="form-control sf-input" placeholder="Ingresa tus apellidos" />
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label fw-bold small mb-1">Contraseña</label>
+                  <input formControlName="contrasena" type="password" class="form-control sf-input" placeholder="Ingresa tu contraseña" />
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label fw-bold small mb-1">Rol</label>
+                  <select formControlName="role_id" class="form-control sf-input">
+                    <option value="1">Administrador</option>
+                    <option value="2">Coordinador</option>
+                  </select>
+                </div>
+
+                <div class="mb-4">
+                  <label class="form-label fw-bold small mb-1">Estado</label>
+                  <input formControlName="estado" type="text" class="form-control sf-input" placeholder="Ingresa el estado del usuario (por defecto: activo)" />
+                </div>
+
+                <button class="btn w-100 sf-btn fw-bold mb-4" type="submit" [disabled]="registerForm.invalid">
+                  Registrar
+                </button>
+              </form>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

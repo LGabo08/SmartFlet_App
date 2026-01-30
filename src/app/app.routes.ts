@@ -12,14 +12,22 @@ export const routes: Routes = [
     path: '',
     component: ShellComponent,
     children: [
-      { path: 'panel', loadComponent: () => import('./paginas/panel/panel.page').then(m => m.PanelPage) },
-      {
-    path: 'viajes', loadComponent: () => import('./paginas/viajes/viajes.page').then( m => m.ViajesPage)},
+    { 
+      path: 'panel', loadComponent: () => import('./paginas/panel/panel.page').then(m => m.PanelPage) 
+    },
+    {
+    path: 'viajes', loadComponent: () => import('./paginas/viajes/viajes.page').then( m => m.ViajesPage)
+    },
 
     {
     path: 'asignaciones',
     loadComponent: () => import('./paginas/asignaciones/asignaciones.page').then( m => m.AsignacionesPage)
-  },
+    },
+
+     {
+    path: 'register',
+    loadComponent: () => import('./paginas/register/register.page').then( m => m.RegisterPage)
+    },
       { path: '', pathMatch: 'full', redirectTo: 'panel' },
     ],
   },
@@ -29,5 +37,9 @@ export const routes: Routes = [
 
 
   { path: '**', redirectTo: 'login' },
+  {
+    path: 'register',
+    loadComponent: () => import('./paginas/register/register.page').then( m => m.RegisterPage)
+  },
   
 ];

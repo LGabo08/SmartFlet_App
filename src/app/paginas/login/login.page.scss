@@ -25,18 +25,28 @@ ion-content::part(scroll) {
 /* izquierda */
 .sf-left {
   background: #e9edf2;
+  height: 100%;
+  overflow: hidden;              /* evita desbordes */
+  display: flex;                 /* centra */
+  align-items: center;
+  justify-content: center;
+  padding: 16px;                 /* aire alrededor */
 }
+
 .sf-hero {
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: cover;
+  object-fit: contain;           /* ✅ ajusta sin recortar */
+  object-position: center;       /* ✅ centrada */
 }
 
 /* derecha */
 .sf-right {
   background: #062a57;
+  height: 100%;
 }
+
 .sf-inner {
   width: 78%;
   min-width: 260px;
