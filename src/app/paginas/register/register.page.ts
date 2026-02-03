@@ -1,79 +1,112 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
-import { IonicModule } from '@ionic/angular';
-import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
-// Importa el servicio de usuario para manejar el registro
-//import { UsuarioService } from 'src/app/services/usuario.service'; // Asegúrate de crear este servicio
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
+
+import { IonContent, IonIcon, AlertController } from '@ionic/angular/standalone';
+
+import { UsuarioService } from 'src/app/services/usuario.service';
 
 @Component({
   selector: 'app-register',
-  templateUrl: './register.page.html',
   standalone: true,
-  imports: [IonicModule,IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, RouterLink],
+  templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss'],
+  imports: [CommonModule, ReactiveFormsModule, IonContent, IonIcon],
 })
 export class RegisterPage implements OnInit {
   registerForm: FormGroup;
+  showPass = false;
 
   constructor(
     private fb: FormBuilder,
-    private router: Router,
+    private usuarioService: UsuarioService,
     private alertController: AlertController,
-    //private usuarioService: UsuarioService // Usamos el servicio para manejar el registro
+    private router: Router
   ) {
-    this.registerForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      apellidos: ['', [Validators.required]],
-      contrasena: ['', [Validators.required, Validators.minLength(6)]],
-      role_id: [1, Validators.required],  // El rol predeterminado será Administrador
-      estado: ['activo'],
-    });
+   this.registerForm = this.fb.group({
+  email: ['', [Validators.required, Validators.email]],
+  nombre: ['', [Validators.required, Validators.maxLength(120)]], // ✅
+  apellidos: ['', [Validators.required, Validators.maxLength(255)]],
+  role_id: [2, Validators.required],
+  contrasena: ['', [Validators.required, Validators.minLength(6)]],
+  confirmarContrasena: ['', [Validators.required]],
+  estado: ['activo', Validators.required],
+});
   }
 
   ngOnInit() {}
 
-  // Método para registrar al usuario
-   async onRegister() {
-  //   if (this.registerForm.invalid) {
-  //     return;
-  //   }
-
-  //   // Tomar los valores del formulario
-  //   const formData = this.registerForm.value;
-    
-  //   try {
-  //     const result = await this.usuarioService.register(formData);
-  //     this.showSuccessAlert();
-  //   } catch (error) {
-  //     this.showErrorAlert(error);
-  //   }
-   }
-
-  // Mostrar alerta de éxito
-  async showSuccessAlert() {
-    const alert = await this.alertController.create({
-      header: '¡Éxito!',
-      message: 'Usuario registrado correctamente.',
-      buttons: ['OK'],
-    });
-
-    await alert.present();
-    this.router.navigate(['/login']); // Redirige al login
+  get showNoMatch(): boolean {
+    const pass = this.registerForm.get('contrasena')?.value ?? '';
+    const conf = this.registerForm.get('confirmarContrasena')?.value ?? '';
+    return conf.length > 0 && pass !== conf;
   }
 
-  // Mostrar alerta de error
-  async showErrorAlert(error: any) {
+  async onRegister() {
+    if (this.registerForm.invalid || this.showNoMatch) return;
+
+    const payload = {
+      email: String(this.registerForm.value.email ?? '').trim(),
+      nombre: String(this.registerForm.value.nombre ?? '').trim(),
+      apellidos: String(this.registerForm.value.apellidos ?? '').trim(),
+      contrasena: String(this.registerForm.value.contrasena ?? ''),
+      role_id: Number(this.registerForm.value.role_id),
+      // ✅ tu backend usa 'activo' por defecto; mandamos minúsculas por consistencia
+      estado: String(this.registerForm.value.estado ?? 'activo').toLowerCase(),
+    };
+
+    try {
+      const res = await firstValueFrom(this.usuarioService.create(payload));
+
+      if (!res?.ok) {
+        await this.showError(
+          this.formatErrors(res?.errors) ?? res?.message ?? 'No se pudo registrar el usuario.'
+        );
+        return;
+      }
+
+      const alert = await this.alertController.create({
+        header: '¡Éxito!',
+        message: `Usuario creado: ${res.usuario?.email ?? payload.email}`,
+        buttons: ['OK'],
+      });
+      await alert.present();
+
+      // Limpia y vuelve al panel (o puedes dejarlo en register)
+      this.registerForm.reset({ role_id: 2, estado: 'activo' });
+      this.router.navigateByUrl('/panel', { replaceUrl: true });
+
+    } catch (err: any) {
+      // Laravel típicamente: err.error.errors (422), err.error.message (401/403)
+      const msg =
+        this.formatErrors(err?.error?.errors) ??
+        err?.error?.message ??
+        err?.message ??
+        'Error inesperado al registrar';
+
+      await this.showError(msg);
+    }
+  }
+
+  private async showError(message: string) {
     const alert = await this.alertController.create({
       header: 'Error',
-      message: `Hubo un problema: ${error.message}`,
+      message,
       buttons: ['OK'],
     });
-
     await alert.present();
+  }
+
+  private formatErrors(errors: any): string | null {
+    if (!errors) return null;
+
+    const lines: string[] = [];
+    for (const key of Object.keys(errors)) {
+      const arr = Array.isArray(errors[key]) ? errors[key] : [String(errors[key])];
+      for (const m of arr) lines.push(`• ${m}`);
+    }
+    return lines.length ? lines.join('<br>') : null;
   }
 }

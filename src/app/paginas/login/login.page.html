@@ -24,16 +24,35 @@
 
               <div class="mb-3">
                 <label class="form-label fw-bold small mb-1">E-mail</label>
-                <input type="email" class="form-control sf-input" />
+                <input
+                  type="email"
+                  class="form-control sf-input"
+                  [(ngModel)]="email"
+                  name="email"
+                  autocomplete="username"
+                  (keyup.enter)="doLogin()"
+                />
               </div>
 
               <div class="mb-4">
                 <label class="form-label fw-bold small mb-1">Contraseña</label>
-                <input type="password" class="form-control sf-input" />
+                <input
+                  type="password"
+                  class="form-control sf-input"
+                  [(ngModel)]="contrasena"
+                  name="contrasena"
+                  autocomplete="current-password"
+                  (keyup.enter)="doLogin()"
+                />
               </div>
 
-              <button class="btn w-100 sf-btn fw-bold mb-4" type="button" routerLink="/panel" routerDirection="root">
+              <button class="btn w-100 sf-btn fw-bold mb-4" type="button" (click)="doLogin()">
                 Entrar
+              </button>
+
+              <!-- opcional -->
+              <button class="btn w-100 btn-link text-white p-0" type="button" (click)="onRegister()">
+                Crear cuenta
               </button>
 
             </div>

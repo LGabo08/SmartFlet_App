@@ -1,90 +1,136 @@
-/* Estilos para el formulario de registro */
-.sf-login {
-    --background: #ffffff;
+.sf-reg {
+  --background: #ffffff;
+  background: #ffffff;
 }
 
-/* Alineación del contenido */
-ion-content::part(scroll) {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.sf-reg-wrap {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  box-sizing: border-box;
 }
 
-/* Centra la tarjeta */
-.sf-center {
-    width: 100%;
-    display: flex;
-    justify-content: center;
+.sf-reg-card {
+  width: min(860px, 100%);
+  background: #062a57;
+  border-radius: 16px;
+  padding: 34px 44px 30px;
+  box-shadow: 0 18px 60px rgba(0,0,0,.12);
+  color: #fff;
 }
 
-/* Tarjeta con tamaño */
-.sf-card {
-    width: min(980px, 100%);
-    height: 550px;
+.sf-reg-brand {
+  font-weight: 900;
+  font-size: 26px;
+  margin-bottom: 10px;
 }
 
-/* Sección izquierda con logo */
-.sf-left {
-    background: #e9edf2;
+.sf-reg-title {
+  font-weight: 900;
+  font-size: 44px;
+  line-height: 1.05;
+  margin-bottom: 26px;
 }
 
-.sf-hero {
-    width: 100%;
-    height: 100%;
-    display: block;
-    object-fit: cover;
+.sf-form { width: 100%; }
+
+.sf-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 18px;
+  margin-bottom: 16px;
 }
 
-/* Sección derecha con formulario */
-.sf-right {
-    background: #062a57;
+.sf-grid--one {
+  grid-template-columns: 1fr;
 }
 
-.sf-inner {
-    width: 78%;
-    min-width: 260px;
-    max-width: 360px;
+.sf-field { min-width: 0; }
+
+.sf-label {
+  display: block;
+  font-weight: 800;
+  font-size: 16px;
+  margin-bottom: 10px;
 }
 
-/* Titulo del formulario */
-.sf-title {
-    font-size: 40px;
-    font-weight: 500;
-    color: #fff;
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0);
+  border: 0;
 }
 
-/* Estilos de los campos de texto */
 .sf-input {
-    height: 40px;
-    border-radius: 8px;
-    border: 0;
-    padding-left: 10px;
+  width: 100%;
+  border: 0;
+  outline: none;
+  background: #ffffff;
+  color: #0a1f3b;
+  border-radius: 10px;
+  padding: 14px 14px;
+  font-size: 16px;
+  box-sizing: border-box;
 }
 
-/* Botón del formulario */
+.sf-input:focus {
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, .25);
+}
+
+.sf-pass {
+  position: relative;
+}
+
+.sf-input--pass {
+  padding-right: 52px;
+}
+
+.sf-eye {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  padding: 6px;
+  cursor: pointer;
+  color: #0a1f3b;
+}
+
+.sf-eye ion-icon {
+  font-size: 22px;
+}
+
+.sf-error {
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #ff6b6b;
+}
+
 .sf-btn {
-    height: 42px;
-    border-radius: 8px;
-    background: #6f849b;
-    border: 0;
-    color: #fff;
+  width: 100%;
+  margin-top: 18px;
+  border: 0;
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-weight: 900;
+  font-size: 18px;
+  background: #7d94b1; /* como tu imagen */
+  color: #ffffff;
+  cursor: pointer;
 }
 
-.sf-btn:hover {
-    filter: brightness(1.06);
+.sf-btn:disabled {
+  opacity: .65;
+  cursor: not-allowed;
 }
 
-.sf-btn:active {
-    transform: translateY(1px);
-}
-
-/* Responsive para pantallas pequeñas */
-@media (max-width: 767.98px) {
-    .sf-card {
-        height: auto;
-    }
-
-    .sf-left {
-        height: 240px;
-    }
+/* Responsive */
+@media (max-width: 820px) {
+  .sf-reg-card { padding: 28px 20px; }
+  .sf-reg-title { font-size: 34px; }
+  .sf-grid { grid-template-columns: 1fr; }
 }
