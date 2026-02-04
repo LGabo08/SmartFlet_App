@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { eyeOutline, eyeOffOutline } from 'ionicons/icons';
 
 import { IonContent, IonIcon, AlertController } from '@ionic/angular/standalone';
-
 import { UsuarioService } from 'src/app/services/usuario.service';
 
 @Component({
@@ -18,6 +18,8 @@ import { UsuarioService } from 'src/app/services/usuario.service';
 export class RegisterPage implements OnInit {
   registerForm: FormGroup;
   showPass = false;
+  eyeOutline = eyeOutline;
+  eyeOffOutline = eyeOffOutline;
 
   constructor(
     private fb: FormBuilder,
@@ -25,15 +27,16 @@ export class RegisterPage implements OnInit {
     private alertController: AlertController,
     private router: Router
   ) {
-   this.registerForm = this.fb.group({
-  email: ['', [Validators.required, Validators.email]],
-  nombre: ['', [Validators.required, Validators.maxLength(120)]], // ✅
-  apellidos: ['', [Validators.required, Validators.maxLength(255)]],
-  role_id: [2, Validators.required],
-  contrasena: ['', [Validators.required, Validators.minLength(6)]],
-  confirmarContrasena: ['', [Validators.required]],
-  estado: ['activo', Validators.required],
-});
+    this.registerForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      nombre: ['', [Validators.required, Validators.maxLength(120)]], // UI: "Nombres"
+      apellidos: ['', [Validators.required, Validators.maxLength(255)]],
+      role_id: [2, Validators.required],
+      estado: ['activo', Validators.required],
+
+      contrasena: ['', [Validators.required, Validators.minLength(6)]],
+      confirmarContrasena: ['', [Validators.required]],
+    });
   }
 
   ngOnInit() {}
@@ -53,7 +56,6 @@ export class RegisterPage implements OnInit {
       apellidos: String(this.registerForm.value.apellidos ?? '').trim(),
       contrasena: String(this.registerForm.value.contrasena ?? ''),
       role_id: Number(this.registerForm.value.role_id),
-      // ✅ tu backend usa 'activo' por defecto; mandamos minúsculas por consistencia
       estado: String(this.registerForm.value.estado ?? 'activo').toLowerCase(),
     };
 
@@ -74,12 +76,11 @@ export class RegisterPage implements OnInit {
       });
       await alert.present();
 
-      // Limpia y vuelve al panel (o puedes dejarlo en register)
+      // Reset conservando defaults
       this.registerForm.reset({ role_id: 2, estado: 'activo' });
       this.router.navigateByUrl('/panel', { replaceUrl: true });
 
     } catch (err: any) {
-      // Laravel típicamente: err.error.errors (422), err.error.message (401/403)
       const msg =
         this.formatErrors(err?.error?.errors) ??
         err?.error?.message ??

@@ -13,22 +13,36 @@
         autocomplete="off"
       >
 
-        <!-- (Opcional PRO) señuelos anti-autofill -->
+        <!-- Señuelos anti-autofill -->
         <input type="text" name="fake-user" autocomplete="username" style="display:none" />
         <input type="password" name="fake-pass" autocomplete="new-password" style="display:none" />
 
-        <!-- Fila 1 -->
-        <div class="sf-grid">
+        <!-- Fila 1: Nombres | Apellidos | Rol -->
+        <div class="sf-grid sf-grid--3">
           <div class="sf-field">
-            <label class="sf-label">E-mail</label>
+            <label class="sf-label">Nombres</label>
             <input
               class="sf-input"
-              type="email"
-              formControlName="email"
-              name="sf-email"
-              autocomplete="username"
+              type="text"
+              formControlName="nombre"
+              name="sf-nombres"
+              autocomplete="given-name"
               spellcheck="false"
-              autocapitalize="off"
+              autocapitalize="words"
+              autocorrect="off"
+            />
+          </div>
+
+          <div class="sf-field">
+            <label class="sf-label">Apellidos</label>
+            <input
+              class="sf-input"
+              type="text"
+              formControlName="apellidos"
+              name="sf-apellidos"
+              autocomplete="family-name"
+              spellcheck="false"
+              autocapitalize="words"
               autocorrect="off"
             />
           </div>
@@ -43,67 +57,76 @@
           </div>
         </div>
 
-        <!-- Fila 2 -->
-        <div class="sf-grid">
+        <!-- Fila 2: Email (ancho) | Estado -->
+        <div class="sf-grid sf-grid--email">
           <div class="sf-field">
-            <label class="sf-label">Contraseña</label>
-            <div class="sf-pass">
-              <input
-                class="sf-input sf-input--pass"
-                [type]="showPass ? 'text' : 'password'"
-                formControlName="contrasena"
-                name="sf-new-password"
-                autocomplete="new-password"
-              />
-              <button
-                class="sf-eye"
-                type="button"
-                (click)="showPass = !showPass"
-                aria-label="Mostrar contraseña"
-              >
-                <ion-icon [name]="showPass ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
-              </button>
-            </div>
-          </div>
-
-          <!-- <div class="sf-field">
-            <label class="sf-label">Estado</label>
+            <label class="sf-label">Email</label>
             <input
               class="sf-input"
-              type="text"
-              formControlName="estado"
-              name="sf-estado"
-              autocomplete="off"
+              type="email"
+              formControlName="email"
+              name="sf-email"
+              autocomplete="username"
+              spellcheck="false"
+              autocapitalize="off"
+              autocorrect="off"
             />
-          </div> -->
+          </div>
 
           <div class="sf-field">
             <label class="sf-label">Estado</label>
             <select class="sf-input" formControlName="estado" name="sf-estado" autocomplete="off">
               <option value="activo">Activo</option>
               <option value="inactivo">Inactivo</option>
-             
             </select>
           </div>
         </div>
 
-        <!-- Repetir contraseña -->
-        <div class="sf-grid sf-grid--one">
-          <div class="sf-field">
-            <label class="sf-label sr-only">Repetir contraseña</label>
-            <input
-              class="sf-input"
-              [type]="showPass ? 'text' : 'password'"
-              formControlName="confirmarContrasena"
-              name="sf-confirm-password"
-              autocomplete="new-password"
-              placeholder="Repetir contraseña"
-            />
-            <div class="sf-error" *ngIf="showNoMatch">
-              no coincide la contraseña
-            </div>
-          </div>
-        </div>
+        <!-- Fila 3: Contraseña | Repetir contraseña -->
+      <!-- Fila 3: Contraseña | Repetir contraseña -->
+<div class="sf-grid sf-grid--pass">
+  <div class="sf-field">
+    <label class="sf-label">Contraseña</label>
+
+    <div class="sf-pass">
+      <input
+        class="sf-input sf-input--pass"
+        [type]="showPass ? 'text' : 'password'"
+        formControlName="contrasena"
+        name="sf-new-password"
+        autocomplete="new-password"
+      />
+
+      <button
+        class="sf-eye"
+        type="button"
+        (click)="showPass = !showPass"
+        [attr.aria-label]="showPass ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+      >
+        <ion-icon [icon]="showPass ? eyeOffOutline : eyeOutline"></ion-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="sf-field">
+    <!-- OJO: ponemos label real para que alinee igual que el de la izquierda -->
+    <label class="sf-label">Repetir contraseña</label>
+
+    <input
+      class="sf-input"
+      [type]="showPass ? 'text' : 'password'"
+      formControlName="confirmarContrasena"
+      name="sf-confirm-password"
+      autocomplete="new-password"
+      placeholder="Repetir contraseña"
+    />
+
+    <div class="sf-error" *ngIf="showNoMatch">
+      no coincide la contraseña
+    </div>
+  </div>
+</div>
+
 
         <button class="sf-btn" type="submit" [disabled]="registerForm.invalid || showNoMatch">
           Registrar
