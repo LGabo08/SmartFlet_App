@@ -12,7 +12,8 @@ export const routes: Routes = [
   {
     path: 'login',
     canActivate: [guestGuard],
-    loadComponent: () => import('./paginas/login/login.page').then(m => m.LoginPage),
+    loadComponent: () =>
+      import('./paginas/login/login.page').then(m => m.LoginPage),
   },
 
   {
@@ -26,6 +27,14 @@ export const routes: Routes = [
       { path: 'viajes', loadComponent: () => import('./paginas/viajes/viajes.page').then(m => m.ViajesPage) },
       { path: 'asignaciones', loadComponent: () => import('./paginas/asignaciones/asignaciones.page').then(m => m.AsignacionesPage) },
       { path: 'register', loadComponent: () => import('./paginas/register/register.page').then(m => m.RegisterPage) },
+      { path: 'usuarios', loadComponent: () => import('./paginas/usuarios/usuarios.page').then(m => m.UsuariosPage) },
+
+      // ✅ NUEVA RUTA PARA EDITAR
+      {
+        path: 'usuarios/:id/editar',
+        loadComponent: () =>
+          import('./paginas/register/register.page').then(m => m.RegisterPage),
+      },
     ],
   },
 

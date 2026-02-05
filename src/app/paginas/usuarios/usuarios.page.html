@@ -1,0 +1,81 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Usuarios</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <div class="sf-toolbar">
+    <input
+      class="sf-input"
+      type="text"
+      placeholder="Buscar por nombre, email o estado..."
+      [(ngModel)]="q"
+      (input)="applyFilter()"
+    />
+
+    <select class="sf-input sf-mini" [(ngModel)]="roleFilter" (change)="applyFilter()">
+      <option value="">Todos los roles</option>
+      <option value="1">Administrador</option>
+      <option value="2">Coordinador</option>
+    </select>
+
+    <select class="sf-input sf-mini" [(ngModel)]="estadoFilter" (change)="applyFilter()">
+      <option value="">Todos</option>
+      <option value="activo">Activo</option>
+      <option value="inactivo">Inactivo</option>
+    </select>
+
+    <button class="sf-btn ghost" type="button" (click)="reload()">Actualizar</button>
+  </div>
+
+  <div class="sf-table-wrap">
+    <table class="sf-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th class="ta-right">Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody *ngIf="loading">
+        <tr><td colspan="6" class="sf-empty">Cargando...</td></tr>
+      </tbody>
+
+      <tbody *ngIf="!loading && filtered.length">
+        <tr *ngFor="let u of filtered">
+          <!-- ✅ tu PK real -->
+          <td>{{ u.idUsuario }}</td>
+
+          <td>{{ u.nombre }} {{ u.apellidos }}</td>
+          <td class="mono">{{ u.email }}</td>
+
+          <td>{{ u.role_id === 1 ? 'ADMIN' : 'COORD' }}</td>
+          <td>{{ u.estado || 'activo' }}</td>
+
+          <td class="ta-right">
+            <!-- ✅ EDITAR -->
+            <button class="sf-btn ghost small" type="button" (click)="editUser(u)">
+              Editar
+            </button>
+
+            <!-- ✅ ELIMINAR -->
+            <button class="sf-btn danger small" type="button" (click)="confirmDelete(u)">
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+
+      <tbody *ngIf="!loading && !filtered.length">
+        <tr><td colspan="6" class="sf-empty">No hay usuarios para mostrar.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</ion-content>

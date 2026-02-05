@@ -8,7 +8,9 @@ import {
   IonContent,
   IonRouterOutlet,
   IonMenuToggle,
-  IonIcon
+  IonIcon,
+  IonAccordionGroup,
+  IonAccordion,
 } from '@ionic/angular/standalone';
 
 import { AuthService } from 'src/app/services/auth.service';
@@ -29,6 +31,8 @@ import type { Usuario } from 'src/models/usuario.model';
     IonRouterOutlet,
     IonMenuToggle,
     IonIcon,
+    IonAccordionGroup,
+    IonAccordion,  
   ],
 })
 export class ShellComponent implements OnInit {

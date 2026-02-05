@@ -4,12 +4,14 @@
     <div class="sf-reg-card">
 
       <div class="sf-reg-brand">SmartFlet</div>
-      <div class="sf-reg-title">Registrar Usuario</div>
+
+      <!-- ✅ título dinámico -->
+      <div class="sf-reg-title">{{ isEdit ? 'Editar Usuario' : 'Registrar Usuario' }}</div>
 
       <form
         class="sf-form"
         [formGroup]="registerForm"
-        (ngSubmit)="onRegister()"
+        (ngSubmit)="onSubmit()"
         autocomplete="off"
       >
 
@@ -52,7 +54,6 @@
             <select class="sf-input" formControlName="role_id" name="sf-role" autocomplete="off">
               <option [value]="1">Administrador</option>
               <option [value]="2">Coordinador</option>
-              <option [value]="3">Encargado de área</option>
             </select>
           </div>
         </div>
@@ -82,54 +83,68 @@
           </div>
         </div>
 
+        <!-- ✅ Solo en editar mostramos una ayuda -->
+        <div class="sf-hint" *ngIf="isEdit">
+          Si no deseas cambiar la contraseña, deja los campos vacíos.
+        </div>
+
         <!-- Fila 3: Contraseña | Repetir contraseña -->
-      <!-- Fila 3: Contraseña | Repetir contraseña -->
-<div class="sf-grid sf-grid--pass">
-  <div class="sf-field">
-    <label class="sf-label">Contraseña</label>
+        <div class="sf-grid sf-grid--pass">
+          <div class="sf-field">
+            <label class="sf-label">Contraseña</label>
 
-    <div class="sf-pass">
-      <input
-        class="sf-input sf-input--pass"
-        [type]="showPass ? 'text' : 'password'"
-        formControlName="contrasena"
-        name="sf-new-password"
-        autocomplete="new-password"
-      />
+            <div class="sf-pass">
+              <input
+                class="sf-input sf-input--pass"
+                [type]="showPass ? 'text' : 'password'"
+                formControlName="contrasena"
+                name="sf-new-password"
+                autocomplete="new-password"
+                [placeholder]="isEdit ? 'Nueva contraseña (opcional)' : 'Contraseña'"
+              />
 
-      <button
-        class="sf-eye"
-        type="button"
-        (click)="showPass = !showPass"
-        [attr.aria-label]="showPass ? 'Ocultar contraseña' : 'Mostrar contraseña'"
-      >
-        <ion-icon [icon]="showPass ? eyeOffOutline : eyeOutline"></ion-icon>
-      </button>
-    </div>
-  </div>
+              <button
+                class="sf-eye"
+                type="button"
+                (click)="showPass = !showPass"
+                [attr.aria-label]="showPass ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+              >
+                <ion-icon [icon]="showPass ? eyeOffOutline : eyeOutline"></ion-icon>
+              </button>
+            </div>
+          </div>
 
-  <div class="sf-field">
-    <!-- OJO: ponemos label real para que alinee igual que el de la izquierda -->
-    <label class="sf-label">Repetir contraseña</label>
+          <div class="sf-field">
+            <label class="sf-label">Repetir contraseña</label>
 
-    <input
-      class="sf-input"
-      [type]="showPass ? 'text' : 'password'"
-      formControlName="confirmarContrasena"
-      name="sf-confirm-password"
-      autocomplete="new-password"
-      placeholder="Repetir contraseña"
-    />
+            <input
+              class="sf-input"
+              [type]="showPass ? 'text' : 'password'"
+              formControlName="confirmarContrasena"
+              name="sf-confirm-password"
+              autocomplete="new-password"
+              [placeholder]="isEdit ? 'Confirmar (opcional)' : 'Repetir contraseña'"
+            />
 
-    <div class="sf-error" *ngIf="showNoMatch">
-      no coincide la contraseña
-    </div>
-  </div>
-</div>
+            <div class="sf-error" *ngIf="showNoMatch">
+              no coincide la contraseña
+            </div>
+          </div>
+        </div>
 
+        <!-- ✅ Botón dinámico -->
+        <button class="sf-btn" type="submit" [disabled]="registerForm.invalid || showNoMatch || saving">
+          {{ saving ? 'Guardando...' : (isEdit ? 'Guardar cambios' : 'Registrar') }}
+        </button>
 
-        <button class="sf-btn" type="submit" [disabled]="registerForm.invalid || showNoMatch">
-          Registrar
+        <!-- ✅ botón volver solo cuando editas -->
+        <button
+          class="sf-btn ghost"
+          type="button"
+          *ngIf="isEdit"
+          (click)="goBack()"
+        >
+          Volver al listado
         </button>
 
       </form>

@@ -1,223 +1,229 @@
+/* ====== CONTENEDOR MENU ====== */
 .sf-menu {
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, Arial, sans-serif;
-
-  /* ✅ sidebar más angosto */
-  --width: 300px;
-  --min-width: 300px;
-  --max-width: 300px;
-
-  --background: #062a57;
-  background: #062a57;
+  --background: #0b2c5d;
 }
 
-/* 🔥 Quitamos padding real del ion-content */
 .sf-menu__content {
-  --background: #062a57 !important;
-  background: #062a57 !important;
-
-  padding: 0 !important;
-  --padding-start: 0px;
-  --padding-end: 0px;
-  --padding-top: 0px;
-  --padding-bottom: 0px;
+  --background: #0b2c5d;
 }
 
-/* Mantén texto blanco */
-.sf-menu,
-.sf-menu * {
-  color: #fff !important;
-}
-
-/* Wrapper principal */
+/* wrapper */
 .sf-wrap {
-  /* ✅ padding más compacto para sidebar angosto */
-  --padL: 18px;
-  --padR: 14px;
-
-  padding: 18px 0;
-  min-height: 100vh;
+  padding: 14px 12px 12px;
   display: flex;
   flex-direction: column;
+  min-height: 100%;
+  gap: 12px;
 }
 
-/* Aplica padding solo donde debe existir */
-.sf-brand,
-.sf-section,
-.sf-footer {
-  padding-left: var(--padL);
-  padding-right: var(--padR);
-}
-
-/* Brand (más pequeño para que no se coma el sidebar) */
+/* ====== BRAND ====== */
 .sf-brand {
-  font-size: 30px;
+  display: block;
+  color: #fff;
   font-weight: 800;
+  font-size: 24px;
   letter-spacing: 0.2px;
-  line-height: 1.05;
-  margin: 14px 0 14px;
   text-decoration: none;
-  display: inline-block;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  padding: 6px 4px 10px;
 }
 
-/* 🔥 TARJETA USUARIO FULL WIDTH REAL */
+/* ====== USER CARD (SIN ICONO) ====== */
 .sf-user {
-  background: #f3b24b;
-  border-radius: 0;
-
-  width: calc(100% + var(--padL) + var(--padR));
-  margin-left: calc(var(--padL) * -1);
-  margin-right: calc(var(--padR) * -1);
-
-  margin-top: 0;
-  margin-bottom: 16px;
-
-  padding: 12px 14px; /* ✅ un poco más compacto */
-}
-
-.sf-user__row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.sf-user__avatar ion-icon {
-  font-size: 42px; /* ✅ un poco más pequeño */
-  color: #0a1f3b !important;
+  background: rgba(255, 255, 255, 0.10);
+  border-radius: 12px;
+  padding: 10px;
 }
 
 .sf-user__info {
-  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .sf-user__welcome {
-  font-weight: 900;
-  font-size: 13px; /* ✅ */
-  color: #0a1f3b !important;
-  line-height: 1.1;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 11px;
 }
 
 .sf-user__name {
-  font-weight: 900;
-  font-size: 16px; /* ✅ */
-  color: #0a1f3b !important;
-  line-height: 1.1;
-}
-
-.sf-user__mail {
+  color: #fff;
   font-weight: 700;
-  font-size: 12px; /* ✅ */
-  color: #0a1f3b !important;
-  opacity: 0.95;
+  font-size: 13px;
+  line-height: 1.2;
+
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Secciones */
-.sf-section {
-  margin: 0 0 18px; /* ✅ un poco menos */
+.sf-user__mail {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 11px; /* ✅ antes 8px, ahora más legible */
+  margin-top: 2px;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.sf-title {
-  font-size: 22px; /* ✅ */
-  font-weight: 700;
-  line-height: 1.05;
-  margin: 0 0 6px;
-}
-
-/* 🔥 Animaciones intactas */
+/* ====== ITEMS (links) ====== */
 .sf-item {
   display: block;
+  color: rgba(255, 255, 255, 0.92);
   text-decoration: none;
 
-  font-size: 16px; /* ✅ */
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
 
-  padding: 4px 8px 4px 12px; /* ✅ */
-  margin: 2px 0;
-  line-height: 1.25;
-
-  border-radius: 8px;
-  opacity: 0.92;
-
-  position: relative;
-  transform: translateX(0);
-
-  transition: transform 160ms ease,
-              background-color 160ms ease,
-              opacity 160ms ease;
-}
-
-/* Línea izquierda (hover/activo) */
-.sf-item::before {
-  content: "";
-  position: absolute;
-  left: 8px;
-  top: 7px;
-  bottom: 7px;
-  width: 3px;
-  border-radius: 999px;
-  background: transparent;
-  transition: background-color 160ms ease;
+  padding: 9px 10px;
+  border-radius: 10px;
+  line-height: 1.2;
 }
 
 .sf-item:hover {
-  opacity: 1;
   background: rgba(255, 255, 255, 0.10);
-  transform: translateX(6px);
 }
 
-.sf-item:hover::before {
-  background: rgba(255, 255, 255, 0.85);
+.sf-item.router-link-active,
+.sf-item.active {
+  background: rgba(255, 255, 255, 0.16);
 }
 
-.sf-item.router-link-active {
-  opacity: 1;
-  background: rgba(255, 255, 255, 0.14);
+/* =========================
+   DROPDOWN MENU (ACCORDION)
+   ========================= */
+
+/* Grupo */
+.sf-acc {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.sf-item.router-link-active::before {
-  background: rgba(255, 255, 255, 0.95);
-}
-
-ion-menu-toggle {
-  display: block;
-}
-
-/* Footer logout */
-.sf-footer {
-  margin-top: auto;
-  padding-top: 10px;
-  padding-bottom: 6px;
-}
-
-.sf-logout {
-  width: 100%;
-  border: 0;
+/* Item accordion */
+.sf-acc__item {
   background: transparent;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Header del dropdown */
+.sf-acc__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
 
-  padding: 10px 8px;
-  border-radius: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
 
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 12px;
   font-weight: 800;
-  font-size: 13px; /* ✅ */
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
 
-  transition: background-color 160ms ease,
-              transform 160ms ease,
-              opacity 160ms ease;
+  cursor: pointer;
+  user-select: none;
+
+  transition: background 160ms ease, border-color 160ms ease;
 }
 
-.sf-logout:hover {
+.sf-acc__header:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+/* Icono del chevron */
+.sf-acc__header ion-icon {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.85);
+  transition: transform 200ms ease;
+}
+
+/* Cuando está abierto, rotamos el chevron */
+ion-accordion.accordion-expanded .sf-acc__header ion-icon {
+  transform: rotate(180deg);
+}
+
+/* Contenido del dropdown */
+.sf-acc__content {
+  padding: 8px 10px 10px;
+  background: rgba(255, 255, 255, 0.06);
+
+  border-left: 1px solid rgba(255, 255, 255, 0.10);
+  border-right: 1px solid rgba(255, 255, 255, 0.10);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+
+  border-radius: 0 0 12px 12px;
+}
+
+/* Items dentro del dropdown más compactos */
+.sf-acc__content .sf-item {
+  font-size: 12.5px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  margin: 4px 0;
+  background: transparent;
+}
+
+.sf-acc__content .sf-item:hover {
   background: rgba(255, 255, 255, 0.10);
-  transform: translateX(6px);
-  opacity: 1;
+}
+
+.sf-acc__content .sf-item.router-link-active {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+/* Separación suave entre módulos */
+.sf-acc__item + .sf-acc__item {
+  margin-top: 2px;
+}
+
+/* ====== FOOTER (LOGOUT) ====== */
+.sf-footer {
+  margin-top: auto;
+  padding-top: 10px;
+}
+
+.sf-logout {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #fff;
+
+  padding: 10px 12px;
+  border-radius: 12px;
+
+  font-weight: 800;
+  font-size: 13px;
 }
 
 .sf-logout ion-icon {
-  font-size: 22px;
-  color: #fff !important;
+  font-size: 18px;
+}
+
+/* ====== SCROLLBAR (para que no se vea feo) ====== */
+.sf-menu__content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sf-menu__content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+}
+
+.sf-menu__content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.06);
 }
