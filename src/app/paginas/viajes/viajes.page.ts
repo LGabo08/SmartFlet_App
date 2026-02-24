@@ -1,91 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
-import { RouterLink } from '@angular/router';
+import { ViajeService } from 'src/app/services/viaje.service';
+import { Viaje } from 'src/models/viaje.model'; // Importamos el modelo de Viaje
 
 type EstadoViaje = 'En curso' | 'Finalizado';
-
-export interface Viaje {
-  numeroViaje: string;
-  cita: string;
-  tarifa: number | null;
-  unidad: string;
-  operador: string;
-  producto: string;
-  cliente: string;
-  origen: string;
-  destino: string;
-  estado: EstadoViaje;
-}
 
 @Component({
   selector: 'app-viajes',
   templateUrl: './viajes.page.html',
   styleUrls: ['./viajes.page.scss'],
-  standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, RouterLink]
 })
 export class ViajesPage implements OnInit {
-
-  constructor() {}
-  ngOnInit() {}
-
-  // ======================
-  // DATA
-  // ======================
-  viajes: Viaje[] = [
-    {
-      numeroViaje: 'VJ-001',
-      cita: '08:30',
-      tarifa: 15000,
-      unidad: 'TX-34',
-      operador: 'Juan Pérez',
-      producto: 'Acero',
-      cliente: 'CEMEX',
-      origen: 'Veracruz',
-      destino: 'Puebla',
-      estado: 'En curso',
-    },
-    {
-      numeroViaje: 'VJ-002',
-      cita: '10:00',
-      tarifa: 22000,
-      unidad: 'TX-18',
-      operador: 'Carlos Ruiz',
-      producto: 'Cemento',
-      cliente: 'Holcim',
-      origen: 'Orizaba',
-      destino: 'CDMX',
-      estado: 'Finalizado',
-    },
-    {
-      numeroViaje: 'VJ-002',
-      cita: '10:00',
-      tarifa: 22000,
-      unidad: 'TX-18',
-      operador: 'Carlos Ruiz',
-      producto: 'Cemento',
-      cliente: 'Holcim',
-      origen: 'Orizaba',
-      destino: 'CDMX',
-      estado: 'Finalizado',
-    }
-    ,
-    {
-      numeroViaje: 'VJ-002',
-      cita: '10:00',
-      tarifa: 55000,
-      unidad: 'TX-18',
-      operador: 'Carlos Ruiz',
-      producto: 'Cemento',
-      cliente: 'Holcim',
-      origen: 'Orizaba',
-      destino: 'CDMX',
-      estado: 'Finalizado',
-    }
-  ];
-
+  viajes: Viaje[] = [];  // Definimos el arreglo de viajes con el tipo 'Viaje'
   filtroTexto = '';
   filtroEstado: '' | EstadoViaje = '';
   filtroCliente = '';
@@ -93,14 +18,21 @@ export class ViajesPage implements OnInit {
   tarifaMin: number | null = null;
   tarifaMax: number | null = null;
 
-  // Dropdown de clientes (sale del arreglo)
-  get clientesDisponibles(): string[] {
-    return Array.from(new Set(this.viajes.map(v => v.cliente))).sort();
+  constructor(private viajeService: ViajeService) {}
+
+  ngOnInit() {
+    // Obtener los viajes de la API cuando se carga la página
+    this.getViajes();
   }
 
-  // ======================
-  // VISTA FILTRADA
-  // ======================
+  // Método para obtener los viajes
+  getViajes() {
+    this.viajeService.getViajes().subscribe((data: Viaje[]) => {
+      this.viajes = data;  // Guardamos los datos obtenidos en el arreglo de viajes
+    });
+  }
+
+  // Filtro de los viajes
   get viajesFiltrados(): Viaje[] {
     const texto = this.filtroTexto.trim().toLowerCase();
     const noViaje = this.filtroNoViaje.trim().toLowerCase();
@@ -108,7 +40,7 @@ export class ViajesPage implements OnInit {
     return this.viajes.filter(v => {
       const matchTexto =
         !texto ||
-        (`${v.numeroViaje} ${v.cliente} ${v.origen} ${v.destino} ${v.producto} ${v.unidad} ${v.operador}`
+        (`${v.numero_viaje} ${v.ruta} ${v.origen} ${v.destino} ${v.producto} ${v.unidad} ${v.operador}`
           .toLowerCase()
           .includes(texto));
 
@@ -119,9 +51,9 @@ export class ViajesPage implements OnInit {
         !this.filtroCliente || v.cliente === this.filtroCliente;
 
       const matchNoViaje =
-        !noViaje || v.numeroViaje.toLowerCase().includes(noViaje);
+        !noViaje || v.numero_viaje.toLowerCase().includes(noViaje);
 
-      const t = v.tarifa ?? 0;
+      const t = v.pago_operador ?? 0;
 
       const matchTarifaMin =
         this.tarifaMin === null || t >= this.tarifaMin;
@@ -141,23 +73,24 @@ export class ViajesPage implements OnInit {
   }
 
   // Para que no se pierda el foco al filtrar
-  trackByNumeroViaje = (_: number, item: Viaje) => item.numeroViaje || _;
+  trackByNumeroViaje = (_: number, item: Viaje) => item.numero_viaje || _;
 
   // ======================
   // ACCIÓN +
   // ======================
   agregarViaje(): void {
     const nuevo: Viaje = {
-      numeroViaje: this.generarFolio(),
-      cita: '',
-      tarifa: null,
-      unidad: '',
-      operador: '',
-      producto: '',
-      cliente: '',
-      origen: '',
-      destino: '',
-      estado: 'En curso',
+      id_viaje: 0,  // Inicializamos el ID como 0
+      numero_viaje: this.generarFolio(),
+      fk_ruta: 0,  // Inicializamos con valores predeterminados
+      fk_licencia_requerida: 0,
+      fk_certificacion_requerida: 0,
+      fk_operador: 0,
+      fk_unidad: 0,
+      fecha_salida: '',
+      fecha_llegada: '',
+      estado: 'PENDIENTE',
+      pago_operador: 0,
     };
 
     this.viajes.unshift(nuevo);
@@ -165,7 +98,7 @@ export class ViajesPage implements OnInit {
 
   private generarFolio(): string {
     const nums = this.viajes
-      .map(v => parseInt((v.numeroViaje || '').replace('VJ-', ''), 10))
+      .map(v => parseInt((v.numero_viaje || '').replace('VJ-', ''), 10))
       .filter(n => !isNaN(n));
     const next = (nums.length ? Math.max(...nums) : 0) + 1;
     return `VJ-${String(next).padStart(3, '0')}`;

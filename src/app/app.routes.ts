@@ -28,15 +28,13 @@ export const routes: Routes = [
       { path: 'asignaciones', loadComponent: () => import('./paginas/asignaciones/asignaciones.page').then(m => m.AsignacionesPage) },
       { path: 'register', loadComponent: () => import('./paginas/register/register.page').then(m => m.RegisterPage) },
       { path: 'usuarios', loadComponent: () => import('./paginas/usuarios/usuarios.page').then(m => m.UsuariosPage) },
+      {path: 'agregar-viaje',loadComponent: () => import('./paginas/agregar-viaje/agregar-viaje.page').then( m => m.AgregarViajePage)},
 
       // ✅ NUEVA RUTA PARA EDITAR
-      {
-        path: 'usuarios/:id/editar',
-        loadComponent: () =>
-          import('./paginas/register/register.page').then(m => m.RegisterPage),
-      },
+      {path: 'usuarios/:id/editar',loadComponent: () =>import('./paginas/register/register.page').then(m => m.RegisterPage),},
     ],
   },
 
   { path: '**', redirectTo: 'login' },
+ 
 ];

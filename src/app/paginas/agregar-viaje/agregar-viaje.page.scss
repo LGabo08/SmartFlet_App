@@ -1,0 +1,170 @@
+/* Contenedor principal de la página */
+.sf-reg-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Tarjeta que contiene el formulario */
+.sf-reg-card {
+  background-color: #fff;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 20px;
+  width: 100%;
+  max-width: 600px;
+}
+
+/* Marca en la parte superior */
+.sf-reg-brand {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #0511f2;  /* Azul corporativo */
+}
+
+/* Título dinámico de la página */
+.sf-reg-title {
+  font-size: 20px;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Formulario */
+.sf-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Estilos para los campos de formulario */
+.sf-field {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Etiquetas de los campos */
+.sf-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+/* Inputs y selects del formulario */
+.sf-input {
+  padding: 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  outline: none;
+}
+
+/* Resaltado de los campos con error */
+.sf-input:focus {
+  border-color: #0511f2;  /* Azul corporativo */
+}
+
+/* Ajustes para la grilla del formulario */
+.sf-grid {
+  display: grid;
+  gap: 20px;
+}
+
+/* Grid específico para formularios de 3 columnas */
+.sf-grid--3 {
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 15px;
+}
+
+/* Grid específico para formularios de 2 columnas (email + estado) */
+.sf-grid--email {
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+/* Grid específico para contraseñas */
+.sf-grid--pass {
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+/* Texto de hint solo en edición de usuario */
+.sf-hint {
+  font-size: 12px;
+  color: #888;
+  text-align: center;
+}
+
+/* Estilo para los botones */
+.sf-btn {
+  background-color: #0511f2;  /* Azul corporativo */
+  color: #fff;
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  text-align: center;
+}
+
+.sf-btn:hover {
+  background-color: #245ca6;  /* Azul más oscuro */
+}
+
+.sf-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Estilo para el botón de "volver" */
+.sf-btn.ghost {
+  background-color: transparent;
+  color: #0511f2;
+  border: 1px solid #0511f2;
+  padding: 10px;
+  font-size: 16px;
+}
+
+.sf-btn.ghost:hover {
+  background-color: #f1f1f1;
+}
+
+/* Estilo del footer para el log-out */
+.sf-footer {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.sf-logout {
+  background-color: #f20505;  /* Rojo de advertencia */
+  color: #fff;
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.sf-logout:hover {
+  background-color: #d91e1e;  /* Rojo más oscuro */
+}
+
+/* Estilo para los mensajes de error */
+.sf-error {
+  color: #f20505;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+/* Agregar un margen al botón "Guardar cambios" cuando esté en edición */
+.sf-btn--edit {
+  margin-top: 20px;
+}

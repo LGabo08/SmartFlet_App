@@ -1,0 +1,95 @@
+<ion-content fullscreen class="sf-reg">
+
+  <div class="sf-reg-wrap">
+    <div class="sf-reg-card">
+
+      <div class="sf-reg-brand">SmartFlet</div>
+
+      <!-- Título dinámico -->
+      <div class="sf-reg-title">Agregar Nuevo Viaje</div>
+
+      <form
+        class="sf-form"
+        [formGroup]="viajeForm"
+        (ngSubmit)="onSubmit()"
+        autocomplete="off"
+      >
+
+        <!-- Señuelos anti-autofill -->
+        <input type="text" name="fake-user" autocomplete="username" style="display:none" />
+        <input type="password" name="fake-pass" autocomplete="new-password" style="display:none" />
+
+        <!-- Fila 1: Número de viaje | Ruta | Licencia Requerida -->
+        <div class="sf-grid sf-grid--3">
+          <div class="sf-field">
+            <label class="sf-label">Número de Viaje</label>
+            <input
+              class="sf-input"
+              type="text"
+              formControlName="numero_viaje"
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </div>
+
+          <div class="sf-field">
+            <label class="sf-label">Ruta</label>
+            <select class="sf-input" formControlName="fk_ruta" autocomplete="off">
+             <option *ngFor="let ruta of rutas" [value]="ruta.id_ruta">{{ ruta.id_ruta }}</option>
+            </select>
+          </div>
+
+          <div class="sf-field">
+            <label class="sf-label">Licencia Requerida</label>
+            <select class="sf-input" formControlName="fk_licencia_requerida" autocomplete="off">
+              <option *ngFor="let licencia of licencias" [value]="licencia.id_licencia">{{ licencia.descripcion_licencia }}</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Fila 2: Certificación Requerida | Fecha de Salida | Fecha de Llegada -->
+        <div class="sf-grid sf-grid--3">
+          <div class="sf-field">
+            <label class="sf-label">Certificación Requerida</label>
+            <select class="sf-input" formControlName="fk_certificacion_requerida" autocomplete="off">
+              <option *ngFor="let certificacion of certificaciones" [value]="certificacion.id_certificacion">{{ certificacion.nombre_certificacion }}</option>
+            </select>
+          </div>
+
+
+        </div>
+
+        <!-- Fila 3: Pago del Operador | Estado -->
+        <div class="sf-grid sf-grid--3">
+          <div class="sf-field">
+            <label class="sf-label">Pago del Operador</label>
+            <input
+              class="sf-input"
+              type="number"
+              formControlName="pago_operador"
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="sf-field">
+            <label class="sf-label">Estado</label>
+            <select class="sf-input" formControlName="estado" autocomplete="off">
+              <option value="PENDIENTE">PENDIENTE</option>
+              <option value="ASIGNADO">ASIGNADO</option>
+              <option value="EN_CURSO">EN CURSO</option>
+              <option value="TERMINADO">TERMINADO</option>
+              <option value="CANCELADO">CANCELADO</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Botón de Enviar -->
+        <!-- Botón que se deshabilita durante el guardado -->
+        <button class="sf-btn" type="submit" [disabled]="viajeForm.invalid || saving">
+          {{ saving ? 'Guardando...' : 'Agregar Viaje' }}
+        </button>
+      </form>
+    </div>
+  </div>
+
+</ion-content>
