@@ -1,0 +1,36 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Editar Certificación</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="onClose()">Cerrar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="certificacionesForm">
+    <!-- Nombre -->
+    <ion-item>
+      <ion-label position="floating">Nombre</ion-label>
+      <ion-input formControlName="nombre" type="text"></ion-input>
+    </ion-item>
+
+    <!-- Descripción -->
+    <ion-item>
+      <ion-label position="floating">Descripción</ion-label>
+      <ion-input formControlName="descripcion" type="text"></ion-input>
+    </ion-item>
+
+    <!-- Cliente -->
+    <ion-item>
+      <ion-label position="floating">Cliente</ion-label>
+      <ion-select formControlName="cliente">
+        <ion-select-option *ngFor="let cliente of clientes" [value]="cliente.id_cliente">
+          {{ cliente.nombre_cliente }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-button expand="full" (click)="onSave()" class="save-button">Guardar Cambios</ion-button>
+  </form>
+</ion-content>

@@ -4,7 +4,9 @@ import { Observable } from 'rxjs';
 import { Ruta } from 'src/models/ruta.model';
 import { Licencia } from 'src/models/licencia.model';
 import { Certificacion } from 'src/models/certificacion.model';
+import { Cliente } from 'src/models/cliente.model';
 
+// datos-viaje.service.ts
 @Injectable({
   providedIn: 'root',
 })
@@ -26,5 +28,15 @@ export class DatosViajeService {
   // Obtener todas las certificaciones
   getCertificaciones(): Observable<Certificacion[]> {
     return this.http.get<Certificacion[]>(`${this.apiUrl}/certificaciones`);
+  }
+
+  // Obtener certificaciones por cliente
+  getCertificacionesPorCliente(clienteId: string): Observable<Certificacion[]> {
+    return this.http.get<Certificacion[]>(`${this.apiUrl}/certificaciones/cliente/${clienteId}`);
+  }
+
+  // Obtener todos los clientes
+  getClientes(): Observable<Cliente[]> {
+    return this.http.get<Cliente[]>(`${this.apiUrl}/clientes`);
   }
 }

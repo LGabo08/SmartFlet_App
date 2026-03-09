@@ -1,0 +1,300 @@
+/* ================= HEADER ================= */
+
+.quota-toolbar {
+  --background: #01265c;
+  --color: white;
+}
+
+.back-btn {
+  color: white;
+}
+
+/* ================= PAGE ================= */
+
+.quota-page {
+  background: #f4f6f9;
+}
+
+/* ================= HERO OPERADOR ================= */
+
+.quota-hero {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  background: white;
+  border-radius: 12px;
+
+  padding: 20px;
+  margin-bottom: 20px;
+
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+}
+
+.quota-hero__avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #01265c;
+}
+
+.quota-hero__info h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.quota-hero__info p {
+  margin: 2px 0;
+  font-size: 14px;
+  color: #555;
+}
+
+/* ================= MÉTRICAS ================= */
+
+.quota-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(160px,1fr));
+  gap: 16px;
+  margin-bottom: 25px;
+}
+
+.metric-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.metric-card__label {
+  font-size: 13px;
+  color: #777;
+}
+
+.metric-card__value {
+  font-size: 22px;
+  font-weight: bold;
+  color: #01265c;
+}
+
+/* ================= PANEL ================= */
+
+.quota-panel {
+  background: white;
+  border-radius: 12px;
+
+  padding: 20px;
+  margin-bottom: 24px;
+
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+}
+
+.quota-panel__head h2 {
+  margin: 0;
+}
+
+.quota-panel__head p {
+  margin: 4px 0 16px;
+  font-size: 13px;
+  color: #777;
+}
+
+.quota-panel__head--between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ================= FORM ================= */
+
+.quota-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.field label {
+  font-size: 13px;
+  margin-bottom: 4px;
+  color: #555;
+}
+
+.field input {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 14px;
+}
+
+.field input:focus {
+  outline: none;
+  border-color: #01265c;
+}
+
+.quota-form__actions {
+  grid-column: 1 / -1;
+
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+
+  margin-top: 10px;
+}
+
+.btn-primary {
+  --background: #01265c;
+  --color: white;
+}
+
+.btn-secondary {
+  --background: #e7e7e7;
+  --color: #333;
+}
+
+/* ================= BUSCADOR ================= */
+
+.quota-search {
+  display: flex;
+  align-items: center;
+
+  border: 1px solid #ddd;
+  border-radius: 8px;
+
+  padding: 6px 10px;
+  gap: 6px;
+}
+
+.quota-search input {
+  border: none;
+  outline: none;
+  font-size: 14px;
+}
+
+/* ================= TABLA ================= */
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.quota-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.quota-table thead {
+  background: #01265c;
+  color: white;
+}
+
+.quota-table th {
+  text-align: left;
+  padding: 10px;
+  font-size: 14px;
+}
+
+.quota-table td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+.quota-table tbody tr:hover {
+  background: #f8f9fb;
+}
+
+/* ================= BADGES ================= */
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+.badge.ok {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.badge.warn {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge.off {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* ================= ACCIONES ================= */
+
+.quota-actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.icon-btn {
+  --background: #eef2ff;
+  --color: #01265c;
+}
+
+.icon-btn--danger {
+  --background: #fff1f1;
+  --color: #b42318;
+}
+
+/* ================= EMPTY ================= */
+
+.empty-state {
+  text-align: center;
+  padding: 30px;
+  color: #666;
+}
+
+.empty-state ion-icon {
+  font-size: 40px;
+  color: #bbb;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 768px) {
+
+  .quota-panel__head--between {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .quota-table thead {
+    display: none;
+  }
+
+  .quota-table tr {
+    display: block;
+    margin-bottom: 14px;
+    border-bottom: 2px solid #eee;
+  }
+
+  .quota-table td {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+  }
+
+  .quota-table td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    color: #555;
+  }
+
+}

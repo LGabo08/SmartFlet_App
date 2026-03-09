@@ -4,4 +4,5 @@ export interface Certificacion {
   nombre_certificacion: string;
   descripcion: string;
   cliente: string;
+  fk_cliente: number;
 }

@@ -1,0 +1,133 @@
+:host {
+  --sf-blue: #0511f2;
+  --sf-blue-2: #245ca6;
+  --sf-text: #0d0d0d;
+  --sf-bg: #f4f6f9;
+  --sf-card: #ffffff;
+  --sf-line: #e6edf7;
+}
+
+.status-toolbar {
+  --background: #0511f2;
+  --color: #fff;
+}
+
+.status-modal-content {
+  --background: var(--sf-bg);
+}
+
+.status-shell {
+  padding: 16px;
+}
+
+.status-card {
+  background: var(--sf-card);
+  border: 1px solid var(--sf-line);
+  border-radius: 18px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.status-card__head {
+  padding: 18px 18px 14px;
+  border-bottom: 1px solid var(--sf-line);
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcff 100%);
+}
+
+.status-card__head h2 {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--sf-blue-2);
+}
+
+.status-card__head p {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(13, 13, 13, 0.65);
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 18px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.field--full {
+  grid-column: 1 / -1;
+}
+
+.field label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.35px;
+  font-weight: 800;
+  color: rgba(13, 13, 13, 0.65);
+}
+
+.readonly-pill {
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: 14px;
+  background: #f7f9ff;
+  border: 1px dashed rgba(5, 17, 242, 0.35);
+  font-weight: 800;
+  color: rgba(13, 13, 13, 0.8);
+}
+
+ion-select,
+ion-textarea {
+  --background: #f7f9ff;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  border-radius: 14px;
+  border: 1px solid #e3e8f2;
+  box-shadow: 0 8px 16px rgba(13, 13, 13, 0.05);
+}
+
+.status-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 0 18px 18px;
+}
+
+.btn-save {
+  --background: #0b2a4a;
+  --background-activated: #0f355d;
+  --color: #fff;
+  --border-radius: 14px;
+  height: 44px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+.btn-cancel {
+  --color: #0b2a4a;
+  --border-color: rgba(11, 42, 74, 0.35);
+  --border-radius: 14px;
+  height: 44px;
+  font-weight: 800;
+}
+
+@media (max-width: 640px) {
+  .status-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .field--full {
+    grid-column: auto;
+  }
+
+  .status-actions {
+    flex-direction: column;
+  }
+}

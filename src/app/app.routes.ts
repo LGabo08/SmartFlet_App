@@ -29,12 +29,24 @@ export const routes: Routes = [
       { path: 'register', loadComponent: () => import('./paginas/register/register.page').then(m => m.RegisterPage) },
       { path: 'usuarios', loadComponent: () => import('./paginas/usuarios/usuarios.page').then(m => m.UsuariosPage) },
       {path: 'agregar-viaje',loadComponent: () => import('./paginas/agregar-viaje/agregar-viaje.page').then( m => m.AgregarViajePage)},
-
+      { path: 'operador',loadComponent: () => import('./paginas/operador/operador.page').then( m => m.OperadorPage)},
+      { path: 'certificaciones',loadComponent: () => import('./paginas/certificaciones/certificaciones.page').then( m => m.CertificacionesPage)},
+      {path: 'unidades',loadComponent: () => import('./paginas/unidades/unidades.page').then( m => m.UnidadesPage)},
       // ✅ NUEVA RUTA PARA EDITAR
       {path: 'usuarios/:id/editar',loadComponent: () =>import('./paginas/register/register.page').then(m => m.RegisterPage),},
+      {
+        path: 'paginas/cuotas-operador/:id',
+          loadComponent: () =>
+        import('./paginas/cuotas-operador/cuotas-operador.page').then(m => m.CuotasOperadorPage)
+          },
+      {path: 'unidades',loadComponent: () => import('./paginas/unidades/unidades.page').then( m => m.UnidadesPage)},
     ],
   },
 
   { path: '**', redirectTo: 'login' },
+  
+  
+  
+
  
 ];

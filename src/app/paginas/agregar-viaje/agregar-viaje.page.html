@@ -1,26 +1,21 @@
-<ion-content fullscreen class="sf-reg">
+<ion-header>
+  <ion-toolbar class="op-toolbar">
+    <ion-title>Agregar Nuevo Viaje</ion-title>
+  </ion-toolbar>
+</ion-header>
 
+<ion-content fullscreen class="sf-reg">
   <div class="sf-reg-wrap">
     <div class="sf-reg-card">
 
-      <div class="sf-reg-brand">SmartFlet</div>
+      <div class="sf-reg-brand">SMARTFLET</div>
 
-      <!-- Título dinámico -->
       <div class="sf-reg-title">Agregar Nuevo Viaje</div>
 
-      <form
-        class="sf-form"
-        [formGroup]="viajeForm"
-        (ngSubmit)="onSubmit()"
-        autocomplete="off"
-      >
+      <form class="sf-form" [formGroup]="viajeForm" (ngSubmit)="onSubmit()" autocomplete="off">
 
-        <!-- Señuelos anti-autofill -->
-        <input type="text" name="fake-user" autocomplete="username" style="display:none" />
-        <input type="password" name="fake-pass" autocomplete="new-password" style="display:none" />
-
-        <!-- Fila 1: Número de viaje | Ruta | Licencia Requerida -->
-        <div class="sf-grid sf-grid--3">
+        <!-- Fila 1: Número de viaje | Ruta -->
+        <div class="sf-grid sf-grid--2">
           <div class="sf-field">
             <label class="sf-label">Número de Viaje</label>
             <input
@@ -29,38 +24,98 @@
               formControlName="numero_viaje"
               autocomplete="off"
               spellcheck="false"
+              placeholder="Ej. VJ-001"
             />
           </div>
 
           <div class="sf-field">
             <label class="sf-label">Ruta</label>
             <select class="sf-input" formControlName="fk_ruta" autocomplete="off">
-             <option *ngFor="let ruta of rutas" [value]="ruta.id_ruta">{{ ruta.id_ruta }}</option>
+              <option value="" disabled selected>Selecciona una ruta</option>
+              <option *ngFor="let ruta of rutas" [value]="ruta.id_ruta">
+                {{ ruta.nombre_ruta }}
+              </option>
             </select>
+          </div>
+        </div>
+
+        <!-- Fila 2: Configuración de Unidad | Licencia -->
+        <div class="sf-grid sf-grid--2">
+          <div class="sf-field">
+            <label class="sf-label">Configuración de Unidad</label>
+            <ion-select class="sf-input" formControlName="configuracion_unidad" (ionChange)="onConfiguracionUnidadChange($event.detail.value)" autocomplete="off">
+              <ion-select-option value="" disabled>Selecciona configuración de unidad</ion-select-option>
+              <ion-select-option *ngFor="let configuracion of configuracionesUnidad" [value]="configuracion">
+                {{ configuracion }}
+              </ion-select-option>
+            </ion-select>
           </div>
 
           <div class="sf-field">
             <label class="sf-label">Licencia Requerida</label>
-            <select class="sf-input" formControlName="fk_licencia_requerida" autocomplete="off">
-              <option *ngFor="let licencia of licencias" [value]="licencia.id_licencia">{{ licencia.descripcion_licencia }}</option>
+            <select class="sf-input" formControlName="fk_licencia_requerida" [disabled]="!viajeForm.get('configuracion_unidad')?.value">
+              <option value="" disabled selected>Selecciona una licencia</option>
+              <option *ngFor="let licencia of licenciasDisponibles" [value]="licencia.id_licencia">
+                {{ licencia.descripcion_licencia }}
+              </option>
             </select>
           </div>
         </div>
 
-        <!-- Fila 2: Certificación Requerida | Fecha de Salida | Fecha de Llegada -->
-        <div class="sf-grid sf-grid--3">
+        <!-- Fila 3: Producto | Cliente -->
+        <div class="sf-grid sf-grid--2">
           <div class="sf-field">
-            <label class="sf-label">Certificación Requerida</label>
-            <select class="sf-input" formControlName="fk_certificacion_requerida" autocomplete="off">
-              <option *ngFor="let certificacion of certificaciones" [value]="certificacion.id_certificacion">{{ certificacion.nombre_certificacion }}</option>
-            </select>
+            <label class="sf-label">Producto</label>
+            <input
+              class="sf-input"
+              type="text"
+              formControlName="producto"
+              autocomplete="off"
+              spellcheck="false"
+              placeholder="Ej. Producto ABC"
+            />
           </div>
 
-
+          <div class="sf-field">
+            <label class="sf-label">Cliente</label>
+            <select class="sf-input" formControlName="cliente" (change)="onClienteChange($event)">
+              <option value="" disabled selected>Selecciona un cliente</option>
+              <option *ngFor="let cliente of clientes" [value]="cliente.id_cliente">
+                {{ cliente.nombre_cliente }}
+              </option>
+            </select>
+          </div>
         </div>
 
-        <!-- Fila 3: Pago del Operador | Estado -->
-        <div class="sf-grid sf-grid--3">
+        <!-- Fila 4: Certificaciones Requeridas -->
+        <div class="sf-grid sf-grid--2">
+          <div class="sf-field sf-col-span-2">
+            <label class="sf-label">Certificaciones Requeridas</label>
+            <ion-item class="sf-ion-item" lines="none">
+              <ion-select
+                class="sf-ion-select"
+                formControlName="certificaciones"
+                interface="popover"
+                multiple="true"
+                placeholder="Selecciona una o varias"
+                okText="Listo"
+                cancelText="Cancelar"
+                [disabled]="!viajeForm.get('cliente')?.value"
+              >
+                <ion-select-option
+                  *ngFor="let certificacion of certificaciones"
+                  [value]="certificacion.id_certificacion"
+                >
+                  {{ certificacion.nombre_certificacion }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+            <small class="sf-help">Tip: Puedes seleccionar varias sin Ctrl.</small>
+          </div>
+        </div>
+
+        <!-- Fila 5: Pago del Operador -->
+        <div class="sf-grid sf-grid--2">
           <div class="sf-field">
             <label class="sf-label">Pago del Operador</label>
             <input
@@ -68,28 +123,18 @@
               type="number"
               formControlName="pago_operador"
               autocomplete="off"
+              placeholder="Ej. 2500"
+              min="0"
             />
-          </div>
-
-          <div class="sf-field">
-            <label class="sf-label">Estado</label>
-            <select class="sf-input" formControlName="estado" autocomplete="off">
-              <option value="PENDIENTE">PENDIENTE</option>
-              <option value="ASIGNADO">ASIGNADO</option>
-              <option value="EN_CURSO">EN CURSO</option>
-              <option value="TERMINADO">TERMINADO</option>
-              <option value="CANCELADO">CANCELADO</option>
-            </select>
           </div>
         </div>
 
-        <!-- Botón de Enviar -->
-        <!-- Botón que se deshabilita durante el guardado -->
+        <!-- Botón -->
         <button class="sf-btn" type="submit" [disabled]="viajeForm.invalid || saving">
           {{ saving ? 'Guardando...' : 'Agregar Viaje' }}
         </button>
+
       </form>
     </div>
   </div>
-
 </ion-content>

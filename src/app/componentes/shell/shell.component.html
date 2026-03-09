@@ -55,10 +55,11 @@
               <ion-icon name="chevron-down-outline"></ion-icon>
             </div>
 
+
             <div slot="content" class="sf-acc__content">
               <ion-menu-toggle auto-hide="false">
-                <a class="sf-item" routerLink="/viajes" routerDirection="root">
-                  Detalles de Viaje
+                <a class="sf-item" routerLink="/asignaciones" routerDirection="root">
+                  Asignar viajes
                 </a>
               </ion-menu-toggle>
 
@@ -75,7 +76,21 @@
               </ion-menu-toggle>
             </div>
           </ion-accordion>
+          <!-- OPERADORES -->
+          <ion-accordion value="certificaciones" class="sf-acc__item">
+            <div slot="header" class="sf-acc__header">
+              <span>Certificaciones</span>
+              <ion-icon name="chevron-down-outline"></ion-icon>
+            </div>
 
+            <div slot="content" class="sf-acc__content">
+              <ion-menu-toggle auto-hide="false">
+                <a class="sf-item" routerLink="/certificaciones" routerDirection="root">
+                  Listado de Certificaciones
+                </a>
+              </ion-menu-toggle>
+            </div>
+          </ion-accordion>
           <!-- OPERADORES -->
           <ion-accordion value="operadores" class="sf-acc__item">
             <div slot="header" class="sf-acc__header">
@@ -85,14 +100,8 @@
 
             <div slot="content" class="sf-acc__content">
               <ion-menu-toggle auto-hide="false">
-                <a class="sf-item" routerLink="/asignaciones" routerDirection="root">
-                  Asignaciones
-                </a>
-              </ion-menu-toggle>
-
-              <ion-menu-toggle auto-hide="false">
-                <a class="sf-item" routerLink="/panel/operadores/listado" routerDirection="root">
-                  Listado de Operadores
+                <a class="sf-item" routerLink="/operador" routerDirection="root">
+                  Listado de operadores
                 </a>
               </ion-menu-toggle>
             </div>
@@ -113,7 +122,7 @@
               </ion-menu-toggle>
 
               <ion-menu-toggle auto-hide="false">
-                <a class="sf-item" routerLink="/panel/unidades/detalle" routerDirection="root">
+                <a class="sf-item" routerLink="/unidades" routerDirection="root">
                   Detalle de Unidades
                 </a>
               </ion-menu-toggle>

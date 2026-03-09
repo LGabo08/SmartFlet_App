@@ -1,0 +1,64 @@
+<ion-header>
+  <ion-toolbar class="status-toolbar">
+    <ion-title>Cambiar Estado</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">Cerrar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="status-modal-content">
+  <div class="status-shell">
+
+    <div class="status-card">
+      <div class="status-card__head">
+        <h2>Cambio de estado de unidad</h2>
+        <p>
+          Unidad:
+          <strong>{{ unidad?.numero_economico || ('ID ' + unidad?.id_unidad) }}</strong>
+        </p>
+      </div>
+
+      <div class="status-grid">
+        <div class="field">
+          <label>Estado actual</label>
+          <div class="readonly-pill">
+            {{ unidad?.estado || 'SIN ESTADO' }}
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Nuevo estado</label>
+          <ion-select [(ngModel)]="nuevoEstado" interface="popover" placeholder="Selecciona un estado">
+            <ion-select-option value="DISPONIBLE">DISPONIBLE</ion-select-option>
+            <ion-select-option value="NO_DISPONIBLE">NO DISPONIBLE</ion-select-option>
+            <ion-select-option value="MANTENIMIENTO">MANTENIMIENTO</ion-select-option>
+            <ion-select-option value="BAJA">BAJA</ion-select-option>
+          </ion-select>
+        </div>
+
+        <div class="field field--full">
+          <label>Motivo del cambio</label>
+          <ion-textarea
+            [(ngModel)]="motivo"
+            autoGrow="true"
+            rows="4"
+            placeholder="Escribe el motivo del cambio de estado"
+          >
+          </ion-textarea>
+        </div>
+      </div>
+
+      <div class="status-actions">
+        <ion-button class="btn-cancel" fill="outline" (click)="dismiss()">
+          Cancelar
+        </ion-button>
+
+        <ion-button class="btn-save" (click)="save()">
+          Guardar cambio
+        </ion-button>
+      </div>
+    </div>
+
+  </div>
+</ion-content>

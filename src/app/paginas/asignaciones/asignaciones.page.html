@@ -1,150 +1,196 @@
-<ion-content fullscreen="true" class="asig">
+<ion-header>
+  <ion-toolbar class="asig-toolbar">
+    <ion-title>Asignaciones de Viaje</ion-title>
+  </ion-toolbar>
+</ion-header>
 
-  <div class="asig__wrap">
-    <h1 class="asig__title">Asignaciones</h1>
+<ion-content class="ion-padding asig-page">
 
-    <section class="asig__panel">
-      <div class="asig__panel-bar">Detalles de Viaje</div>
+  <!-- DEBUG / RESUMEN -->
+  <ion-item lines="none" class="asig-debug">
+    <ion-label>
+      Pendientes: <b>{{ viajesPendientesFiltrados.length }}</b>
+      <span *ngIf="viajeId"> | Seleccionado: <b>{{ viajeSeleccionado?.numero_viaje || viajeId }}</b></span>
+    </ion-label>
+  </ion-item>
 
-      <div class="asig__panel-body">
+  <!-- LISTA DE VIAJES PENDIENTES -->
+  <ion-card *ngIf="viajesPendientes.length > 0; else sinViajes" class="asig-card">
+    <ion-card-header class="asig-card__head">
+      <div class="asig-head-row">
+        <div>
+          <ion-card-title class="asig-card__title">Viajes pendientes</ion-card-title>
+          <ion-card-subtitle class="asig-card__sub">
+            Selecciona uno para iniciar asignación
+          </ion-card-subtitle>
+        </div>
 
-        <!-- Card 1: Detalles de viaje -->
-        <ion-card class="sf-card">
-          <ion-card-content>
-            <ion-grid class="sf-grid">
-              <ion-row>
-                <ion-col size="12" size-md="4">
-                  <div class="sf-field">
-                    <label>No. Viaje</label>
-                    <div class="sf-input"></div>
-                  </div>
-                </ion-col>
-
-                <ion-col size="12" size-md="4">
-                  <div class="sf-field">
-                    <label>Origen</label>
-                    <div class="sf-input"></div>
-                  </div>
-                </ion-col>
-
-                <ion-col size="12" size-md="4">
-                  <div class="sf-field">
-                    <label>Tipo Unidad</label>
-                    <div class="sf-input"></div>
-                  </div>
-                </ion-col>
-              </ion-row>
-
-              <ion-row>
-                <ion-col size="12" size-md="4">
-                  <div class="sf-field">
-                    <label>Cliente</label>
-                    <div class="sf-input"></div>
-                  </div>
-                </ion-col>
-
-                <ion-col size="12" size-md="4">
-                  <div class="sf-field">
-                    <label>Destino</label>
-                    <div class="sf-input"></div>
-                  </div>
-                </ion-col>
-
-                <ion-col size="12" size-md="4">
-                  <div class="sf-field">
-                    <label>Producto</label>
-                    <div class="sf-input"></div>
-                  </div>
-                </ion-col>
-              </ion-row>
-            </ion-grid>
-          </ion-card-content>
-        </ion-card>
-
-        <!-- Card 2: Operador + datos + acciones -->
-        <ion-card class="sf-card sf-card--operator">
-          <ion-card-content>
-
-            <ion-grid class="sf-grid">
-              <ion-row class="sf-operator-row">
-
-                <!-- Avatar / operador -->
-                <ion-col size="12" size-md="3" class="sf-operator-col">
-                  <div class="sf-operator">
-                    <div class="sf-avatar">
-                      <div class="sf-avatar__head"></div>
-                      <div class="sf-avatar__body"></div>
-                    </div>
-                    <div class="sf-operator__name">Nombre Operador</div>
-                  </div>
-                </ion-col>
-
-                <!-- Campos operador -->
-                <ion-col size="12" size-md="9">
-                  <ion-grid class="sf-grid sf-grid--inner">
-                    <ion-row>
-                      <ion-col size="12" size-md="6">
-                        <div class="sf-field">
-                          <label>Fecha ultimo viaje</label>
-                          <div class="sf-input sf-input--wide"></div>
-                        </div>
-                      </ion-col>
-
-                      <ion-col size="12" size-md="6">
-                        <div class="sf-field">
-                          <label>Porcentaje de cuota</label>
-                          <div class="sf-input sf-input--wide"></div>
-                        </div>
-                      </ion-col>
-                    </ion-row>
-
-                    <ion-row>
-                      <ion-col size="12" size-md="6">
-                        <div class="sf-field">
-                          <label>Prioridad</label>
-                          <div class="sf-input sf-input--wide"></div>
-                        </div>
-                      </ion-col>
-
-                      <ion-col size="12" size-md="6">
-                        <div class="sf-field">
-                          <label>Ubicacion</label>
-                          <div class="sf-input sf-input--wide"></div>
-                        </div>
-                      </ion-col>
-                    </ion-row>
-
-                    <ion-row>
-                      <ion-col size="12" size-md="6">
-                        <div class="sf-field">
-                          <label>Estado Operador</label>
-                          <div class="sf-input sf-input--wide"></div>
-                        </div>
-                      </ion-col>
-
-                      <ion-col size="12" size-md="6">
-                        <div class="sf-field">
-                          <label>PRED</label>
-                          <div class="sf-input sf-input--wide"></div>
-                        </div>
-                      </ion-col>
-                    </ion-row>
-                  </ion-grid>
-                </ion-col>
-              </ion-row>
-            </ion-grid>
-
-            <!-- Acciones -->
-            <div class="sf-actions">
-              <ion-button expand="block" class="sf-btn">Asignar</ion-button>
-              <ion-button expand="block" class="sf-btn">Rechazar</ion-button>
-            </div>
-
-          </ion-card-content>
-        </ion-card>
-
+        <div class="asig-search">
+          <ion-icon name="search-outline"></ion-icon>
+          <input
+            type="text"
+            placeholder="Buscar por viaje, ruta, licencia o certificación..."
+            [(ngModel)]="searchViaje"
+            (input)="applyViajeFilter()"
+          />
+        </div>
       </div>
-    </section>
-  </div>
+    </ion-card-header>
+
+    <ion-list class="asig-list">
+      <ion-item *ngFor="let v of viajesPendientesFiltrados" class="asig-item">
+        <ion-label class="asig-item__label">
+          <div class="asig-viaje-top">
+            <h2 class="asig-item__h2">{{ v.numero_viaje }}</h2>
+            <span class="asig-chip">Pendiente</span>
+          </div>
+
+          <p class="asig-item__p">
+            <strong>Ruta:</strong> {{ v.nombre_ruta || 'Sin ruta' }}
+          </p>
+
+          <p class="asig-item__p">
+            <strong>Licencia requerida:</strong>
+            {{ v.nombre_licencia || (v.fk_licencia_requerida ? 'Sin nombre (licencia)' : 'No requerida') }}
+          </p>
+
+          <p class="asig-item__p">
+            <strong>Certificación requerida:</strong>
+            {{ v.nombre_certificacion || (v.fk_certificacion_requerida ? 'Sin nombre (certificación)' : 'No requerida') }}
+          </p>
+
+          <p class="asig-item__p">
+            <strong>Pago operador:</strong>
+            {{ (v.pago_operador ?? v.tarifa_operador) | currency }}
+          </p>
+        </ion-label>
+
+        <ion-button slot="end" class="btn-primary" (click)="iniciarAsignacion(v.id_viaje)">
+          INICIAR
+        </ion-button>
+      </ion-item>
+
+      <ion-item *ngIf="viajesPendientesFiltrados.length === 0" class="asig-empty-inline">
+        <ion-label>No se encontraron viajes con ese criterio.</ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-card>
+
+  <ng-template #sinViajes>
+    <ion-item class="asig-empty">
+      <ion-label>No hay viajes pendientes.</ion-label>
+    </ion-item>
+  </ng-template>
+
+  <!-- LISTA DE OPERADORES SUGERIDOS -->
+  <ion-card *ngIf="operadores.length > 0" class="asig-card">
+    <ion-card-header class="asig-card__head">
+      <ion-card-title class="asig-card__title">Operadores sugeridos</ion-card-title>
+      <ion-card-subtitle class="asig-card__sub">
+        Para el viaje:
+        <b>{{ viajeSeleccionado?.numero_viaje || ('ID ' + viajeId) }}</b>
+      </ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-list class="asig-list">
+      <ion-item
+        *ngFor="let s of operadores; let i = index"
+        class="asig-item asig-op"
+        [class.asig-op--top]="i === 0"
+      >
+        <ion-label class="asig-item__label">
+          <div class="asig-op-topline">
+            <h2 class="asig-item__h2">
+              {{ s.operador?.nombre || ('Operador ID: ' + s.id_operador) }}
+            </h2>
+
+            <span class="asig-rank" *ngIf="i === 0">Mejor opción</span>
+          </div>
+
+          <p *ngIf="s.operador?.numero_empleado" class="asig-item__p">
+            <strong>No. empleado:</strong> {{ s.operador.numero_empleado }}
+          </p>
+
+          <p class="asig-item__p">
+            <strong>Unidad:</strong>
+            {{ s.unidad?.numero_economico || (s.unidad_id ? ('ID: ' + s.unidad_id) : 'N/A') }}
+          </p>
+
+          <p class="asig-item__p">
+            <strong>Cuota restante:</strong> {{ s.cuota_restante ?? 'N/A' }}
+            | <strong>Días sin viaje:</strong> {{ s.dias_sin_viaje ?? 'N/A' }}
+          </p>
+
+          <!-- CRITERIOS VISUALES -->
+          <div class="asig-criteria">
+            <div
+              *ngFor="let c of buildCriteriaList(s)"
+              class="criteria-item"
+              [ngClass]="c.ok ? 'ok' : 'warn'"
+            >
+              <ion-icon [name]="c.ok ? 'checkmark-circle-outline' : 'close-circle-outline'"></ion-icon>
+              <span>{{ c.label }}</span>
+            </div>
+          </div>
+
+          <!-- RAZONES / MOTIVOS -->
+          <div *ngIf="(s.razones?.length || s.motivos?.length); else sinMotivos" class="asig-motivos">
+            <strong>Motivos de selección:</strong>
+
+            <ul class="asig-motivos__list">
+              <li *ngFor="let m of (s.razones?.length ? s.razones : s.motivos)">
+                {{ m }}
+              </li>
+            </ul>
+          </div>
+
+          <ng-template #sinMotivos>
+            <p class="asig-item__p asig-muted">
+              <strong>Motivos de selección:</strong> Sin motivos registrados por el motor.
+            </p>
+          </ng-template>
+        </ion-label>
+
+        <div class="asig-actions" slot="end">
+          <ion-button class="btn-primary" (click)="asignarViaje(viajeId!, s.id_operador)">
+            ASIGNAR
+          </ion-button>
+
+          <ion-button class="btn-ghost-danger" (click)="rechazarViaje(viajeId!, s.id_operador)">
+            RECHAZAR
+          </ion-button>
+        </div>
+      </ion-item>
+    </ion-list>
+  </ion-card>
+
+  <!-- MODAL RECHAZO -->
+  <ion-modal [isOpen]="showRechazoModal" (isOpenChange)="onModalChange($event)">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar class="asig-toolbar">
+          <ion-title>Motivo del Rechazo</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cerrarModalRechazo()">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding">
+        <ion-item>
+          <ion-label position="floating">Motivo</ion-label>
+          <ion-textarea
+            [(ngModel)]="rechazoMotivo"
+            placeholder="Escribe el motivo del rechazo"
+            required>
+          </ion-textarea>
+        </ion-item>
+
+        <ion-button (click)="confirmarRechazo()" expand="block" class="btn-danger" style="margin-top:12px;">
+          Confirmar Rechazo
+        </ion-button>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 
 </ion-content>

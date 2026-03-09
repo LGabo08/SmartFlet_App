@@ -1,0 +1,123 @@
+<ion-header>
+  <ion-toolbar class="cert-toolbar">
+    <ion-title>Certificaciones</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="cert-page">
+  <!-- FORMULARIO -->
+  <section class="cert-panel">
+    <div class="cert-panel__head">
+      <div>
+        <h2>Nueva Certificación</h2>
+        <p>Registra una certificación asociada a un cliente.</p>
+      </div>
+    </div>
+
+    <form [formGroup]="certificacionesForm" class="cert-form">
+      <div class="cert-field">
+        <label>Nombre</label>
+        <input
+          type="text"
+          formControlName="nombre"
+          placeholder="Ingrese el nombre de la certificación"
+        />
+      </div>
+
+      <div class="cert-field">
+        <label>Descripción</label>
+        <input
+          type="text"
+          formControlName="descripcion"
+          placeholder="Ingrese una descripción"
+        />
+      </div>
+
+      <div class="cert-field">
+        <label>Cliente</label>
+        <select formControlName="cliente">
+          <option value="" disabled selected>Seleccione un cliente</option>
+          <option *ngFor="let cliente of clientes" [value]="cliente.id_cliente">
+            {{ cliente.nombre_cliente }}
+          </option>
+        </select>
+      </div>
+
+      <button
+        type="button"
+        class="btn-save"
+        (click)="onSubmit()"
+        [disabled]="saving"
+      >
+        {{ saving ? 'Guardando...' : 'Guardar Certificación' }}
+      </button>
+    </form>
+  </section>
+
+  <!-- LISTADO -->
+  <section class="cert-panel">
+    <div class="cert-panel__head cert-panel__head--between">
+      <div>
+        <h2>Listado de Certificaciones</h2>
+        <p>{{ certificacionesFiltradas.length }} certificación(es) encontrada(s)</p>
+      </div>
+
+      <div class="cert-search">
+        <ion-icon name="search-outline"></ion-icon>
+        <input
+          type="text"
+          placeholder="Buscar por nombre, cliente o descripción..."
+          [(ngModel)]="searchTerm"
+          (input)="applyFilter()"
+        />
+      </div>
+    </div>
+
+    <div class="table-wrapper" *ngIf="certificacionesFiltradas.length > 0; else emptyState">
+      <table class="cert-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Cliente</th>
+            <th>Descripción</th>
+            <th class="text-center">Acción</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let cert of certificacionesFiltradas">
+            <td data-label="Nombre">
+              <div class="primary-text">{{ cert.nombre_certificacion }}</div>
+            </td>
+
+            <td data-label="Cliente">
+              <span class="badge-client">
+                {{ getClienteNombre(cert.fk_cliente) }}
+              </span>
+            </td>
+
+            <td data-label="Descripción">
+              <div class="description-text">
+                {{ cert.descripcion || 'Sin descripción' }}
+              </div>
+            </td>
+
+            <td data-label="Acción" class="text-center">
+              <button class="btn-icon" (click)="openEditModal(cert)">
+                <ion-icon name="create-outline"></ion-icon>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <ng-template #emptyState>
+      <div class="empty-state">
+        <ion-icon name="document-text-outline"></ion-icon>
+        <h3>No hay certificaciones</h3>
+        <p>No se encontraron registros con los filtros actuales.</p>
+      </div>
+    </ng-template>
+  </section>
+</ion-content>

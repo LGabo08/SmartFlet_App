@@ -1,170 +1,266 @@
-/* Contenedor principal de la página */
+/* =========================================================
+   AGREGAR VIAJE - SmartFlet (Corporativo / Cool)
+   Paleta: #0511F2 #245CA6 #D91E1E #0D0D0D
+========================================================= */
+
+:host {
+  --sf-blue: #0b2c5d;
+  --sf-blue-2: #0b2c5d;
+  --sf-red: #0b2c5d;
+  --sf-text: #0D0D0D;
+
+  --sf-bg: #f4f6f9;
+  --sf-card: #ffffff;
+
+  --sf-radius: 18px;
+  --sf-radius-sm: 14px;
+
+  --sf-shadow: 0 16px 45px rgba(13, 13, 13, 0.14);
+  --sf-shadow-soft: 0 10px 26px rgba(13, 13, 13, 0.10);
+
+  --sf-border: rgba(13, 13, 13, 0.10);
+  --sf-border-2: rgba(13, 13, 13, 0.14);
+
+  --sf-input-h: 46px;
+}
+
+/* ===== Fondo tipo "premium" ===== */
+.sf-reg {
+  --background: transparent;
+  background:
+    radial-gradient(900px 500px at 15% 10%, rgba(5, 17, 242, .18), transparent 60%),
+    radial-gradient(900px 500px at 85% 15%, rgba(36, 92, 166, .16), transparent 55%),
+    radial-gradient(800px 600px at 50% 90%, rgba(217, 30, 30, .10), transparent 60%),
+    linear-gradient(180deg, #f8faff 0%, var(--sf-bg) 100%);
+}
+
+/* ===== Wrapper centrado ===== */
 .sf-reg-wrap {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 20px;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: clamp(14px, 3vw, 26px);
 }
 
-/* Tarjeta que contiene el formulario */
+/* ===== Card ===== */
 .sf-reg-card {
-  background-color: #fff;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  padding: 20px;
-  width: 100%;
-  max-width: 600px;
+  width: min(980px, 100%);
+  background: var(--sf-card);
+  border-radius: var(--sf-radius);
+  box-shadow: var(--sf-shadow);
+  border: 1px solid var(--sf-border);
+  overflow: hidden;
+  position: relative;
 }
 
-/* Marca en la parte superior */
+/* Decoración */
+.sf-reg-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(700px 220px at 10% 0%, rgba(5, 17, 242, .14), transparent 60%),
+    radial-gradient(700px 220px at 90% 0%, rgba(36, 92, 166, .12), transparent 60%);
+}
+
+/* ===== Brand ===== */
 .sf-reg-brand {
-  font-size: 24px;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 20px;
-  color: #0511f2;  /* Azul corporativo */
+  position: relative;
+  z-index: 1;
+  padding: 18px 20px;
+  background: linear-gradient(90deg, var(--sf-blue), var(--sf-blue-2));
+  color: #fff;
+  font-weight: 900;
+  letter-spacing: .6px;
+  text-transform: uppercase;
+  border-bottom: 4px solid var(--sf-red);
 }
 
-/* Título dinámico de la página */
+/* ===== Title ===== */
 .sf-reg-title {
-  font-size: 20px;
-  text-align: center;
-  margin-bottom: 20px;
-  color: #333;
+  position: relative;
+  z-index: 1;
+  padding: 18px 20px 6px;
+  font-size: clamp(18px, 2.2vw, 24px);
+  font-weight: 900;
+  color: var(--sf-text);
 }
 
-/* Formulario */
+/* ===== Form ===== */
 .sf-form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+  position: relative;
+  z-index: 1;
+  padding: 16px 20px 22px;
+  display: grid;
+  gap: 14px;
 }
 
-/* Estilos para los campos de formulario */
-.sf-field {
-  display: flex;
-  flex-direction: column;
-}
-
-/* Etiquetas de los campos */
-.sf-label {
-  font-size: 14px;
-  font-weight: 600;
-  color: #666;
-  margin-bottom: 5px;
-}
-
-/* Inputs y selects del formulario */
-.sf-input {
-  padding: 12px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #f9f9f9;
-  outline: none;
-}
-
-/* Resaltado de los campos con error */
-.sf-input:focus {
-  border-color: #0511f2;  /* Azul corporativo */
-}
-
-/* Ajustes para la grilla del formulario */
+/* ===== Grid (3 cols -> responsive) ===== */
 .sf-grid {
   display: grid;
-  gap: 20px;
+  gap: 14px;
 }
 
-/* Grid específico para formularios de 3 columnas */
 .sf-grid--3 {
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 15px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-/* Grid específico para formularios de 2 columnas (email + estado) */
-.sf-grid--email {
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
+/* ✅ responsive */
+@media (max-width: 980px) {
+  .sf-grid--3 {
+    grid-template-columns: 1fr;
+  }
 }
 
-/* Grid específico para contraseñas */
-.sf-grid--pass {
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
+/* ===== Field ===== */
+.sf-field {
+  display: grid;
+  gap: 8px;
 }
 
-/* Texto de hint solo en edición de usuario */
-.sf-hint {
+/* Labels */
+.sf-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: rgba(13, 13, 13, .75);
+  letter-spacing: .2px;
+}
+
+/* ===== Inputs base (input/select) ===== */
+.sf-input {
+  height: var(--sf-input-h);
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid var(--sf-border-2);
+  background: #fff;
+  color: var(--sf-text);
+  padding: 0 12px;
+  outline: none;
+
+  box-shadow: 0 6px 18px rgba(13, 13, 13, .06);
+  transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+}
+
+.sf-input:focus {
+  border-color: rgba(5, 17, 242, .55);
+  box-shadow: 0 10px 26px rgba(5, 17, 242, .18);
+  transform: translateY(-1px);
+}
+
+/* Select nativo: arrow */
+.sf-input select,
+select.sf-input {
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, rgba(13,13,13,.55) 50%),
+    linear-gradient(135deg, rgba(13,13,13,.55) 50%, transparent 50%),
+    linear-gradient(to right, rgba(13,13,13,.08), rgba(13,13,13,.08));
+  background-position:
+    calc(100% - 18px) 19px,
+    calc(100% - 12px) 19px,
+    calc(100% - 40px) 50%;
+  background-size:
+    6px 6px,
+    6px 6px,
+    1px 58%;
+  background-repeat: no-repeat;
+  padding-right: 44px;
+}
+
+/* ===== Ion item/select wrapper ===== */
+.sf-ion-item {
+  --background: transparent;
+  --inner-padding-end: 0px;
+  --padding-start: 0px;
+  --min-height: var(--sf-input-h);
+  border-radius: 14px;
+  border: 1px solid var(--sf-border-2);
+  box-shadow: 0 6px 18px rgba(13, 13, 13, .06);
+  transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+  overflow: hidden;
+}
+
+.sf-ion-item.ion-focused,
+.sf-ion-item:focus-within {
+  border-color: rgba(5, 17, 242, .55);
+  box-shadow: 0 10px 26px rgba(5, 17, 242, .18);
+  transform: translateY(-1px);
+}
+
+/* Ion select look like input */
+.sf-ion-select {
+  width: 100%;
+  --placeholder-color: rgba(13, 13, 13, .45);
+  --placeholder-font-style: normal;
+
+  padding: 10px 12px;
+  color: var(--sf-text);
+  font-weight: 600;
+}
+
+/* ===== Chips ===== */
+.sf-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 6px;
+}
+
+ion-chip {
+  --background: rgba(5, 17, 242, .06);
+  --color: var(--sf-blue);
+  border-color: rgba(5, 17, 242, .25);
+  font-weight: 700;
+}
+
+/* ===== Help text ===== */
+.sf-help {
+  display: block;
   font-size: 12px;
-  color: #888;
-  text-align: center;
+  color: rgba(13, 13, 13, .55);
 }
 
-/* Estilo para los botones */
+/* ===== Button ===== */
 .sf-btn {
-  background-color: #0511f2;  /* Azul corporativo */
-  color: #fff;
-  padding: 12px;
-  font-size: 16px;
-  border: none;
-  border-radius: 5px;
+  height: 48px;
+  border: 0;
+  border-radius: 14px;
   cursor: pointer;
-  transition: background-color 0.3s;
-  text-align: center;
+
+  background: linear-gradient(90deg, var(--sf-blue), var(--sf-blue-2));
+  color: #fff;
+  font-weight: 900;
+  letter-spacing: .25px;
+
+  box-shadow: 0 12px 28px rgba(5, 17, 242, .24);
+  transition: transform 140ms ease, box-shadow 140ms ease, filter 140ms ease;
+  margin-top: 6px;
 }
 
 .sf-btn:hover {
-  background-color: #245ca6;  /* Azul más oscuro */
+  transform: translateY(-1px);
+  box-shadow: 0 18px 40px rgba(5, 17, 242, .28);
+  filter: brightness(1.02);
 }
 
-.sf-btn:disabled {
-  background-color: #ccc;
+.sf-btn:active {
+  transform: translateY(0px);
+  box-shadow: 0 10px 24px rgba(5, 17, 242, .22);
+}
+
+.sf-btn[disabled] {
+  opacity: .60;
   cursor: not-allowed;
+  filter: grayscale(.15);
+  box-shadow: none;
 }
 
-/* Estilo para el botón de "volver" */
-.sf-btn.ghost {
-  background-color: transparent;
-  color: #0511f2;
-  border: 1px solid #0511f2;
-  padding: 10px;
-  font-size: 16px;
-}
-
-.sf-btn.ghost:hover {
-  background-color: #f1f1f1;
-}
-
-/* Estilo del footer para el log-out */
-.sf-footer {
-  margin-top: 20px;
-  text-align: center;
-}
-
-.sf-logout {
-  background-color: #f20505;  /* Rojo de advertencia */
-  color: #fff;
-  padding: 12px;
-  font-size: 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.sf-logout:hover {
-  background-color: #d91e1e;  /* Rojo más oscuro */
-}
-
-/* Estilo para los mensajes de error */
-.sf-error {
-  color: #f20505;
-  font-size: 12px;
-  margin-top: 5px;
-}
-
-/* Agregar un margen al botón "Guardar cambios" cuando esté en edición */
-.sf-btn--edit {
-  margin-top: 20px;
+/* ===== Pequeños detalles ===== */
+.sf-reg-card,
+.sf-input,
+.sf-ion-item,
+.sf-btn {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }

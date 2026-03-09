@@ -1,116 +1,177 @@
-<div class="detalle-viaje-container">
-  <h2 class="titulo">Detalle de Viaje</h2>
+<ion-header>
+  <ion-toolbar class="op-toolbar">
+    <ion-title>Listado de Viajes</ion-title>
+  </ion-toolbar>
+</ion-header>
 
-  <div class="panel-viaje">
-    <div class="panel-header">Agregar Viaje</div>
+<ion-content class="ion-padding op-page">
+  <section class="op-panel">
+    <div class="op-panel__head">
+      <h2>Listado de Viajes</h2>
+    </div>
 
-    <div class="panel-body">
-
-      <!-- FILTROS -->
-      <div class="barra-filtros">
-        <div class="filtro-grupo">
-          <label>Buscar</label>
+    <div class="op-board">
+      <!-- Barra de filtros -->
+      <div class="op-filters">
+        <div class="op-search">
+          <ion-icon name="search-outline"></ion-icon>
           <input
             type="text"
-            placeholder="No. viaje, cliente, origen, destino..."
-            [(ngModel)]="filtroTexto"
+            placeholder="Buscar por no. viaje, ruta, operador, unidad o estado..."
+            [(ngModel)]="searchTerm"
+            (input)="applyFilters()"
           />
         </div>
 
-        <div class="filtro-grupo">
-          <label>Estatus</label>
-          <select [(ngModel)]="filtroEstado">
-            <option value="">Todos</option>
-            <option value="En curso">En curso</option>
-            <option value="Finalizado">Finalizado</option>
+        <div class="op-select-wrap">
+          <select [(ngModel)]="selectedRuta" (change)="applyFilters()">
+            <option value="">Todas las rutas</option>
+            <option *ngFor="let ruta of rutasUnicas" [value]="ruta">
+              {{ ruta }}
+            </option>
           </select>
         </div>
 
-        <div class="filtro-grupo">
-          <label>Cliente</label>
-          <select [(ngModel)]="filtroCliente">
-            <option value="">Todos</option>
-            <option *ngFor="let c of clientesDisponibles" [value]="c">{{ c }}</option>
+        <div class="op-select-wrap">
+          <select [(ngModel)]="selectedEstado" (change)="applyFilters()">
+            <option value="">Todos los estados</option>
+            <option *ngFor="let estado of estadosUnicos" [value]="estado">
+              {{ estado }}
+            </option>
           </select>
         </div>
 
-        <div class="filtro-grupo">
-          <label>No. Viaje</label>
-          <input
-            type="text"
-            placeholder="VJ-001"
-            [(ngModel)]="filtroNoViaje"
-          />
-        </div>
-
-        <div class="filtro-grupo">
-          <label>Tarifa (mín)</label>
-          <input
-            type="number"
-            placeholder="0"
-            [(ngModel)]="tarifaMin"
-          />
-        </div>
-
-        <div class="filtro-grupo">
-          <label>Tarifa (máx)</label>
-          <input
-            type="number"
-            placeholder="999999"
-            [(ngModel)]="tarifaMax"
-          />
-        </div>
-
+        <ion-button class="btn-refresh" (click)="resetFilters()">
+          Limpiar
+        </ion-button>
       </div>
 
-      <!-- LISTA (scroll vertical) -->
-      <div class="lista-viajes">
-        <!-- ENCABEZADO -->
-        <div class="fila-header">
-          <div class="h-icon"></div>
-          <div>No. Viaje</div>
-          <div>Cita</div>
-          <div>Tarifa</div>
-          <div>Unidad</div>
-          <div>Operador</div>
-          <div>Producto</div>
-          <div>Cliente</div>
-          <div>Origen</div>
-          <div>Destino</div>
-          <div class="col-estatus">Estatus</div>
-        </div>
+      <!-- Tabla -->
+      <div class="table-wrapper">
+        <table class="op-table">
+          <thead>
+            <tr>
+              <th>No. Viaje</th>
+              <th>Ruta</th>
+              <th>Operador</th>
+              <th>Unidad</th>
+              <th>Fecha Salida</th>
+              <th>Fecha Llegada</th>
+              <th>Estado</th>
+              <th>Tarifa</th>
+              <th class="text-center">Acción</th>
+            </tr>
+          </thead>
 
-        <!-- FILAS -->
-        <div
-          class="fila-viaje"
-          *ngFor="let viaje of viajesFiltrados; trackBy: trackByNumeroViaje"
-        >
-          <div class="icono-camion">🚚</div>
-          <input [(ngModel)]="viaje.numeroViaje" placeholder="No. Viaje">
-          <input [(ngModel)]="viaje.cita" placeholder="Cita">
-          <input [(ngModel)]="viaje.tarifa" type="number" placeholder="Tarifa">
-          <input [(ngModel)]="viaje.unidad" placeholder="Unidad">
-          <input [(ngModel)]="viaje.operador" placeholder="Operador">
-          <input [(ngModel)]="viaje.producto" placeholder="Producto">
-          <input [(ngModel)]="viaje.cliente" placeholder="Cliente">
-          <input [(ngModel)]="viaje.origen" placeholder="Origen">
-          <input [(ngModel)]="viaje.destino" placeholder="Destino">
+          <tbody>
+            <tr *ngFor="let viaje of viajesFiltrados">
+              <td data-label="No. Viaje">{{ viaje.numero_viaje }}</td>
+              <td data-label="Ruta">{{ viaje.nombre_ruta }}</td>
+              <td data-label="Operador">
+                {{ viaje.operador_nombre }} {{ viaje.operador_apellidos }}
+              </td>
+              <td data-label="Unidad">{{ viaje.numero_economico }}</td>
+              <td data-label="Fecha Salida">{{ viaje.fecha_salida }}</td>
+              <td data-label="Fecha Llegada">{{ viaje.fecha_llegada || '—' }}</td>
+              <td data-label="Estado">
+                <span class="badge" [ngClass]="getEstadoClass(viaje.estado)">
+                  {{ viaje.estado }}
+                </span>
+              </td>
+              <td data-label="Tarifa">{{ viaje.pago_operador | currency }}</td>
+              <td data-label="Acción" class="text-center">
+                <ion-button
+                  fill="clear"
+                  class="icon-btn"
+                  (click)="showDetails(viaje)"
+                >
+                  <ion-icon name="information-circle-outline"></ion-icon>
+                </ion-button>
+              </td>
+            </tr>
 
-          <!-- ESTATUS SOLO LECTURA -->
-          <div class="estatus-badge" [ngClass]="{
-            'en-curso': viaje.estado === 'En curso',
-            'finalizado': viaje.estado === 'Finalizado'
-          }">
-            {{ viaje.estado }}
+            <tr *ngIf="!viajesFiltrados || viajesFiltrados.length === 0">
+              <td colspan="9" class="empty-state">
+                No hay viajes registrados.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODAL: Detalles del Viaje -->
+  <ion-modal [isOpen]="modalOpen" (didDismiss)="closeModal()">
+    <ng-template>
+      <ion-content class="op-modal">
+        <div class="modal-shell">
+          <div class="modal-topbar">
+            <div class="modal-title">Detalles del Viaje</div>
+            <ion-button fill="clear" class="icon-btn" (click)="closeModal()">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </div>
+
+          <div class="modal-card">
+            <div class="modal-grid">
+              <div class="field">
+                <label>No. Viaje</label>
+                <p>{{ modalData?.numero_viaje }}</p>
+              </div>
+
+              <div class="field">
+                <label>Ruta</label>
+                <p>{{ modalData?.nombre_ruta }}</p>
+              </div>
+
+              <div class="field">
+                <label>Operador</label>
+                <p>{{ modalData?.operador_nombre }} {{ modalData?.operador_apellidos }}</p>
+              </div>
+
+              <div class="field">
+                <label>Unidad</label>
+                <p>{{ modalData?.numero_economico }}</p>
+              </div>
+
+              <div class="field">
+                <label>Fecha Salida</label>
+                <p>{{ modalData?.fecha_salida }}</p>
+              </div>
+
+              <div class="field">
+                <label>Fecha Llegada</label>
+                <p>{{ modalData?.fecha_llegada || '—' }}</p>
+              </div>
+
+              <div class="field">
+                <label>Estado</label>
+                <p>{{ modalData?.estado }}</p>
+              </div>
+
+              <div class="field">
+                <label>Tarifa</label>
+                <p>{{ modalData?.pago_operador | currency }}</p>
+              </div>
+
+              <div class="field">
+                <label>Certificación</label>
+                <p>{{ modalData?.nombre_certificacion || 'N/A' }}</p>
+              </div>
+
+              <div class="field">
+                <label>Licencia</label>
+                <p>{{ modalData?.nombre_licencia || 'N/A' }}</p>
+              </div>
+            </div>
+
+            <ion-button expand="block" class="btn-close" (click)="closeModal()">
+              Cerrar
+            </ion-button>
           </div>
         </div>
-      </div>
-
-      <!-- BOTÓN -->
-      <div class="contenedor-boton">
-        <button class="btn-agregar" type="button" (click)="agregarViaje()">+</button>
-      </div>
-
-    </div>
-  </div>
-</div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

@@ -35,7 +35,10 @@
                 "output": "assets"
               }
             ],
-            "styles": ["src/global.scss", "src/theme/variables.scss"],
+            "styles": [
+                "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "src/global.scss"
+              ],
             "scripts": [],
             "browser": "src/main.ts"
           },
