@@ -1,0 +1,850 @@
+<ion-header>
+  <ion-toolbar class="hist-toolbar">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/viajes" text="Volver"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Detalle e Historial</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding hist-page">
+
+  <div class="hist-loading" *ngIf="cargandoViaje">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando información del viaje...</p>
+  </div>
+
+  <ion-card class="viaje-card" *ngIf="!cargandoViaje && !errorViaje && viaje">
+
+    <div class="viaje-banner">
+      <div>
+        <p class="viaje-banner__label">No. Viaje</p>
+        <p class="viaje-banner__numero">{{ viaje.numero_viaje }}</p>
+      </div>
+      <span class="estado-badge" [ngClass]="'estado-badge--' + estadoClass">
+        {{ viaje.estado }}
+      </span>
+    </div>
+
+    <div class="viaje-grid">
+
+      <div class="viaje-field">
+        <ion-icon name="map-outline"></ion-icon>
+        <div><span class="viaje-field__label">Ruta</span><span class="viaje-field__value">{{ nombreRuta }}</span></div>
+      </div>
+
+      <div class="viaje-field">
+        <ion-icon name="person-outline"></ion-icon>
+        <div><span class="viaje-field__label">Operador</span><span class="viaje-field__value">{{ nombreOperador }}</span></div>
+      </div>
+
+      <div class="viaje-field">
+        <ion-icon name="bus-outline"></ion-icon>
+        <div><span class="viaje-field__label">Unidad</span><span class="viaje-field__value">{{ numeroEconomico }}</span></div>
+      </div>
+
+      <div class="viaje-field">
+        <ion-icon name="settings-outline"></ion-icon>
+        <div><span class="viaje-field__label">Configuración</span><span class="viaje-field__value">{{ viaje.configuracion_unidad || '—' }}</span></div>
+      </div>
+
+      <div class="viaje-field">
+        <ion-icon name="person-circle-outline"></ion-icon>
+        <div><span class="viaje-field__label">Cliente</span><span class="viaje-field__value">{{ viaje.cliente || '—' }}</span></div>
+      </div>
+
+      <div class="viaje-field">
+        <ion-icon name="cube-outline"></ion-icon>
+        <div><span class="viaje-field__label">Producto</span><span class="viaje-field__value">{{ viaje.producto || '—' }}</span></div>
+      </div>
+
+      <div class="viaje-field">
+        <ion-icon name="calendar-outline"></ion-icon>
+        <div><span class="viaje-field__label">Fecha salida</span><span class="viaje-field__value">{{ viaje.fecha_salida || '—' }}</span></div>
+      </div>
+
+      <div class="viaje-field">
+        <ion-icon name="calendar-outline"></ion-icon>
+        <div><span class="viaje-field__label">Fecha llegada</span><span class="viaje-field__value">{{ viaje.fecha_llegada || '—' }}</span></div>
+      </div>
+
+      <div class="viaje-field">
+        <ion-icon name="cash-outline"></ion-icon>
+        <div style="flex:1;">
+          <span class="viaje-field__label">Tarifa operador</span>
+          <div class="tarifa-row">
+            <span class="viaje-field__value">{{ viaje.pago_operador | currency }}</span>
+            <ion-button *ngIf="puedeEditarTarifa" fill="outline" size="small" class="btn-edit-tarifa" (click)="abrirModalTarifa()">
+              <ion-icon slot="start" name="pencil-outline"></ion-icon>Modificar
+            </ion-button>
+          </div>
+        </div>
+      </div>
+
+      <div class="viaje-field">
+        <ion-icon name="ribbon-outline"></ion-icon>
+        <div><span class="viaje-field__label">Licencia requerida</span>
+          <span class="viaje-field__value">{{ viaje.licencia?.nombre_licencia ?? viaje.nombre_licencia ?? 'N/A' }}</span></div>
+      </div>
+
+      <div class="viaje-field viaje-field--full">
+        <ion-icon name="medal-outline"></ion-icon>
+        <div>
+          <span class="viaje-field__label">Certificaciones</span>
+          <span class="viaje-field__value">
+            <ng-container *ngIf="viaje.certificaciones?.length > 0; else sinCert">
+              <span *ngFor="let c of viaje.certificaciones; let last = last">
+                {{ c.nombre_certificacion }}{{ !last ? ', ' : '' }}
+              </span>
+            </ng-container>
+            <ng-template #sinCert>No requeridas</ng-template>
+          </span>
+        </div>
+      </div>
+
+      <!-- [ENCADENAMIENTO] Aviso si es hijo encadenado -->
+      <div class="viaje-field viaje-field--full" *ngIf="esHijoEncadenado">
+        <div class="enc-hijo-aviso">
+          <ion-icon name="git-branch-outline"></ion-icon>
+          <span>Este viaje es parte de una cadena — está encadenado al viaje padre #{{ viaje.fk_viaje_padre }}</span>
+        </div>
+      </div>
+
+      <!-- ── Botón Reasignar — solo ASIGNADO ── -->
+      <div class="viaje-field viaje-field--full" *ngIf="puedeReasignar">
+        <button class="btn-reasignar-main" (click)="abrirModalReasignar()">
+          <span class="btn-reasignar-main__icon">🔄</span>
+          <div class="btn-reasignar-main__text">
+            <span class="btn-reasignar-main__label">Reasignar Viaje</span>
+            <span class="btn-reasignar-main__sub">Libera al operador y regresa el viaje a pendiente</span>
+          </div>
+        </button>
+      </div>
+
+      <!-- ── Aviso EN_CURSO — no se puede reasignar ── -->
+      <div class="viaje-field viaje-field--full"
+           *ngIf="(viaje?.estado ?? '') === 'EN_CURSO'">
+        <div style="background:#fef3c7; border-left:4px solid #f59e0b; padding:10px 14px;
+                    border-radius:6px; font-size:13px; color:#92400e; display:flex;
+                    align-items:flex-start; gap:8px;">
+          <span>⚠️</span>
+          <span>Los viajes <strong>EN CURSO</strong> no pueden reasignarse —
+                solo pueden <strong>finalizarse</strong> o <strong>cancelarse</strong>.</span>
+        </div>
+      </div>
+
+      <div class="viaje-field viaje-field--full" *ngIf="puedeIniciar">
+        <button class="btn-iniciar-main" (click)="abrirModalIniciar()">
+          <span class="btn-iniciar-main__icon">🚀</span>
+          <div class="btn-iniciar-main__text">
+            <span class="btn-iniciar-main__label">Iniciar Viaje</span>
+            <span class="btn-iniciar-main__sub">Cambia el estado del viaje a En Curso</span>
+          </div>
+        </button>
+      </div>
+
+      <div class="viaje-field viaje-field--full" *ngIf="puedeFinalizar">
+        <button class="btn-finalizar-main" (click)="abrirModalFinalizar()">
+          <span class="btn-finalizar-main__icon">✅</span>
+          <div class="btn-finalizar-main__text">
+            <span class="btn-finalizar-main__label">Finalizar Viaje</span>
+            <span class="btn-finalizar-main__sub">Marca el viaje como terminado y libera operador y unidad</span>
+          </div>
+        </button>
+      </div>
+
+      <div class="viaje-field viaje-field--full" *ngIf="puedeCancelar">
+        <button class="btn-cancelar-main" (click)="abrirModalCancelar()">
+          <span class="btn-cancelar-main__icon">🚫</span>
+          <div class="btn-cancelar-main__text">
+            <span class="btn-cancelar-main__label">Cancelar Viaje</span>
+            <span class="btn-cancelar-main__sub">
+              {{ esHijoEncadenado
+                  ? 'Cancela este viaje encadenado (el operador sigue en su viaje padre)'
+                  : viaje.estado === 'EN_CURSO'
+                    ? 'Cancela el viaje en curso (la tarifa no se restará al operador)'
+                    : 'Cancela el viaje y libera al operador y unidad' }}
+            </span>
+          </div>
+        </button>
+      </div>
+
+    </div>
+  </ion-card>
+
+  <!-- Card cadena -->
+  <ion-card class="cadena-card" *ngIf="tieneCadena">
+    <div class="cadena-header">
+      <ion-icon name="git-branch-outline"></ion-icon>
+      <span>Cadena de viajes encadenados</span>
+    </div>
+    <div class="cadena-eslabones">
+      <div class="cadena-eslabon" *ngFor="let e of cadena">
+        <div class="cadena-eslabon__viaje cadena-eslabon__viaje--padre">
+          <span class="cadena-tag">Viaje padre</span>
+          <span class="cadena-numero">#{{ e.numero_padre }}</span>
+          <span class="cadena-ruta">{{ e.ruta_padre }}</span>
+          <span class="cadena-estado" [ngClass]="'cadena-estado--' + e.estado_padre.toLowerCase()">{{ e.estado_padre }}</span>
+        </div>
+        <div class="cadena-flecha">→</div>
+        <div class="cadena-eslabon__viaje cadena-eslabon__viaje--hijo">
+          <span class="cadena-tag">Viaje {{ e.orden }}</span>
+          <span class="cadena-numero">#{{ e.numero_hijo }}</span>
+          <span class="cadena-ruta">{{ e.ruta_hijo }}</span>
+          <span class="cadena-estado" [ngClass]="'cadena-estado--' + e.estado_hijo.toLowerCase()">{{ e.estado_hijo }}</span>
+        </div>
+      </div>
+    </div>
+  </ion-card>
+
+  <!-- Card finalización -->
+  <ion-card class="finalizacion-card" *ngIf="estaTerminado && finalizacion">
+    <div class="finalizacion-banner"
+      [class.finalizacion-banner--correcto]="finalizacion.tipo_finalizacion === 'CORRECTO'"
+      [class.finalizacion-banner--incidencia]="finalizacion.tipo_finalizacion === 'CON_INCIDENCIA'">
+      <span class="finalizacion-banner__icon">{{ finalizacion.tipo_finalizacion === 'CORRECTO' ? '✅' : '⚠️' }}</span>
+      <div>
+        <p class="finalizacion-banner__label">Resultado del viaje</p>
+        <p class="finalizacion-banner__tipo">
+          {{ finalizacion.tipo_finalizacion === 'CORRECTO' ? 'Finalizado correctamente' : 'Finalizado con incidencia' }}
+        </p>
+      </div>
+    </div>
+    <div class="finalizacion-grid">
+      <div class="finalizacion-field">
+        <span class="finalizacion-field__label">Fecha de llegada</span>
+        <span class="finalizacion-field__value">{{ finalizacion.fecha_llegada_real | date:'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+      <div class="finalizacion-field">
+        <span class="finalizacion-field__label">Registrado el</span>
+        <span class="finalizacion-field__value">{{ finalizacion.fecha_finalizacion | date:'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+      <div class="finalizacion-field" *ngIf="finalizacion.nombre_coordinador">
+        <span class="finalizacion-field__label">Coordinador</span>
+        <span class="finalizacion-field__value">{{ finalizacion.nombre_coordinador }}</span>
+      </div>
+      <div class="finalizacion-field finalizacion-field--full" *ngIf="finalizacion.notas">
+        <span class="finalizacion-field__label">Notas / Incidencia</span>
+        <p class="finalizacion-field__notas">{{ finalizacion.notas }}</p>
+      </div>
+    </div>
+  </ion-card>
+
+  <ion-card class="hist-error-card" *ngIf="!cargandoViaje && errorViaje">
+    <ion-card-content>
+      <p>No se pudo cargar la información del viaje.</p>
+      <ion-button fill="outline" (click)="cargarViaje()">Reintentar</ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Historial -->
+  <div class="hist-section-title" *ngIf="!cargandoViaje">
+    <ion-icon name="time-outline"></ion-icon>
+    Historial de incidencias
+  </div>
+
+  <div class="hist-loading" *ngIf="cargandoHist">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando historial...</p>
+  </div>
+
+  <div class="hist-empty" *ngIf="!cargandoHist && !errorHist && historial.length === 0">
+    <ion-icon name="document-outline"></ion-icon>
+    <p>Sin incidencias registradas para este viaje.</p>
+  </div>
+
+  <div class="hist-timeline" *ngIf="!cargandoHist && !errorHist && historial.length > 0">
+    <div *ngFor="let inc of historial; let i = index" class="hist-item">
+      <div class="hist-track">
+        <div class="hist-dot" [ngClass]="'hist-dot--' + colorEvento(inc.tipo_evento)"></div>
+        <div class="hist-line" *ngIf="i < historial.length - 1"></div>
+      </div>
+      <div class="hist-card">
+        <div class="hist-card__head">
+          <span class="hist-tipo" [ngClass]="'hist-tipo--' + colorEvento(inc.tipo_evento)">{{ labelEvento(inc.tipo_evento) }}</span>
+          <span class="hist-fecha">{{ inc.created_at | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        <p class="hist-info">
+          <ion-icon name="person-outline"></ion-icon>
+          <strong>Operador:</strong>&nbsp;{{ inc.nombre_operador || ('ID ' + inc.fk_operador) }}
+          <span class="hist-empleado" *ngIf="inc.numero_empleado">&nbsp;· #{{ inc.numero_empleado }}</span>
+        </p>
+        <p class="hist-info" *ngIf="inc.nombre_coordinador">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          <strong>Coordinador:</strong>&nbsp;{{ inc.nombre_coordinador }}
+        </p>
+        <div class="hist-advs" *ngIf="inc.tipo_evento === 'ASIGNACION_CON_ADVERTENCIAS' && advertenciasActivas(inc).length > 0">
+          <span class="hist-adv-tag" *ngFor="let adv of advertenciasActivas(inc)">⚠️ {{ adv }}</span>
+        </div>
+        <div class="hist-detalle"
+          *ngIf="(inc.tipo_evento === 'RECHAZO_OPERADOR' || inc.tipo_evento === 'CANCELACION_VIAJE' || inc.tipo_evento === 'REASIGNACION') && inc.detalle">
+          <ion-icon name="chatbox-outline"></ion-icon>
+          <strong>Motivo:</strong>&nbsp;{{ inc.detalle }}
+        </div>
+        <ng-container *ngIf="inc.tipo_evento === 'CAMBIO_TARIFA' && inc.detalle">
+          <ng-container *ngIf="parsearDetalleTarifa(inc.detalle) as dt">
+            <div class="tarifa-detalle">
+              <span class="tarifa-chip tarifa-chip--old">Anterior: {{ dt.tarifa_anterior | currency }}</span>
+              <ion-icon name="arrow-forward-outline"></ion-icon>
+              <span class="tarifa-chip tarifa-chip--new">Nueva: {{ dt.tarifa_nueva | currency }}</span>
+              <span class="tarifa-chip" [class.tarifa-chip--pos]="dt.diferencia >= 0" [class.tarifa-chip--neg]="dt.diferencia < 0">
+                {{ dt.diferencia >= 0 ? '+' : '' }}{{ dt.diferencia | currency }}
+              </span>
+            </div>
+          </ng-container>
+        </ng-container>
+        <ng-container *ngIf="inc.tipo_evento === 'ENCADENAMIENTO_ASIGNADO' && inc.detalle">
+          <ng-container *ngIf="parsearDetalleEncadenamiento(inc.detalle) as det">
+            <div class="hist-detalle">
+              <ion-icon name="git-branch-outline"></ion-icon>
+              Encadenado al viaje padre #{{ det.viaje_padre }} · Eslabón {{ det.orden }}
+            </div>
+          </ng-container>
+        </ng-container>
+        <ng-container *ngIf="inc.tipo_evento === 'ENCADENAMIENTO_RANKING' && inc.detalle">
+          <ng-container *ngIf="parsearDetalleEncadenamiento(inc.detalle) as det">
+            <div class="hist-detalle" [class.hist-detalle--ok]="det.resultado === 'mejor_opcion'" [class.hist-detalle--warn]="det.resultado !== 'mejor_opcion'">
+              <ion-icon name="podium-outline"></ion-icon>{{ det.mensaje }}
+            </div>
+          </ng-container>
+        </ng-container>
+        <ng-container *ngIf="(inc.tipo_evento === 'ENCADENAMIENTO_LIBERADO' || inc.tipo_evento === 'ENCADENAMIENTO_CONTINUADO') && inc.detalle">
+          <ng-container *ngIf="parsearDetalleEncadenamiento(inc.detalle) as det">
+            <div class="hist-detalle">
+              <ion-icon name="information-circle-outline"></ion-icon>
+              {{ det.motivo }} (viaje padre: #{{ det.numero_padre }})
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!-- MODALES                                                                -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+
+  <!-- ── Modal: CANCELAR VIAJE ── -->
+  <ion-modal [isOpen]="showCancelModal" (didDismiss)="cerrarModalCancelar()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar class="cancel-modal-toolbar">
+          <ion-title class="cancel-modal-title">
+            <span class="cancel-modal-title__dot"></span>
+            Cancelar Viaje {{ viaje?.numero_viaje }}
+          </ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cerrarModalCancelar()">
+              <ion-icon slot="start" name="close-outline"></ion-icon>Cerrar
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="cancel-modal-content">
+
+        <!-- Banner: viaje hijo encadenado (este viaje ES hijo) -->
+        <div class="cancel-banner cancel-banner--info" *ngIf="esHijoEncadenado">
+          <div class="cancel-banner__icon">🔗</div>
+          <div class="cancel-banner__text">
+            <strong>Viaje encadenado</strong>
+            <p>Este viaje está encadenado al viaje padre
+              #{{ cadena[0]?.numero_padre ?? viaje?.fk_viaje_padre ?? '—' }}.
+              Al cancelarlo, la tarifa se restará al operador pero
+              el operador y la unidad no se liberan — siguen activos en el viaje padre.</p>
+          </div>
+        </div>
+
+        <!-- Banner: viaje EN_CURSO con operador — tarifa NO se resta -->
+        <div class="cancel-banner cancel-banner--warn"
+             *ngIf="!esHijoEncadenado && viaje?.fk_operador && viaje?.estado === 'EN_CURSO' && !showPasoEncadenados">
+          <div class="cancel-banner__icon">⚠️</div>
+          <div class="cancel-banner__text">
+            <strong>Viaje en curso</strong>
+            <p>El viaje ya fue iniciado. La tarifa <strong>no se restará</strong> al operador
+               (se considera ganada). Se liberará al operador y su unidad.</p>
+          </div>
+        </div>
+
+        <!-- Banner: viaje ASIGNADO con operador — tarifa SÍ se resta -->
+        <div class="cancel-banner cancel-banner--danger"
+             *ngIf="!esHijoEncadenado && viaje?.fk_operador && viaje?.estado === 'ASIGNADO' && !showPasoEncadenados">
+          <div class="cancel-banner__icon">⚠️</div>
+          <div class="cancel-banner__text">
+            <strong>Viaje asignado no iniciado</strong>
+            <p>El viaje no había iniciado. La tarifa <strong>se restará</strong>
+               de la cuota del operador. Se liberará al operador y su unidad.</p>
+          </div>
+        </div>
+
+        <!-- Banner: viaje sin operador -->
+        <div class="cancel-banner cancel-banner--warn"
+             *ngIf="!esHijoEncadenado && !viaje?.fk_operador">
+          <div class="cancel-banner__icon">ℹ️</div>
+          <div class="cancel-banner__text">
+            <strong>Viaje sin operador</strong>
+            <p>Este viaje no tiene operador asignado. Solo se cancelará el registro.</p>
+          </div>
+        </div>
+
+        <!-- Sección 01: Motivo -->
+        <div class="cancel-section">
+          <div class="cancel-section__label">
+            <span class="cancel-section__num">01</span>
+            Motivo de cancelación *
+          </div>
+          <div class="cancel-field">
+            <textarea class="cancel-textarea" [(ngModel)]="cancelMotivo"
+              placeholder="Describe el motivo de la cancelación (obligatorio)..." rows="3"></textarea>
+          </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             SECCIÓN 02 — VIAJES HIJOS ENCADENADOS
+             Solo si este viaje es PADRE con hijos activos
+        ════════════════════════════════════════════════════════════════════ -->
+        <div class="cancel-section cancel-section--encadenados"
+             *ngIf="viaje?.fk_operador && !esHijoEncadenado && showPasoEncadenados">
+
+          <div class="cancel-section__label">
+            <span class="cancel-section__num">02</span>
+            Viajes encadenados activos
+          </div>
+
+          <div class="enc-aviso">
+            <span>🔗</span>
+            <p>Este viaje tiene <strong>{{ cancelViajesEncadenados.length }}</strong> viaje(s) encadenado(s) activo(s).
+               ¿Qué deseas hacer con ellos?</p>
+          </div>
+
+          <div class="enc-hijos-lista">
+            <div class="enc-hijo-item" *ngFor="let hijo of cancelViajesEncadenados">
+              <span class="enc-orden">Viaje {{ hijo.orden }}</span>
+              <span class="enc-numero">#{{ hijo.numero_hijo }}</span>
+              <span class="enc-ruta">{{ hijo.ruta_hijo }}</span>
+              <span class="badge" [ngClass]="hijo.estado_hijo === 'PENDIENTE' ? 'pending' : 'ok'">{{ hijo.estado_hijo }}</span>
+            </div>
+          </div>
+
+          <div class="enc-opciones">
+            <!-- Opción A: cancelar solo el padre, hijo se convierte en nuevo padre -->
+            <label class="enc-opcion-label" [class.enc-opcion-label--selected]="cancelAccionEncadenados === 'continuar'">
+              <input type="radio" name="accionEncadenados" value="continuar" [(ngModel)]="cancelAccionEncadenados"/>
+              <div class="enc-opcion-body">
+                <strong>Cancelar solo este viaje</strong>
+                <span>El viaje encadenado se convierte en el nuevo viaje padre.
+                      El operador queda en ASIGNADO — no se puede cambiar su estado ni zona.
+                      La tarifa de este viaje no se restará (ya inició).</span>
+              </div>
+            </label>
+            <!-- Opción B: cancelar padre e hijos, liberar operador -->
+            <label class="enc-opcion-label" [class.enc-opcion-label--selected]="cancelAccionEncadenados === 'liberar'">
+              <input type="radio" name="accionEncadenados" value="liberar" [(ngModel)]="cancelAccionEncadenados"/>
+              <div class="enc-opcion-body">
+                <strong>Cancelar este viaje y los encadenados</strong>
+                <span>Se cancelarán todos los viajes de la cadena. Solo se restará la tarifa
+                      del viaje hijo (ASIGNADO). El operador y la unidad quedarán libres.</span>
+              </div>
+            </label>
+          </div>
+
+          <!-- Banner informativo según elección -->
+          <div class="cancel-banner cancel-banner--info"
+               style="margin-top:10px;"
+               *ngIf="cancelAccionEncadenados === 'continuar'">
+            <div class="cancel-banner__icon">ℹ️</div>
+            <div class="cancel-banner__text">
+              <strong>Operador y unidad quedan en ASIGNADO</strong>
+              <p>No es posible cambiar el estado ni la zona — el operador tomará el viaje encadenado.
+                 La tarifa de este viaje EN_CURSO no se restará.</p>
+            </div>
+          </div>
+
+          <div class="cancel-banner cancel-banner--danger"
+               style="margin-top:10px;"
+               *ngIf="cancelAccionEncadenados === 'liberar'">
+            <div class="cancel-banner__icon">⚠️</div>
+            <div class="cancel-banner__text">
+              <strong>Se cancelarán {{ cancelViajesEncadenados.length + 1 }} viaje(s)</strong>
+              <p>Solo se restará la tarifa del viaje hijo ASIGNADO.
+                 La tarifa del viaje EN_CURSO no se resta. El operador y la unidad quedarán libres.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             SECCIONES ACTUALIZAR OPERADOR Y UNIDAD
+             Bloqueadas si:
+               - Este viaje ES hijo encadenado
+               - Es padre EN_CURSO y eligió 'continuar'
+             Visibles si:
+               - Viaje ASIGNADO sin cadena
+               - Viaje EN_CURSO sin hijos
+               - Tiene hijos y eligió 'liberar'
+        ════════════════════════════════════════════════════════════════════ -->
+        <ng-container *ngIf="viaje?.fk_operador && !esHijoEncadenado">
+
+          <div [class.cancel-section--disabled]="showPasoEncadenados && cancelAccionEncadenados === 'continuar'">
+
+            <div class="cancel-section">
+              <div class="cancel-section__label">
+                <span class="cancel-section__num">{{ showPasoEncadenados ? '03' : '02' }}</span>
+                Actualizar operador
+                <span class="cancel-section__badge-locked"
+                      *ngIf="showPasoEncadenados && cancelAccionEncadenados === 'continuar'">
+                  🔒 Bloqueado — operador continúa con el viaje encadenado
+                </span>
+              </div>
+              <div class="cancel-grid">
+                <div class="cancel-field-group">
+                  <label class="cancel-label">Estado del operador</label>
+                  <div class="cancel-select-wrap">
+                    <select class="cancel-select" [(ngModel)]="cancelNuevoEstadoOperador"
+                            [disabled]="showPasoEncadenados && cancelAccionEncadenados === 'continuar'">
+                      <option *ngFor="let e of ESTADOS_OPERADOR" [value]="e">{{ e }}</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="cancel-field-group">
+                  <label class="cancel-label">Nueva zona del operador</label>
+                  <div class="cancel-select-wrap">
+                    <select class="cancel-select" [(ngModel)]="cancelNuevaZonaOperador"
+                            [disabled]="showPasoEncadenados && cancelAccionEncadenados === 'continuar'">
+                      <option [ngValue]="null">— Sin cambio —</option>
+                      <option *ngFor="let z of zonas" [ngValue]="z.id_zona">{{ z.nombre_zona }}</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="cancel-field cancel-field--border-top">
+                <label class="cancel-label">Motivo del cambio (operador)</label>
+                <textarea class="cancel-textarea" [(ngModel)]="cancelMotivoEstadoOperador"
+                  [disabled]="showPasoEncadenados && cancelAccionEncadenados === 'continuar'"
+                  placeholder="Ej. Operador no disponible por incidencia..." rows="2"></textarea>
+              </div>
+            </div>
+
+            <div class="cancel-section">
+              <div class="cancel-section__label">
+                <span class="cancel-section__num">{{ showPasoEncadenados ? '04' : '03' }}</span>
+                Actualizar unidad
+                <span class="cancel-section__badge-locked"
+                      *ngIf="showPasoEncadenados && cancelAccionEncadenados === 'continuar'">
+                  🔒 Bloqueado — unidad continúa con el viaje encadenado
+                </span>
+              </div>
+              <div class="cancel-grid">
+                <div class="cancel-field-group">
+                  <label class="cancel-label">Estado de la unidad</label>
+                  <div class="cancel-select-wrap">
+                    <select class="cancel-select" [(ngModel)]="cancelNuevoEstadoUnidad"
+                            [disabled]="showPasoEncadenados && cancelAccionEncadenados === 'continuar'">
+                      <option *ngFor="let e of ESTADOS_UNIDAD" [value]="e">{{ e }}</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="cancel-field-group">
+                  <label class="cancel-label">Nueva zona de la unidad</label>
+                  <div class="cancel-select-wrap">
+                    <select class="cancel-select" [(ngModel)]="cancelNuevaZonaUnidad"
+                            [disabled]="showPasoEncadenados && cancelAccionEncadenados === 'continuar'">
+                      <option [ngValue]="null">— Sin cambio —</option>
+                      <option *ngFor="let z of zonas" [ngValue]="z.id_zona">{{ z.nombre_zona }}</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="cancel-field cancel-field--border-top">
+                <label class="cancel-label">Motivo del cambio (unidad)</label>
+                <textarea class="cancel-textarea" [(ngModel)]="cancelMotivoEstadoUnidad"
+                  [disabled]="showPasoEncadenados && cancelAccionEncadenados === 'continuar'"
+                  placeholder="Ej. Unidad requiere revisión..." rows="2"></textarea>
+              </div>
+            </div>
+
+          </div>
+        </ng-container>
+
+        <div class="cancel-actions">
+          <button class="cancel-btn cancel-btn--confirm" [disabled]="cancelando" (click)="confirmarCancelacion()">
+            <ion-spinner *ngIf="cancelando" name="crescent"></ion-spinner>
+            <span>{{ cancelando ? 'Cancelando...' : 'Confirmar cancelación' }}</span>
+          </button>
+          <button class="cancel-btn cancel-btn--back" [disabled]="cancelando" (click)="cerrarModalCancelar()">
+            Volver
+          </button>
+        </div>
+
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+
+  <!-- ── Modal: Modificar tarifa ── -->
+  <ion-modal [isOpen]="showTarifaModal" (didDismiss)="cerrarModalTarifa()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar style="--background:#0b2c5d; --color:#fff;">
+          <ion-title>Modificar Tarifa</ion-title>
+          <ion-buttons slot="end"><ion-button (click)="cerrarModalTarifa()">Cerrar</ion-button></ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <p style="font-size:14px; margin-bottom:16px;">Tarifa actual: <strong>{{ viaje?.pago_operador | currency }}</strong></p>
+        <ion-item>
+          <ion-label position="floating">Nueva tarifa</ion-label>
+          <ion-input type="number" [(ngModel)]="nuevaTarifa" placeholder="0.00" min="0.01"></ion-input>
+        </ion-item>
+        <ion-button expand="block" style="margin-top:16px; --background:#0b2c5d;" [disabled]="guardandoTarifa" (click)="confirmarCambioTarifa()">
+          <ion-spinner *ngIf="guardandoTarifa" name="crescent" style="margin-right:8px;"></ion-spinner>
+          {{ guardandoTarifa ? 'Guardando...' : 'Confirmar cambio' }}
+        </ion-button>
+        <ion-button expand="block" fill="outline" color="medium" style="margin-top:8px;" [disabled]="guardandoTarifa" (click)="cerrarModalTarifa()">Cancelar</ion-button>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+
+  <!-- ── Modal: Reasignar viaje ── -->
+  <ion-modal [isOpen]="showReasignarModal" (didDismiss)="cerrarModalReasignar()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar style="--background:#0b2c5d; --color:#fff;">
+          <ion-title>Reasignar Viaje</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cerrarModalReasignar()">CERRAR</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding reasig-modal-content">
+
+        <!-- CASO: Este viaje ES hijo encadenado -->
+        <ng-container *ngIf="esViajeHijoReasignar">
+          <div class="reasig-banner reasig-banner--info">
+            <span class="reasig-banner__icon">🔗</span>
+            <span>
+              Este viaje está encadenado al viaje padre.
+              Al reasignarlo, el viaje volverá a <strong>PENDIENTE</strong>, se restará
+              la tarifa al operador y continuará <strong>EN_VIAJE</strong> con su viaje
+              padre — no se puede cambiar su estado ni zona.
+            </span>
+          </div>
+        </ng-container>
+
+        <!-- CASO: Viaje sin cadena — usuario elige estado/zona -->
+        <ng-container *ngIf="!esViajeHijoReasignar">
+
+          <p class="reasig-desc">
+            Se restará la tarifa al operador y el viaje volverá a PENDIENTE.
+            Selecciona el nuevo estado y zona del operador y la unidad.
+          </p>
+
+          <!-- Fila 1: Mover a ambos -->
+          <div class="reasig-row">
+            <div class="reasig-toggle-col">
+              <span class="reasig-toggle-label">Mover a ambos</span>
+              <label class="reasig-toggle-track" [class.reasig-toggle-track--on]="reasigMoverAmbos">
+                <input type="checkbox" [(ngModel)]="reasigMoverAmbos" (change)="onMoverAmbosChange()" />
+                <span class="reasig-toggle-thumb"></span>
+              </label>
+            </div>
+            <div class="reasig-input-col">
+              <label class="reasig-label">Nueva Zona de la Unidad y Operador</label>
+              <div class="reasig-select-wrap"
+                   [class.reasig-select-wrap--disabled]="!reasigMoverAmbos">
+                <select class="reasig-select" [(ngModel)]="reasigZonaAmbos"
+                        [disabled]="!reasigMoverAmbos">
+                  <option [ngValue]="null">Sin cambio</option>
+                  <option *ngFor="let z of zonas" [ngValue]="z.id_zona">{{ z.nombre_zona }}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sub-fila: zonas individuales -->
+          <div class="reasig-subrow" *ngIf="!reasigMoverAmbos">
+            <div class="reasig-input-col">
+              <label class="reasig-label reasig-label--sub">Nueva Zona del Operador</label>
+              <div class="reasig-select-wrap">
+                <select class="reasig-select" [(ngModel)]="reasignacionForm.nueva_zona_operador">
+                  <option [ngValue]="null">Sin cambio</option>
+                  <option *ngFor="let z of zonas" [ngValue]="z.id_zona">{{ z.nombre_zona }}</option>
+                </select>
+              </div>
+            </div>
+            <div class="reasig-input-col">
+              <label class="reasig-label reasig-label--sub">Nueva Zona de la Unidad</label>
+              <div class="reasig-select-wrap">
+                <select class="reasig-select" [(ngModel)]="reasignacionForm.nueva_zona_unidad">
+                  <option [ngValue]="null">Sin cambio</option>
+                  <option *ngFor="let z of zonas" [ngValue]="z.id_zona">{{ z.nombre_zona }}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="reasig-divider"></div>
+
+          <!-- Fila 2: Cambiar a ambos -->
+          <div class="reasig-row">
+            <div class="reasig-toggle-col">
+              <span class="reasig-toggle-label">Cambiar a Ambos</span>
+              <label class="reasig-toggle-track" [class.reasig-toggle-track--on]="reasigCambiarAmbos">
+                <input type="checkbox" [(ngModel)]="reasigCambiarAmbos" (change)="onCambiarAmbosChange()" />
+                <span class="reasig-toggle-thumb"></span>
+              </label>
+            </div>
+            <div class="reasig-input-col">
+              <label class="reasig-label">Nuevo Estado de la Unidad y Operador</label>
+              <div class="reasig-select-wrap"
+                   [class.reasig-select-wrap--disabled]="!reasigCambiarAmbos">
+                <select class="reasig-select" [(ngModel)]="reasigEstadoAmbos"
+                        [disabled]="!reasigCambiarAmbos">
+                  <option *ngFor="let e of ESTADOS_OPERADOR_REASIGN" [value]="e">{{ e }}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sub-fila: estados individuales -->
+          <div class="reasig-subrow" *ngIf="!reasigCambiarAmbos">
+            <div class="reasig-input-col">
+              <label class="reasig-label reasig-label--sub">Nuevo Estado del Operador</label>
+              <div class="reasig-select-wrap">
+                <select class="reasig-select" [(ngModel)]="reasignacionForm.nuevo_estado_operador">
+                  <option *ngFor="let e of ESTADOS_OPERADOR_REASIGN" [value]="e">{{ e }}</option>
+                </select>
+              </div>
+            </div>
+            <div class="reasig-input-col">
+              <label class="reasig-label reasig-label--sub">Nuevo Estado de la Unidad</label>
+              <div class="reasig-select-wrap">
+                <select class="reasig-select" [(ngModel)]="reasignacionForm.nuevo_estado_unidad">
+                  <option *ngFor="let e of ESTADOS_UNIDAD_REASIGN" [value]="e">{{ e }}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+        </ng-container>
+
+        <!-- Botones siempre visibles -->
+        <div class="reasig-actions">
+          <button class="reasig-btn reasig-btn--cancel" [disabled]="guardandoReasignar" (click)="cerrarModalReasignar()">
+            Cancelar
+          </button>
+          <button class="reasig-btn reasig-btn--confirm" [disabled]="guardandoReasignar" (click)="confirmarReasignacion()">
+            <ion-spinner *ngIf="guardandoReasignar" name="crescent"></ion-spinner>
+            <span>{{ guardandoReasignar ? 'Procesando...' : 'Confirmar' }}</span>
+          </button>
+        </div>
+
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+
+  
+  <!-- ── Modal: Finalizar viaje ── -->
+<ion-modal [isOpen]="showFinalizarModal" (didDismiss)="cerrarModalFinalizar()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar style="--background:#166534; --color:#fff;">
+        <ion-title>Finalizar Viaje</ion-title>
+        <ion-buttons slot="end"><ion-button (click)="cerrarModalFinalizar()">Cerrar</ion-button></ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+
+      <!-- Banner informativo — qué ocurre al finalizar -->
+      <div style="background:#f0fdf4; border-left:4px solid #166534; padding:12px 14px;
+                  border-radius:6px; margin-bottom:16px; font-size:13px; color:#14532d;">
+        <strong>✅ ¿Qué ocurre al finalizar el viaje?</strong>
+        <ul style="margin: 6px 0 0 0; padding-left:18px; line-height:1.7;">
+          <li>El viaje cambia a estado <strong>TERMINADO</strong>.</li>
+          <li>Si el viaje es un viaje padre el operador y la unidad quedan en estado <strong>ASIGNADO</strong> y pueden tomar el siguiente viaje.</li>
+          <li>El operador y la unidad quedan <strong>libres (DISPONIBLE)</strong> si son viajes sin encadenamiento .</li>
+          <li>El operador y la unidad cambiaran de zona a la <strong>ZONA DESTINO</strong> de este viaje</li>
+        </ul>
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <label style="display:block; font-size:0.68rem; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:4px;">Resultado del viaje *</label>
+        <ion-select [(ngModel)]="finalizarForm.tipo_finalizacion" interface="popover"
+          style="border:1.5px solid #e2e8f0; border-radius:8px; --padding-start:10px; background:#fff; font-size:0.88rem; min-height:38px;">
+          <ion-select-option value="CORRECTO">✅ Finalizado correctamente</ion-select-option>
+          <ion-select-option value="CON_INCIDENCIA">⚠️ Finalizado con incidencia</ion-select-option>
+        </ion-select>
+      </div>
+      <div style="margin-bottom:14px;">
+        <label style="display:block; font-size:0.68rem; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:4px;">Fecha de llegada *</label>
+        <input type="datetime-local" [(ngModel)]="finalizarForm.fecha_llegada_real"
+          style="width:100%; border:1.5px solid #e2e8f0; border-radius:8px; padding:8px 10px; font-size:0.88rem; background:#fff; box-sizing:border-box; font-family:inherit;">
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="display:block; font-size:0.68rem; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:4px;">
+          Notas <span style="color:#9ca3af; font-weight:400;">{{ finalizarForm.tipo_finalizacion === 'CON_INCIDENCIA' ? '(obligatorio)' : '(opcional)' }}</span>
+        </label>
+        <ion-textarea [(ngModel)]="finalizarForm.notas" [autoGrow]="true" rows="3"
+          style="border:1.5px solid #e2e8f0; border-radius:8px; --padding-start:10px; background:#fff; font-size:0.88rem;"></ion-textarea>
+      </div>
+      <ion-button expand="block" style="--background:#166534; --border-radius:8px; font-weight:600; margin-bottom:8px;"
+        [disabled]="guardandoFinalizar" (click)="confirmarFinalizar()">
+        <ion-spinner *ngIf="guardandoFinalizar" name="crescent" style="margin-right:8px;"></ion-spinner>
+        {{ guardandoFinalizar ? 'Finalizando...' : 'Confirmar Finalización' }}
+      </ion-button>
+      <ion-button expand="block" fill="outline" color="medium" style="--border-radius:8px;" [disabled]="guardandoFinalizar" (click)="cerrarModalFinalizar()">Cancelar</ion-button>
+
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+
+<!-- ── Modal: Iniciar viaje ── -->
+<ion-modal [isOpen]="showIniciarModal" (didDismiss)="cerrarModalIniciar()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar style="--background:#1e40af; --color:#fff;">
+        <ion-title>Iniciar Viaje</ion-title>
+        <ion-buttons slot="end"><ion-button (click)="cerrarModalIniciar()">Cerrar</ion-button></ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+
+      <!-- Banner: viaje hijo encadenado -->
+      <div *ngIf="esHijoEncadenado"
+        style="background:#e8f0fe; border-left:4px solid #4285f4; padding:10px 14px;
+               border-radius:6px; margin-bottom:16px; font-size:13px; color:#1a2e6e;">
+        🔗 Este viaje está encadenado. Solo se puede iniciar si el viaje padre ya está <strong>TERMINADO</strong>.
+      </div>
+
+      <!-- Banner informativo — qué ocurre al iniciar -->
+      <div style="background:#e8f0fe; border-left:4px solid #1e40af; padding:12px 14px;
+                  border-radius:6px; margin-bottom:16px; font-size:13px; color:#1a2e6e;">
+        <strong>🚀 ¿Qué ocurre al iniciar el viaje?</strong>
+        <ul style="margin: 6px 0 0 0; padding-left:18px; line-height:1.7;">
+          <li>El viaje cambia a estado <strong>EN CURSO</strong>.</li>
+          <li>El operador y la unidad se marcan como <strong>EN VIAJE</strong>.</li>
+          <li>Ya no será posible reasignarlo — solo finalizarlo o cancelarlo.</li>
+        </ul>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <label style="display:block; font-size:0.68rem; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:4px;">Fecha y hora de inicio *</label>
+        <input type="datetime-local" [(ngModel)]="fechaInicioViaje"
+          style="width:100%; border:1.5px solid #e2e8f0; border-radius:8px; padding:8px 10px; font-size:0.88rem; background:#fff; box-sizing:border-box; font-family:inherit;">
+      </div>
+      <ion-button expand="block" style="--background:#1e40af; --border-radius:8px; font-weight:600; margin-bottom:8px;"
+  [disabled]="guardandoIniciar || esHijoEncadenado" (click)="confirmarIniciar()">
+        <ion-spinner *ngIf="guardandoIniciar" name="crescent" style="margin-right:8px;"></ion-spinner>
+        {{ guardandoIniciar ? 'Iniciando...' : 'Confirmar Inicio' }}
+      </ion-button>
+      <ion-button expand="block" fill="outline" color="medium" style="--border-radius:8px;" [disabled]="guardandoIniciar" (click)="cerrarModalIniciar()">Cancelar</ion-button>
+
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+</ion-content>

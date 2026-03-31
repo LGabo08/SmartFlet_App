@@ -5,8 +5,6 @@
 </ion-header>
 
 <ion-content class="ion-padding asig-page">
-
-  <!-- DEBUG / RESUMEN -->
   <ion-item lines="none" class="asig-debug">
     <ion-label>
       Pendientes: <b>{{ viajesPendientesFiltrados.length }}</b>
@@ -24,7 +22,6 @@
             Selecciona uno para iniciar asignación
           </ion-card-subtitle>
         </div>
-
         <div class="asig-search">
           <ion-icon name="search-outline"></ion-icon>
           <input
@@ -44,27 +41,25 @@
             <h2 class="asig-item__h2">{{ v.numero_viaje }}</h2>
             <span class="asig-chip">Pendiente</span>
           </div>
-
-          <p class="asig-item__p">
-            <strong>Ruta:</strong> {{ v.nombre_ruta || 'Sin ruta' }}
-          </p>
-
+          <p class="asig-item__p"><strong>Ruta:</strong> {{ v.nombre_ruta || 'Sin ruta' }}</p>
           <p class="asig-item__p">
             <strong>Licencia requerida:</strong>
             {{ v.nombre_licencia || (v.fk_licencia_requerida ? 'Sin nombre (licencia)' : 'No requerida') }}
           </p>
-
           <p class="asig-item__p">
-            <strong>Certificación requerida:</strong>
-            {{ v.nombre_certificacion || (v.fk_certificacion_requerida ? 'Sin nombre (certificación)' : 'No requerida') }}
+            <strong>Certificaciones requeridas:</strong>
+            <ng-container *ngIf="v.certificaciones?.length > 0; else sinCert">
+              <span *ngFor="let cert of v.certificaciones; let last = last">
+                {{ cert.nombre_certificacion }}{{ !last ? ', ' : '' }}
+              </span>
+            </ng-container>
+            <ng-template #sinCert>No requeridas</ng-template>
           </p>
-
           <p class="asig-item__p">
             <strong>Pago operador:</strong>
-            {{ (v.pago_operador ?? v.tarifa_operador) | currency }}
+            {{ (v.tarifa_operador ?? v.pago_operador) | currency }}
           </p>
         </ion-label>
-
         <ion-button slot="end" class="btn-primary" (click)="iniciarAsignacion(v.id_viaje)">
           INICIAR
         </ion-button>
@@ -83,89 +78,419 @@
   </ng-template>
 
   <!-- LISTA DE OPERADORES SUGERIDOS -->
-  <ion-card *ngIf="operadores.length > 0" class="asig-card">
+  <ion-card *ngIf="operadores.length > 0" class="asig-card ops-card">
     <ion-card-header class="asig-card__head">
       <ion-card-title class="asig-card__title">Operadores sugeridos</ion-card-title>
       <ion-card-subtitle class="asig-card__sub">
-        Para el viaje:
+        Asignando para viaje
         <b>{{ viajeSeleccionado?.numero_viaje || ('ID ' + viajeId) }}</b>
       </ion-card-subtitle>
     </ion-card-header>
 
     <ion-list class="asig-list">
-      <ion-item
-        *ngFor="let s of operadores; let i = index"
-        class="asig-item asig-op"
-        [class.asig-op--top]="i === 0"
-      >
+      <ion-item *ngFor="let s of operadores; let i = index"
+        class="asig-item asig-op-item"
+        [class.asig-op-item--top]="i === 0"
+        [class.asig-op-item--bloqueado-enc]="operadorYaEncadenado(s)">
+
         <ion-label class="asig-item__label">
-          <div class="asig-op-topline">
-            <h2 class="asig-item__h2">
-              {{ s.operador?.nombre || ('Operador ID: ' + s.id_operador) }}
-            </h2>
 
-            <span class="asig-rank" *ngIf="i === 0">Mejor opción</span>
-          </div>
-
-          <p *ngIf="s.operador?.numero_empleado" class="asig-item__p">
-            <strong>No. empleado:</strong> {{ s.operador.numero_empleado }}
-          </p>
-
-          <p class="asig-item__p">
-            <strong>Unidad:</strong>
-            {{ s.unidad?.numero_economico || (s.unidad_id ? ('ID: ' + s.unidad_id) : 'N/A') }}
-          </p>
-
-          <p class="asig-item__p">
-            <strong>Cuota restante:</strong> {{ s.cuota_restante ?? 'N/A' }}
-            | <strong>Días sin viaje:</strong> {{ s.dias_sin_viaje ?? 'N/A' }}
-          </p>
-
-          <!-- CRITERIOS VISUALES -->
-          <div class="asig-criteria">
-            <div
-              *ngFor="let c of buildCriteriaList(s)"
-              class="criteria-item"
-              [ngClass]="c.ok ? 'ok' : 'warn'"
-            >
-              <ion-icon [name]="c.ok ? 'checkmark-circle-outline' : 'close-circle-outline'"></ion-icon>
-              <span>{{ c.label }}</span>
+          <!-- ── Tarjeta de viaje objetivo dentro de cada card ── -->
+          <div class="vob-card" *ngIf="viajeSeleccionado">
+            <div class="vob-card__left">
+              <span class="vob-card__label">Asignando para</span>
+              <span class="vob-card__num">{{ viajeSeleccionado.numero_viaje }}</span>
+            </div>
+            <div class="vob-card__divider"></div>
+            <div class="vob-card__detail">
+              <div class="vob-card__row">
+                <span class="vob-card__ico">🗺️</span>
+                <span class="vob-card__val">{{ viajeSeleccionado.nombre_ruta || 'Sin ruta' }}</span>
+              </div>
+              <div class="vob-card__row">
+                <span class="vob-card__ico">📏</span>
+                <span class="vob-card__val">{{ viajeSeleccionado.distancia_km }} km</span>
+              </div>
+              <div class="vob-card__row">
+                <span class="vob-card__ico">🔑</span>
+                <span class="vob-card__val">Licencia: {{ viajeSeleccionado.nombre_licencia || 'No requerida' }}</span>
+              </div>
+              <div class="vob-card__row">
+                <span class="vob-card__ico">💵</span>
+                <span class="vob-card__val vob-card__tarifa">
+                  {{ getTarifaViaje(viajeSeleccionado) | currency }}
+                </span>
+              </div>
             </div>
           </div>
 
-          <!-- RAZONES / MOTIVOS -->
-          <div *ngIf="(s.razones?.length || s.motivos?.length); else sinMotivos" class="asig-motivos">
-            <strong>Motivos de selección:</strong>
+          <!-- ── Cabecera del operador ── -->
+          <div class="op-header">
+            <div class="op-avatar" [class.op-avatar--top]="i === 0">
+              {{ (s.operador?.nombre || 'O')[0].toUpperCase() }}
+            </div>
+            <div class="op-header__info">
+              <h2 class="asig-item__h2">
+                <!-- Nombre del operador: navega a su detalle -->
+                <span class="op-link"
+                  (click)="irAOperador($event, s.operador?.id_operador ?? s.id_operador)"
+                  title="Ver detalle del operador">
+                  {{ s.operador?.nombre || ('Operador ID: ' + s.id_operador) }}
+                </span>
+                <!-- Número económico de unidad: navega a su detalle -->
+                <span class="op-unidad-link"
+                  *ngIf="s.unidad?.numero_economico"
+                  (click)="irAUnidad($event, getIdUnidad(s.unidad))"
+                  title="Ver detalle de la unidad">
+                  · {{ s.unidad.numero_economico }}
+                </span>
+              </h2>
+              <span class="op-empleado" *ngIf="s.operador?.numero_empleado">
+                #{{ s.operador.numero_empleado }}
+              </span>
+            </div>
+            <div class="op-header__badges">
+              <span class="asig-rank asig-rank--top" *ngIf="i === 0">⭐ Mejor opción</span>
 
-            <ul class="asig-motivos__list">
-              <li *ngFor="let m of (s.razones?.length ? s.razones : s.motivos)">
-                {{ m }}
-              </li>
-            </ul>
+              <span class="asig-encadenable-badge"
+                *ngIf="s.es_encadenable && !operadorYaEncadenado(s)">
+                🔗 Encadenable
+              </span>
+
+              <span class="asig-encadenado-bloqueado-badge" *ngIf="operadorYaEncadenado(s)">
+                ⛓️ Ya encadenado
+              </span>
+
+              <span class="op-score"
+                [class.op-score--ok]="s.penalizacion < 100"
+                [class.op-score--warn]="s.penalizacion >= 100">
+                {{ s.penalizacion }}pts
+              </span>
+            </div>
           </div>
 
-          <ng-template #sinMotivos>
-            <p class="asig-item__p asig-muted">
-              <strong>Motivos de selección:</strong> Sin motivos registrados por el motor.
-            </p>
-          </ng-template>
+          <!-- ── Aviso: viaje encadenado pendiente ── -->
+          <div class="enc-bloqueado-aviso" *ngIf="operadorYaEncadenado(s)">
+            <span>⛓️</span>
+            <div>
+              <strong>El operador debe iniciar su viaje encadenado</strong>
+              <span *ngIf="s.numero_viaje_encadenado_pendiente">
+                — Viaje #{{ s.numero_viaje_encadenado_pendiente }} en espera
+              </span>
+            </div>
+          </div>
+
+          <!-- ── Bloque de encadenamiento ── -->
+          <div class="enc-block"
+            *ngIf="s.es_encadenable && s.viaje_activo_id && !operadorYaEncadenado(s)">
+            <div class="enc-chain-row">
+              <div class="enc-chain-step enc-chain-step--activo">
+                <span class="enc-chain-badge">En viaje</span>
+                <span class="enc-chain-ruta">{{ s.ruta_activa || ('Viaje #' + s.viaje_activo_id) }}</span>
+              </div>
+              <span class="enc-chain-arrow">→</span>
+              <div class="enc-chain-step enc-chain-step--nuevo">
+                <span class="enc-chain-badge enc-chain-badge--nuevo">Nuevo</span>
+                <span class="enc-chain-ruta">{{ viajeSeleccionado?.nombre_ruta || 'este viaje' }}</span>
+              </div>
+            </div>
+            <div class="enc-lejos" *ngIf="s.lejos">
+              <span class="enc-lejos-icon">⚠</span>
+              <span>Operador demasiado lejos — terminará en
+                {{ s.zona_efectiva_nombre || ('zona ' + s.zona_efectiva) }}</span>
+            </div>
+          </div>
+
+          <!-- ── Grid de criterios ── -->
+          <div class="asig-criteria">
+
+            <div class="criteria-item"
+              [class.criteria-ok]="s.operador?.estado_operador === 'DISPONIBLE' || s.es_encadenable"
+              [class.criteria-warn]="s.operador?.estado_operador !== 'DISPONIBLE' && !s.es_encadenable">
+              <span class="criteria-icon">
+                {{ (s.operador?.estado_operador === 'DISPONIBLE' || s.es_encadenable) ? '✓' : '✗' }}
+              </span>
+              <div class="criteria-body">
+                <span class="criteria-label">Operador disponible</span>
+                <span class="criteria-value">
+                  {{ s.operador?.estado_operador || 'N/A' }}
+                  <span class="enc-tag"
+                    *ngIf="s.es_encadenable && !operadorYaEncadenado(s)">· en viaje encadenable</span>
+                  <span class="enc-tag enc-tag--warn"
+                    *ngIf="operadorYaEncadenado(s)">· viaje encadenado pendiente</span>
+                  <span class="enc-tag enc-tag--warn"
+                    *ngIf="s.operador?.estado_operador === 'ASIGNADO'">· viaje no iniciado</span>
+                </span>
+              </div>
+            </div>
+
+            <div class="criteria-item criteria-neutral">
+              <span class="criteria-icon">●</span>
+              <div class="criteria-body">
+                <span class="criteria-label">Estado operador</span>
+                <span class="criteria-value">{{ s.operador?.estado_operador || 'N/A' }}</span>
+              </div>
+            </div>
+
+            <div class="criteria-item"
+              [class.criteria-ok]="!s.operador_fuera_zona"
+              [class.criteria-warn]="s.operador_fuera_zona">
+              <span class="criteria-icon">{{ !s.operador_fuera_zona ? '✓' : '✗' }}</span>
+              <div class="criteria-body">
+                <span class="criteria-label">Operador fuera de zona</span>
+                <span class="criteria-value">{{ s.operador_fuera_zona ? 'Sí' : 'No' }}</span>
+              </div>
+            </div>
+
+            <div class="criteria-item criteria-neutral">
+              <span class="criteria-icon">◎</span>
+              <div class="criteria-body">
+                <span class="criteria-label">Zona del operador</span>
+                <span class="criteria-value">{{ s.operador?.nombre_zona || 'N/A' }}</span>
+              </div>
+            </div>
+
+            <div class="criteria-item"
+              [class.criteria-ok]="!s.licencia_vencida"
+              [class.criteria-warn]="s.licencia_vencida">
+              <span class="criteria-icon">{{ !s.licencia_vencida ? '✓' : '✗' }}</span>
+              <div class="criteria-body">
+                <span class="criteria-label">Licencia vencida</span>
+                <span class="criteria-value">{{ s.licencia_vencida ? 'Sí' : 'No' }}</span>
+              </div>
+            </div>
+
+            <div class="criteria-item criteria-neutral">
+              <span class="criteria-icon">◷</span>
+              <div class="criteria-body">
+                <span class="criteria-label">Licencia vigencia</span>
+                <span class="criteria-value">{{ s.operador?.vigencia_licencia || 'N/A' }}</span>
+              </div>
+            </div>
+
+            <div class="criteria-item"
+              [class.criteria-ok]="s.unidad_asignada"
+              [class.criteria-warn]="!s.unidad_asignada">
+              <span class="criteria-icon">{{ s.unidad_asignada ? '✓' : '✗' }}</span>
+              <div class="criteria-body">
+                <span class="criteria-label">Unidad asignada</span>
+                <span class="criteria-value">
+                  {{ s.unidad_asignada ? (s.unidad?.numero_economico || 'Sin número') : 'No asignada' }}
+                </span>
+              </div>
+            </div>
+
+            <div class="criteria-item"
+              [class.criteria-ok]="s.unidad?.estado_unidad === 'DISPONIBLE' || (s.es_encadenable && s.unidad?.estado_unidad === 'EN_VIAJE')"
+              [class.criteria-warn]="s.unidad && s.unidad?.estado_unidad !== 'DISPONIBLE' && !(s.es_encadenable && s.unidad?.estado_unidad === 'EN_VIAJE')"
+              [class.criteria-neutral]="!s.unidad">
+              <span class="criteria-icon">
+                {{ (s.unidad?.estado_unidad === 'DISPONIBLE' || (s.es_encadenable && s.unidad?.estado_unidad === 'EN_VIAJE')) ? '✓' : (s.unidad?.estado_unidad ? '✗' : '—') }}
+              </span>
+              <div class="criteria-body">
+                <span class="criteria-label">Estado de unidad</span>
+                <span class="criteria-value">
+                  {{ s.unidad?.estado_unidad || 'N/A' }}
+                  <span class="enc-tag"
+                    *ngIf="s.es_encadenable && s.unidad?.estado_unidad === 'EN_VIAJE'">· ok para encadenamiento</span>
+                </span>
+              </div>
+            </div>
+
+            <div class="criteria-item"
+              [class.criteria-ok]="!s.unidad_fuera_zona"
+              [class.criteria-warn]="s.unidad_fuera_zona">
+              <span class="criteria-icon">{{ !s.unidad_fuera_zona ? '✓' : '✗' }}</span>
+              <div class="criteria-body">
+                <span class="criteria-label">Unidad fuera de zona</span>
+                <span class="criteria-value">{{ s.unidad_fuera_zona ? 'Sí' : 'No' }}</span>
+              </div>
+            </div>
+
+            <div class="criteria-item criteria-neutral">
+              <span class="criteria-icon">◎</span>
+              <div class="criteria-body">
+                <span class="criteria-label">Zona de la unidad</span>
+                <span class="criteria-value">{{ s.unidad?.nombre_zona || 'N/A' }}</span>
+              </div>
+            </div>
+
+            <div class="criteria-item"
+              [class.criteria-ok]="s.cumple_licencia"
+              [class.criteria-warn]="!s.cumple_licencia">
+              <span class="criteria-icon">{{ s.cumple_licencia ? '✓' : '✗' }}</span>
+              <div class="criteria-body">
+                <span class="criteria-label">Cumple con licencia</span>
+                <span class="criteria-value">{{ s.cumple_licencia ? 'Sí' : 'No' }}</span>
+              </div>
+            </div>
+
+            <div class="criteria-item criteria-neutral">
+              <span class="criteria-icon">◈</span>
+              <div class="criteria-body">
+                <span class="criteria-label">Licencia del operador</span>
+                <span class="criteria-value">{{ s.operador?.nombre_licencia || 'N/A' }}</span>
+              </div>
+            </div>
+
+            <div class="criteria-item"
+              [class.criteria-ok]="!s.rechazado"
+              [class.criteria-warn]="s.rechazado">
+              <span class="criteria-icon">{{ !s.rechazado ? '✓' : '✗' }}</span>
+              <div class="criteria-body">
+                <span class="criteria-label">Rechazado previo</span>
+                <span class="criteria-value">{{ s.rechazado ? 'Sí' : 'No' }}</span>
+              </div>
+            </div>
+
+            <div class="criteria-item"
+              [class.criteria-ok]="s.cuota_restante > 0"
+              [class.criteria-warn]="s.cuota_restante === 0">
+              <span class="criteria-icon">{{ s.cuota_restante > 0 ? '✓' : '✗' }}</span>
+              <div class="criteria-body">
+                <span class="criteria-label">Cuota disponible</span>
+                <span class="criteria-value">
+                  {{ s.cuota_restante > 0 ? 'Sí' : 'No' }} ({{ s.cuota_restante }} restantes)
+                </span>
+              </div>
+            </div>
+
+            <div class="criteria-item criteria-full criteria-neutral"
+              *ngIf="s.certificaciones_cumplidas?.length === 0 && s.certificaciones_faltantes?.length === 0">
+              <span class="criteria-icon">◎</span>
+              <div class="criteria-body">
+                <span class="criteria-label">Certificaciones</span>
+                <span class="criteria-value">No requeridas para este viaje</span>
+              </div>
+            </div>
+
+            <div class="criteria-item criteria-full"
+              *ngIf="s.certificaciones_cumplidas?.length > 0 || s.certificaciones_faltantes?.length > 0"
+              [class.criteria-ok]="s.certificaciones_faltantes?.length === 0"
+              [class.criteria-warn]="s.certificaciones_faltantes?.length > 0">
+              <span class="criteria-icon">{{ s.certificaciones_faltantes?.length === 0 ? '✓' : '✗' }}</span>
+              <div class="criteria-body">
+                <span class="criteria-label">Certificaciones faltantes</span>
+                <div class="cert-row">
+                  <span class="cert-group" *ngIf="s.certificaciones_faltantes?.length > 0">
+                    <span class="cert-tag cert-tag--warn"
+                      *ngFor="let cert of s.certificaciones_faltantes">{{ cert }}</span>
+                  </span>
+                  <span class="criteria-value" *ngIf="s.certificaciones_faltantes?.length === 0">
+                    Todas cumplidas ✓
+                  </span>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /asig-criteria -->
         </ion-label>
 
+        <!-- ── Acciones ── -->
         <div class="asig-actions" slot="end">
-          <ion-button class="btn-primary" (click)="asignarViaje(viajeId!, s.id_operador)">
-            ASIGNAR
+          <div class="asig-block-reasons" *ngIf="tieneErrorBloqueante(s)">
+            <div class="block-reason" *ngFor="let m of motivosBloqueo(s)">🔴 {{ m }}</div>
+          </div>
+
+          <ion-button
+            class="btn-primary"
+            [disabled]="tieneErrorBloqueante(s)"
+            (click)="solicitarAsignacion(s)">
+            {{ s.es_encadenable && !operadorYaEncadenado(s) ? 'ENCADENAR' : 'ASIGNAR' }}
           </ion-button>
 
           <ion-button class="btn-ghost-danger" (click)="rechazarViaje(viajeId!, s.id_operador)">
             RECHAZAR
           </ion-button>
         </div>
+
       </ion-item>
     </ion-list>
   </ion-card>
 
-  <!-- MODAL RECHAZO -->
-  <ion-modal [isOpen]="showRechazoModal" (isOpenChange)="onModalChange($event)">
+  <ion-card *ngIf="viajeId && operadores.length === 0" class="asig-card">
+    <ion-card-header class="asig-card__head">
+      <ion-card-title class="asig-card__title">Sin resultados</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>No se han encontrado operadores disponibles para este viaje.</p>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Modal: Encadenar viaje -->
+  <ion-modal [isOpen]="showEncadenamientoModal" (didDismiss)="cerrarEncadenamientoModal()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar class="asig-toolbar">
+          <ion-title>Encadenar viaje</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cerrarEncadenamientoModal()">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <p class="confirm-intro">
+          <strong>{{ encadenamientoOperador?.operador?.nombre }}</strong>
+          tiene un viaje en curso
+          (<b>#{{ encadenamientoViajePadreId }}</b>) y tomará este al terminarlo.
+        </p>
+
+        <div class="enc-chain-row" style="margin-bottom:16px;"
+          *ngIf="encadenamientoOperador?.ruta_activa">
+          <div class="enc-chain-step">
+            <span class="enc-chain-badge">En curso</span>
+            <span class="enc-chain-ruta">{{ encadenamientoOperador?.ruta_activa }}</span>
+          </div>
+          <span class="enc-chain-arrow">→</span>
+          <div class="enc-chain-step">
+            <span class="enc-chain-badge enc-chain-badge--nuevo">Nuevo</span>
+            <span class="enc-chain-ruta">{{ viajeSeleccionado?.nombre_ruta || 'este viaje' }}</span>
+          </div>
+        </div>
+
+        <div class="enc-lejos" style="margin-bottom:16px;" *ngIf="encadenamientoOperador?.lejos">
+          <span class="enc-lejos-icon">⚠</span>
+          <span>Operador demasiado lejos — terminará en
+            {{ encadenamientoOperador?.zona_efectiva_nombre
+              || ('zona ' + encadenamientoOperador?.zona_efectiva) }}</span>
+        </div>
+
+        <div class="enc-viaje-info" *ngIf="viajeSeleccionado">
+          <div class="enc-viaje-info__row">
+            <span class="enc-viaje-info__label">Viaje</span>
+            <span class="enc-viaje-info__val">{{ viajeSeleccionado.numero_viaje }}</span>
+          </div>
+          <div class="enc-viaje-info__row">
+            <span class="enc-viaje-info__label">Ruta</span>
+            <span class="enc-viaje-info__val">{{ viajeSeleccionado.nombre_ruta || 'Sin ruta' }}</span>
+          </div>
+          <div class="enc-viaje-info__row" *ngIf="viajeSeleccionado.distancia_km">
+            <span class="enc-viaje-info__label">Distancia</span>
+            <span class="enc-viaje-info__val">{{ viajeSeleccionado.distancia_km }} km</span>
+          </div>
+          <div class="enc-viaje-info__row">
+            <span class="enc-viaje-info__label">Tarifa</span>
+            <span class="enc-viaje-info__val">
+              {{ getTarifaViaje(viajeSeleccionado) | currency }}
+            </span>
+          </div>
+        </div>
+
+        <ion-button expand="block" class="btn-primary" style="margin-top:20px;"
+          (click)="confirmarEncadenamiento()">
+          🔗 Confirmar encadenamiento
+        </ion-button>
+
+        <ion-button expand="block" fill="outline" color="medium" style="margin-top:8px;"
+          (click)="cerrarEncadenamientoModal()">
+          Cancelar
+        </ion-button>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Modal: Motivo del rechazo -->
+  <ion-modal [isOpen]="showRechazoModal" (didDismiss)="cerrarModalRechazo()">
     <ng-template>
       <ion-header>
         <ion-toolbar class="asig-toolbar">
@@ -175,20 +500,52 @@
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
-
       <ion-content class="ion-padding">
         <ion-item>
           <ion-label position="floating">Motivo</ion-label>
-          <ion-textarea
-            [(ngModel)]="rechazoMotivo"
-            placeholder="Escribe el motivo del rechazo"
-            required>
-          </ion-textarea>
+          <ion-textarea [(ngModel)]="rechazoMotivo"
+            placeholder="Escribe el motivo del rechazo" required></ion-textarea>
         </ion-item>
-
-        <ion-button (click)="confirmarRechazo()" expand="block" class="btn-danger" style="margin-top:12px;">
+        <ion-button (click)="confirmarRechazo()" expand="block" class="btn-danger"
+          style="margin-top:12px;">
           Confirmar Rechazo
         </ion-button>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Modal: Confirmación con advertencias -->
+  <ion-modal [isOpen]="showConfirmModal" (didDismiss)="cerrarConfirmModal()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar class="asig-toolbar">
+          <ion-title>Confirmar Asignación</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cerrarConfirmModal()">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <p class="confirm-intro">
+          Estás por asignar a <strong>{{ confirmOperadorNombre }}</strong>.<br>
+          Se detectaron los siguientes puntos antes de confirmar:
+        </p>
+        <div *ngFor="let adv of confirmAdvertencias"
+          class="adv-item"
+          [class.adv-item--error]="adv.tipo === 'error'"
+          [class.adv-item--warn]="adv.tipo === 'warn'">
+          <span class="adv-icon">{{ adv.tipo === 'error' ? '🔴' : '🟡' }}</span>
+          <span class="adv-msg">{{ adv.mensaje }}</span>
+        </div>
+        <p class="confirm-question">¿Deseas continuar con la asignación de todas formas?</p>
+        <div class="confirm-btns">
+          <ion-button expand="block" class="btn-primary" (click)="confirmarAsignacion()">
+            Confirmar de todas formas
+          </ion-button>
+          <ion-button expand="block" fill="outline" color="medium" (click)="cerrarConfirmModal()">
+            Cancelar
+          </ion-button>
+        </div>
       </ion-content>
     </ng-template>
   </ion-modal>

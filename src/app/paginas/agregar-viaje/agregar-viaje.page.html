@@ -1,6 +1,12 @@
 <ion-header>
-  <ion-toolbar class="op-toolbar">
-    <ion-title>Agregar Nuevo Viaje</ion-title>
+  <ion-toolbar class="det-toolbar">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" class="back-btn">
+        <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+        Viajes
+      </ion-button>
+    </ion-buttons>
+    <ion-title></ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -9,15 +15,14 @@
     <div class="sf-reg-card">
 
       <div class="sf-reg-brand">SMARTFLET</div>
-
       <div class="sf-reg-title">Agregar Nuevo Viaje</div>
 
       <form class="sf-form" [formGroup]="viajeForm" (ngSubmit)="onSubmit()" autocomplete="off">
 
-        <!-- Fila 1: Número de viaje | Ruta -->
+        <!-- Fila 1: No. Embarque | Ruta -->
         <div class="sf-grid sf-grid--2">
           <div class="sf-field">
-            <label class="sf-label">Número de Viaje</label>
+            <label class="sf-label">No. Embarque</label>
             <input
               class="sf-input"
               type="text"
@@ -25,7 +30,13 @@
               autocomplete="off"
               spellcheck="false"
               placeholder="Ej. VJ-001"
+              maxlength="50"
+              inputmode="text"
             />
+            <small class="sf-error"
+              *ngIf="viajeForm.get('numero_viaje')?.invalid && viajeForm.get('numero_viaje')?.touched">
+              Solo se permiten letras, números y guiones.
+            </small>
           </div>
 
           <div class="sf-field">
@@ -43,7 +54,12 @@
         <div class="sf-grid sf-grid--2">
           <div class="sf-field">
             <label class="sf-label">Configuración de Unidad</label>
-            <ion-select class="sf-input" formControlName="configuracion_unidad" (ionChange)="onConfiguracionUnidadChange($event.detail.value)" autocomplete="off">
+            <ion-select
+              class="sf-input"
+              formControlName="configuracion_unidad"
+              (ionChange)="onConfiguracionUnidadChange($event.detail.value)"
+              autocomplete="off"
+            >
               <ion-select-option value="" disabled>Selecciona configuración de unidad</ion-select-option>
               <ion-select-option *ngFor="let configuracion of configuracionesUnidad" [value]="configuracion">
                 {{ configuracion }}
@@ -53,7 +69,11 @@
 
           <div class="sf-field">
             <label class="sf-label">Licencia Requerida</label>
-            <select class="sf-input" formControlName="fk_licencia_requerida" [disabled]="!viajeForm.get('configuracion_unidad')?.value">
+            <select
+              class="sf-input"
+              formControlName="fk_licencia_requerida"
+              [attr.disabled]="!viajeForm.get('configuracion_unidad')?.value ? true : null"
+            >
               <option value="" disabled selected>Selecciona una licencia</option>
               <option *ngFor="let licencia of licenciasDisponibles" [value]="licencia.id_licencia">
                 {{ licencia.descripcion_licencia }}
@@ -73,7 +93,12 @@
               autocomplete="off"
               spellcheck="false"
               placeholder="Ej. Producto ABC"
+              maxlength="100"
             />
+            <small class="sf-error"
+              *ngIf="viajeForm.get('producto')?.invalid && viajeForm.get('producto')?.touched">
+              Ingresa un producto válido.
+            </small>
           </div>
 
           <div class="sf-field">
@@ -125,16 +150,35 @@
               autocomplete="off"
               placeholder="Ej. 2500"
               min="0"
+              max="9999999"
+              step="0.01"
             />
+            <small class="sf-error"
+              *ngIf="viajeForm.get('pago_operador')?.invalid && viajeForm.get('pago_operador')?.touched">
+              Ingresa un monto válido (mayor o igual a 0).
+            </small>
           </div>
         </div>
 
-        <!-- Botón -->
+        <!-- Botón: valida y abre el modal de confirmación -->
         <button class="sf-btn" type="submit" [disabled]="viajeForm.invalid || saving">
-          {{ saving ? 'Guardando...' : 'Agregar Viaje' }}
+          {{ saving ? 'Guardando...' : 'Revisar y Agregar Viaje' }}
         </button>
 
       </form>
     </div>
   </div>
+
+  <!-- ══════════════════════════════════════════════════
+       MODAL DE CONFIRMACIÓN
+       Se monta inline; el componente gestiona el overlay.
+  ═══════════════════════════════════════════════════ -->
+  <app-confirmar-viaje-modal
+    *ngIf="showConfirmModal && confirmData"
+    [data]="confirmData"
+    [saving]="saving"
+    (confirmed)="onModalConfirmed()"
+    (cancelled)="onModalCancelled()"
+  ></app-confirmar-viaje-modal>
+
 </ion-content>

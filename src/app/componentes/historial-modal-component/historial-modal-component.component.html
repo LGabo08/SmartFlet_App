@@ -1,0 +1,83 @@
+<ion-header class="hist-header">
+  <ion-toolbar class="hist-toolbar">
+    <div class="hist-topbar">
+      <div class="hist-title-group">
+        <div class="hist-icon">
+          <ion-icon name="time-outline"></ion-icon>
+        </div>
+        <div>
+          <p class="hist-label">Unidad #{{ unidadId }}</p>
+          <h2 class="hist-title">Historial de Cambios</h2>
+        </div>
+      </div>
+      <ion-button fill="clear" class="hist-close-btn" (click)="dismiss()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="hist-content">
+
+  <!-- Con historial -->
+  <div class="hist-body" *ngIf="historial.length > 0; else sinHistorial">
+
+    <div class="hist-summary">
+      <span class="hist-count">{{ historial.length }} cambio(s) registrado(s)</span>
+    </div>
+
+    <div class="hist-timeline">
+      <div class="hist-item" *ngFor="let item of historial; let i = index">
+
+        <!-- Línea de tiempo -->
+        <div class="hist-line">
+          <div class="hist-dot"></div>
+          <div class="hist-connector" *ngIf="i < historial.length - 1"></div>
+        </div>
+
+        <!-- Contenido del cambio -->
+        <div class="hist-card">
+          <div class="hist-card__header">
+            <div class="hist-estados">
+              <span class="estado-pill"
+                [class.pill-disponible]="item.estado_anterior === 'DISPONIBLE'"
+                [class.pill-no_disponible]="item.estado_anterior === 'NO_DISPONIBLE'"
+                [class.pill-mantenimiento]="item.estado_anterior === 'MANTENIMIENTO'"
+                [class.pill-baja]="item.estado_anterior === 'BAJA'">
+                {{ item.estado_anterior }}
+              </span>
+              <ion-icon name="arrow-forward-outline" class="hist-arrow"></ion-icon>
+              <span class="estado-pill"
+                [class.pill-disponible]="item.estado_nuevo === 'DISPONIBLE'"
+                [class.pill-no_disponible]="item.estado_nuevo === 'NO_DISPONIBLE'"
+                [class.pill-mantenimiento]="item.estado_nuevo === 'MANTENIMIENTO'"
+                [class.pill-baja]="item.estado_nuevo === 'BAJA'">
+                {{ item.estado_nuevo }}
+              </span>
+            </div>
+            <span class="hist-fecha">
+              <ion-icon name="calendar-outline"></ion-icon>
+              {{ item.fecha_reporte | date: 'dd/MM/yyyy HH:mm' }}
+            </span>
+          </div>
+
+          <div class="hist-motivo" *ngIf="item.motivo">
+            <ion-icon name="chatbubble-outline"></ion-icon>
+            <span>{{ item.motivo }}</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Sin historial -->
+  <ng-template #sinHistorial>
+    <div class="hist-empty">
+      <ion-icon name="time-outline"></ion-icon>
+      <h3>Sin registros</h3>
+      <p>Esta unidad no tiene cambios de estado registrados aún.</p>
+    </div>
+  </ng-template>
+
+</ion-content>

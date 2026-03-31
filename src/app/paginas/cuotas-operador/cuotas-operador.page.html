@@ -5,7 +5,6 @@
         <ion-icon name="arrow-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-
     <ion-title>Cuotas del Operador</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -15,7 +14,6 @@
   <!-- ENCABEZADO -->
   <section class="quota-hero">
     <div class="quota-hero__avatar"></div>
-
     <div class="quota-hero__info">
       <h1>{{ operadorNombre || 'Operador' }}</h1>
       <p>No. Empleado: <b>{{ numeroEmpleado || 'N/D' }}</b></p>
@@ -23,79 +21,78 @@
     </div>
   </section>
 
-  <!-- MÉTRICAS -->
-  <section class="quota-metrics">
-    <div class="metric-card">
-      <span class="metric-card__label">Periodo actual</span>
-      <strong class="metric-card__value">{{ periodoActual || 'N/D' }}</strong>
+  <!-- MÉTRICAS cuota activa -->
+  <section class="quota-metrics" *ngIf="resumen.cuota_objetivo > 0">
+    <div class="metric-card metric-card--wide">
+      <span class="metric-card__label">Semana activa</span>
+      <strong class="metric-card__value metric-card__value--sm">
+        {{ resumen.fecha_inicio | date:'dd/MM/yyyy' }}
+        al
+        {{ resumen.fecha_fin | date:'dd/MM/yyyy' }}
+      </strong>
     </div>
-
     <div class="metric-card">
       <span class="metric-card__label">Cuota objetivo</span>
-      <strong class="metric-card__value">{{ resumen.cuota_objetivo }}</strong>
+      <strong class="metric-card__value">{{ resumen.cuota_objetivo | currency }}</strong>
     </div>
-
     <div class="metric-card">
       <span class="metric-card__label">Cuota realizada</span>
-      <strong class="metric-card__value">{{ resumen.cuota_realizada }}</strong>
+      <strong class="metric-card__value">{{ resumen.cuota_realizada | currency }}</strong>
     </div>
-
     <div class="metric-card">
       <span class="metric-card__label">Cuota restante</span>
-      <strong class="metric-card__value">{{ resumen.cuota_restante }}</strong>
+      <strong class="metric-card__value">{{ resumen.cuota_restante | currency }}</strong>
     </div>
   </section>
 
   <!-- FORMULARIO -->
   <section class="quota-panel">
     <div class="quota-panel__head">
-      <h2>{{ editingId ? 'Actualizar cuota' : 'Registrar cuota' }}</h2>
-      <p>Administra la cuota del operador por periodo.</p>
+      <h2>{{ editingId ? 'Actualizar cuota' : 'Registrar cuota semanal' }}</h2>
+      <p>El rango no puede exceder 7 días.</p>
     </div>
 
     <div class="quota-form">
+
       <div class="field">
-        <label>Periodo</label>
-        <input
-          type="text"
-          [(ngModel)]="form.periodo"
-          placeholder="Ej. 202603"
-        />
+        <label>Fecha de inicio *</label>
+        <input type="date"
+          [(ngModel)]="form.fecha_inicio"
+          (change)="onFechaInicioChange()"/>
+      </div>
+
+      <div class="field">
+        <label>Fecha de fin * <span class="dias-hint">({{ diasRango }} día(s))</span></label>
+        <input type="date"
+          [(ngModel)]="form.fecha_fin"
+          [min]="form.fecha_inicio"
+          [max]="maxFechaFin"/>
+        <span class="field-warn" *ngIf="diasRango > 7">
+          ⚠️ El rango no puede exceder 7 días
+        </span>
       </div>
 
       <div class="field">
         <label>Cuota objetivo</label>
-        <input
-          type="number"
-          [(ngModel)]="form.cuota_objetivo"
-          placeholder="Ej. 12"
-        />
+        <input type="number" [(ngModel)]="form.cuota_objetivo" placeholder="Ej. 10000" min="0"/>
       </div>
 
       <div class="field">
         <label>Cuota realizada</label>
-        <input
-          type="number"
-          [(ngModel)]="form.cuota_realizada"
-          placeholder="Ej. 4"
-        />
+        <input type="number" [(ngModel)]="form.cuota_realizada" placeholder="Ej. 0" min="0"/>
       </div>
 
       <div class="field">
         <label>Cuota restante</label>
-        <input
-          type="number"
+        <input type="number"
           [value]="(form.cuota_objetivo || 0) - (form.cuota_realizada || 0)"
-          disabled
-        />
+          disabled/>
       </div>
 
       <div class="quota-form__actions">
-        <ion-button class="btn-secondary" (click)="resetForm()">
-          Limpiar
-        </ion-button>
-
-        <ion-button class="btn-primary" (click)="saveCuota()" [disabled]="saving">
+        <ion-button class="btn-secondary" (click)="resetForm()">Limpiar</ion-button>
+        <ion-button class="btn-primary" (click)="saveCuota()"
+          [disabled]="saving || diasRango > 7">
           {{ saving ? 'Guardando...' : (editingId ? 'Actualizar cuota' : 'Guardar cuota') }}
         </ion-button>
       </div>
@@ -109,15 +106,10 @@
         <h2>Histórico de cuotas</h2>
         <p>{{ cuotasFiltradas.length }} registro(s)</p>
       </div>
-
       <div class="quota-search">
         <ion-icon name="search-outline"></ion-icon>
-        <input
-          type="text"
-          [(ngModel)]="searchTerm"
-          (input)="applyFilter()"
-          placeholder="Buscar por periodo o estado..."
-        />
+        <input type="text" [(ngModel)]="searchTerm"
+          (input)="applyFilter()" placeholder="Buscar por fecha o estado..."/>
       </div>
     </div>
 
@@ -125,43 +117,43 @@
       <table class="quota-table">
         <thead>
           <tr>
-            <th>Periodo</th>
-            <th>Cuota objetivo</th>
+            <th>Semana</th>
+            <th>Objetivo</th>
             <th>Realizada</th>
             <th>Restante</th>
             <th>Estado</th>
             <th class="text-center">Acciones</th>
           </tr>
         </thead>
-
         <tbody>
-          <tr *ngFor="let c of cuotasFiltradas">
-            <td data-label="Periodo">{{ c.periodo }}</td>
-
-            <td data-label="Cuota objetivo">{{ c.cuota_objetivo }}</td>
-
-            <td data-label="Realizada">{{ c.cuota_realizada }}</td>
-
-            <td data-label="Restante">{{ c.cuota_restante }}</td>
-
+          <tr *ngFor="let c of cuotasFiltradas"
+            [class.row-active]="esCuotaActiva(c)">
+            <td data-label="Semana">
+              <div class="semana-cell">
+                <span>{{ c.fecha_inicio | date:'dd/MM/yy' }} — {{ c.fecha_fin | date:'dd/MM/yy' }}</span>
+                <span class="activa-tag" *ngIf="esCuotaActiva(c)">Esta semana</span>
+              </div>
+            </td>
+            <td data-label="Objetivo">{{ c.cuota_objetivo | currency }}</td>
+            <td data-label="Realizada">{{ c.cuota_realizada | currency }}</td>
+            <td data-label="Restante">{{ c.cuota_restante | currency }}</td>
             <td data-label="Estado">
               <span class="badge" [ngClass]="getEstadoClass(c)">
                 {{ getEstadoLabel(c) }}
               </span>
             </td>
-
             <td data-label="Acciones" class="text-center">
               <div class="quota-actions">
-                <ion-button fill="clear" class="icon-btn" (click)="editCuota(c)">
+                <ion-button fill="clear" class="icon-btn" (click)="editCuota(c)" title="Editar">
                   <ion-icon name="create-outline"></ion-icon>
                 </ion-button>
-
-                <ion-button
-                  fill="clear"
-                  class="icon-btn icon-btn--danger"
-                  (click)="deleteCuota(c)"
-                  [disabled]="deleting"
-                >
+                <ion-button fill="clear" class="icon-btn"
+                  [routerLink]="['/operadores', operadorId, 'movimientos']"
+                  [queryParams]="{ periodo: c.periodo }" title="Ver movimientos">
+                  <ion-icon name="swap-vertical-outline"></ion-icon>
+                </ion-button>
+                <ion-button fill="clear" class="icon-btn icon-btn--danger"
+                  (click)="deleteCuota(c)" [disabled]="deleting" title="Eliminar">
                   <ion-icon name="trash-outline"></ion-icon>
                 </ion-button>
               </div>

@@ -1,0 +1,207 @@
+$primary:       #0b2c5d;
+$primary-light: #e8eef7;
+$text-main:     #1a1a2e;
+$text-muted:    #6b7280;
+$border:        #e2e8f0;
+$border-error:  #dc2626;
+$bg-page:       #f1f4f8;
+$white:         #ffffff;
+
+.crear-toolbar {
+  --background: #{$primary};
+  --color: #{$white};
+  .back-btn { --color: #{$white}; font-size: 0.85rem; font-weight: 500; }
+}
+
+.crear-page { --background: #{$bg-page}; }
+.crear-panel { padding: 16px; }
+
+.crear-card {
+  background: $white;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba($primary, 0.1), 0 1px 4px rgba(0,0,0,0.06);
+  padding: 20px;
+}
+
+.crear-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  @media (max-width: 520px) { grid-template-columns: 1fr; }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  ion-input, ion-select {
+    border: 1.5px solid $border;
+    border-radius: 8px;
+    --padding-start: 10px;
+    --padding-end: 10px;
+    --color: #{$text-main};
+    background: $white;
+    font-size: 0.88rem;
+    min-height: 38px;
+    transition: border-color 0.2s;
+  }
+
+  &--error {
+    ion-input, ion-select, .date-input {
+      border-color: $border-error !important;
+    }
+  }
+
+  &--full { grid-column: 1 / -1; }
+}
+
+// Input date nativo — mismo estilo que ion-input
+.date-input {
+  border: 1.5px solid $border;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.88rem;
+  color: $text-main;
+  background: $white;
+  width: 100%;
+  min-height: 38px;
+  outline: none;
+  font-family: inherit;
+  box-sizing: border-box;
+
+  &:focus { border-color: $primary; }
+}
+
+.opcional {
+  font-size: 0.65rem;
+  color: #9ca3af;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  margin-left: 4px;
+}
+
+.error-msg {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  color: $border-error;
+  font-weight: 500;
+
+  ion-icon { font-size: 0.85rem; flex-shrink: 0; }
+}
+
+.certs-loading, .certs-empty {
+  font-size: 0.82rem;
+  color: $text-muted;
+  padding: 8px 12px;
+  background: $bg-page;
+  border-radius: 8px;
+  border: 1.5px dashed $border;
+}
+
+.unidad-nota {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: $primary-light;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.8rem;
+  color: $primary;
+
+  ion-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+  strong { font-weight: 700; }
+}
+
+.crear-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+
+  .btn-save {
+    --background: #{$primary};
+    --color: #{$white};
+    --border-radius: 8px;
+    font-weight: 600;
+  }
+
+  .btn-cancel {
+    --background: #f1f4f8;
+    --color: #{$text-muted};
+    --border-radius: 8px;
+    font-weight: 600;
+  }
+}
+
+
+.certs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1.5px solid $border;
+  border-radius: 8px;
+  padding: 8px;
+  background: $white;
+}
+
+.cert-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover { background: $primary-light; }
+}
+
+.cert-check {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 2px solid $border;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+
+  ion-icon { font-size: 0.85rem; color: $white; }
+
+  &--active {
+    background: $primary;
+    border-color: $primary;
+  }
+}
+
+.cert-nombre {
+  font-size: 0.85rem;
+  color: $text-main;
+}
+
+.certs-resumen {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: $primary;
+  font-weight: 600;
+  margin-top: 6px;
+
+  ion-icon { font-size: 1rem; }
+}

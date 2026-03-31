@@ -1,0 +1,291 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+// ── Variables ──────────────────────────────────────────────
+:host {
+  --navy:      #01265c;
+  --navy-dark: #0b2a4a;
+  --accent:    #2563eb;
+  --accent-lt: #eff6ff;
+  --line:      #e4ecf7;
+  --bg:        #f8faff;
+  --text:      #0f172a;
+  --muted:     #64748b;
+  --danger:    #ef4444;
+  --danger-lt: #fef2f2;
+  --radius:    14px;
+}
+
+// ── Header / Toolbar ──────────────────────────────────────
+.cert-header {
+  box-shadow: none;
+}
+
+.cert-toolbar {
+  --background:    #ffffff;
+  --border-color:  var(--line);
+  --padding-start: 0;
+  --padding-end:   0;
+  --min-height:    72px;
+  border-bottom: 1px solid var(--line);
+}
+
+.cert-toolbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 72px;
+}
+
+.cert-title-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+// Ícono decorativo en el header
+.cert-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--accent-lt);
+  border: 1px solid #bfdbfe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  ion-icon {
+    font-size: 22px;
+    color: var(--accent);
+  }
+}
+
+.cert-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10.5px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--muted);
+  margin: 0 0 2px;
+}
+
+.cert-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--navy);
+  margin: 0;
+  letter-spacing: -0.2px;
+}
+
+// Botón cerrar — X limpia
+.cert-close-btn {
+  --color: var(--muted);
+  --padding-start: 0;
+  --padding-end: 0;
+  width: 36px;
+  height: 36px;
+  --border-radius: 10px;
+  --background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+
+  ion-icon {
+    font-size: 20px;
+  }
+
+  &:hover {
+    --background: var(--bg);
+    --color: var(--navy);
+  }
+}
+
+// ── Contenido ────────────────────────────────────────────
+.cert-content {
+  --background: var(--bg);
+}
+
+.cert-form {
+  padding: 24px 20px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+// ── Campo genérico ────────────────────────────────────────
+.cert-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.cert-field-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--navy);
+
+  ion-icon {
+    font-size: 14px;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+}
+
+// ── Input wrapper ─────────────────────────────────────────
+.cert-input-wrap {
+  background: #ffffff;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+
+  &:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+  }
+
+  &.invalid {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.08);
+  }
+}
+
+.cert-input {
+  display: block;
+  width: 100%;
+  padding: 14px 16px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text);
+  border-radius: var(--radius);
+  box-sizing: border-box;
+
+  &::placeholder {
+    color: #a0aec0;
+  }
+}
+
+.cert-textarea {
+  resize: none;
+  line-height: 1.55;
+  min-height: 80px;
+}
+
+// ── Select ────────────────────────────────────────────────
+.cert-select-wrap {
+  position: relative;
+  background: #ffffff;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+
+  &:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+  }
+
+  &.invalid {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.08);
+  }
+}
+
+.cert-select {
+  width: 100%;
+  height: 50px;
+  padding: 0 44px 0 16px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  border-radius: var(--radius);
+
+  option[value=""][disabled] {
+    color: #a0aec0;
+  }
+}
+
+.cert-select-arrow {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+// ── Error ─────────────────────────────────────────────────
+.cert-error {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  color: var(--danger);
+  font-weight: 500;
+  margin: 0;
+  padding-left: 2px;
+}
+
+// ── Botón guardar ─────────────────────────────────────────
+.cert-save-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  height: 52px;
+  margin-top: 4px;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--navy);
+  color: #ffffff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.12s ease,
+              box-shadow 0.18s ease;
+  box-shadow: 0 8px 20px rgba(1, 38, 92, 0.22);
+
+  ion-icon {
+    font-size: 19px;
+  }
+
+  &:hover {
+    background: var(--navy-dark);
+    box-shadow: 0 12px 28px rgba(1, 38, 92, 0.3);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(1, 38, 92, 0.2);
+  }
+}
+
+// ── Responsive ────────────────────────────────────────────
+@media (max-width: 480px) {
+  .cert-toolbar-inner {
+    padding: 0 14px;
+  }
+
+  .cert-form {
+    padding: 18px 14px 24px;
+  }
+}

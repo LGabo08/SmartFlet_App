@@ -1,0 +1,87 @@
+$primary:       #0b2c5d;
+$primary-light: #e8eef7;
+$text-main:     #1a1a2e;
+$text-muted:    #6b7280;
+$border:        #e2e8f0;
+$border-error:  #dc2626;
+$bg-page:       #f1f4f8;
+$white:         #ffffff;
+
+.crear-toolbar {
+  --background: #{$primary};
+  --color: #{$white};
+  .back-btn { --color: #{$white}; font-size: 0.85rem; font-weight: 500; }
+}
+
+.crear-page  { --background: #{$bg-page}; }
+.crear-panel { padding: 16px; }
+
+.crear-card {
+  background: $white;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba($primary, 0.1), 0 1px 4px rgba(0,0,0,0.06);
+  padding: 20px;
+}
+
+.crear-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  @media (max-width: 520px) { grid-template-columns: 1fr; }
+}
+
+.field {
+  display: flex; flex-direction: column; gap: 4px;
+
+  label {
+    font-size: 0.68rem; font-weight: 700;
+    color: $text-muted; text-transform: uppercase; letter-spacing: 0.06em;
+  }
+
+  ion-input, ion-select {
+    border: 1.5px solid $border; border-radius: 8px;
+    --padding-start: 10px; --padding-end: 10px;
+    --color: #{$text-main}; background: $white;
+    font-size: 0.88rem; min-height: 38px;
+    transition: border-color 0.2s;
+  }
+
+  &--error {
+    ion-input, ion-select { border-color: $border-error !important; }
+  }
+
+  &--full { grid-column: 1 / -1; }
+}
+
+.opcional {
+  font-size: 0.65rem; color: #9ca3af;
+  font-weight: 400; text-transform: none;
+  letter-spacing: 0; margin-left: 4px;
+}
+
+.error-msg {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 0.72rem; color: $border-error; font-weight: 500;
+  ion-icon { font-size: 0.85rem; flex-shrink: 0; }
+}
+
+.info-nota {
+  display: flex; align-items: flex-start; gap: 8px;
+  background: $primary-light; border-radius: 8px;
+  padding: 10px 12px; font-size: 0.8rem; color: $primary;
+  ion-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+  strong { font-weight: 700; }
+}
+
+.crear-actions {
+  display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;
+
+  .btn-save {
+    --background: #{$primary}; --color: #{$white};
+    --border-radius: 8px; font-weight: 600;
+  }
+  .btn-cancel {
+    --background: #f1f4f8; --color: #{$text-muted};
+    --border-radius: 8px; font-weight: 600;
+  }
+}

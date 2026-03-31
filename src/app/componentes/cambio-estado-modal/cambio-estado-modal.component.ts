@@ -29,6 +29,14 @@ export class CambioEstadoModalComponent {
   save() {
     const estadoActual = this.unidad?.estado || '';
 
+    // Validar que el nuevo estado esté en la lista de estados válidos
+    const estadosPermitidos = ['DISPONIBLE', 'NO_DISPONIBLE', 'BAJA', 'MANTENIMIENTO', ];
+    if (!estadosPermitidos.includes(this.nuevoEstado)) {
+      alert('El estado seleccionado no es válido');
+      return;
+    }
+
+    // Validaciones previas antes de guardar
     if (!this.nuevoEstado) {
       alert('Por favor, selecciona el nuevo estado');
       return;
@@ -44,6 +52,7 @@ export class CambioEstadoModalComponent {
       return;
     }
 
+    // Dispara el evento de dismiss para pasar los datos
     this.modalController.dismiss({
       estado_anterior: estadoActual,
       estado_nuevo: this.nuevoEstado,

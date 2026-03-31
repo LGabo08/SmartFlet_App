@@ -12,7 +12,7 @@ export class UnidadService {
 
   // Obtener todas las unidades
   getUnidades(): Observable<Unidad[]> {
-    return this.http.get<Unidad[]>(this.baseUrl);  // Directamente devolvemos el array
+    return this.http.get<Unidad[]>(this.baseUrl);
   }
 
   // Obtener una unidad por su ID
@@ -39,4 +39,56 @@ export class UnidadService {
   cambiarEstado(id: string, data: any): Observable<any> {
     return this.http.put<any>(`${this.baseUrl}/${id}/cambiar-estado`, data);
   }
+
+  // Obtener el historial de cambios de estado de la unidad
+  getHistorial(id: string): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/${id}/historial`);
+  }
+
+  // Obtener el historial de cambios de estado de la unidad
+  getHistorialEstado(id: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/${id}/historial-estado`);
+  }
+
+  // Obtener las licencias
+  getLicencias(): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/licencias`);
+  }
+
+  // Obtener las zonas
+  getZonas(): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/zonas`);  // Llamada a la API para obtener las zonas
+  }
+
+  getUnidadDetalle(id: number): Observable<any> {
+  return this.http.get<any>(`${this.baseUrl}/${id}/detalle`);
+}
+
+asignarOperador(id: number, idOperador: number): Observable<any> {
+  return this.http.post<any>(`${this.baseUrl}/${id}/asignar-operador`, { id_operador: idOperador });
+}
+
+quitarOperador(id: number): Observable<any> {
+  return this.http.post<any>(`${this.baseUrl}/${id}/quitar-operador`, {});
+}
+
+getHistorialZona(id: number, filtros?: any): Observable<any> {
+  return this.http.get<any>(`${this.baseUrl}/${id}/historial-zona`, { params: filtros ?? {} });
+}
+
+getHistorialEstadoFiltrado(id: number, filtros?: any): Observable<any> {
+  return this.http.get<any>(`${this.baseUrl}/${id}/historial-estado-filtrado`, { params: filtros ?? {} });
+}
+
+cambiarZona(id: number, data: { zona_nueva: number; motivo: string }): Observable<any> {
+  return this.http.put<any>(`${this.baseUrl}/${id}/cambiar-estado`, data);
+}
+
+cambiarZonaUnidad(id: number, data: { zona_nueva: number; motivo: string }): Observable<any> {
+  return this.http.post<any>(`${this.baseUrl}/${id}/cambiar-zona`, data);
+}
+
+getHistorialOperadores(id: number, filtros?: any): Observable<any> {
+  return this.http.get<any>(`${this.baseUrl}/${id}/historial-operadores`, { params: filtros ?? {} });
+}
 }

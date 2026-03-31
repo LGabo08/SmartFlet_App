@@ -1,0 +1,187 @@
+<ion-header>
+  <ion-toolbar class="crear-toolbar">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" class="back-btn">
+        <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+        Operadores
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Nuevo Operador</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="crear-page">
+  <div class="crear-panel">
+    <div class="crear-card">
+      <div class="crear-grid">
+
+        <!-- No. Empleado -->
+        <div class="field" [class.field--error]="errors.numero_empleado">
+          <label>No. Empleado *</label>
+          <ion-input
+            [(ngModel)]="form.numero_empleado"
+            (ionBlur)="validateField('numero_empleado')"
+            (ionInput)="validateField('numero_empleado')"
+            inputmode="numeric"
+            placeholder="Ej. 170922">
+          </ion-input>
+          <span class="error-msg" *ngIf="errors.numero_empleado">
+            <ion-icon name="alert-circle-outline"></ion-icon>
+            {{ errors.numero_empleado }}
+          </span>
+        </div>
+
+        <!-- Nombres -->
+        <div class="field" [class.field--error]="errors.nombres">
+          <label>Nombres *</label>
+          <ion-input
+            [(ngModel)]="form.nombres"
+            (ionBlur)="validateField('nombres')"
+            (ionInput)="validateField('nombres')"
+            placeholder="Nombres del operador">
+          </ion-input>
+          <span class="error-msg" *ngIf="errors.nombres">
+            <ion-icon name="alert-circle-outline"></ion-icon>
+            {{ errors.nombres }}
+          </span>
+        </div>
+
+        <!-- Apellidos -->
+        <div class="field" [class.field--error]="errors.apellidos">
+          <label>Apellidos *</label>
+          <ion-input
+            [(ngModel)]="form.apellidos"
+            (ionBlur)="validateField('apellidos')"
+            (ionInput)="validateField('apellidos')"
+            placeholder="Apellidos del operador">
+          </ion-input>
+          <span class="error-msg" *ngIf="errors.apellidos">
+            <ion-icon name="alert-circle-outline"></ion-icon>
+            {{ errors.apellidos }}
+          </span>
+        </div>
+
+        <!-- Zona -->
+        <div class="field">
+          <label>Zona Actual <span class="opcional">(opcional)</span></label>
+          <ion-select [(ngModel)]="form.fk_zona_actual"
+            interface="popover" placeholder="Selecciona una zona">
+            <ion-select-option [value]="null">Sin zona</ion-select-option>
+            <ion-select-option *ngFor="let z of zonas" [value]="z.id_zona">
+              {{ z.nombre_zona }}
+            </ion-select-option>
+          </ion-select>
+        </div>
+
+        <!-- Licencia -->
+        <div class="field">
+          <label>Licencia <span class="opcional">(opcional)</span></label>
+          <ion-select [(ngModel)]="form.fk_tipo_licencia"
+            interface="popover" placeholder="Selecciona una licencia">
+            <ion-select-option [value]="null">Sin licencia</ion-select-option>
+            <ion-select-option *ngFor="let l of licencias" [value]="l.id_licencia">
+              {{ l.descripcion_licencia }}
+            </ion-select-option>
+          </ion-select>
+        </div>
+
+        <!-- Vigencia Licencia -->
+        <div class="field" [class.field--error]="errors.vigencia_licencia">
+          <label>Vigencia Licencia <span class="opcional">(opcional)</span></label>
+          <input
+            type="date"
+            class="date-input"
+            [(ngModel)]="form.vigencia_licencia"
+            [min]="minFecha"
+            [max]="maxFecha"
+            (change)="validateField('vigencia_licencia')">
+          <span class="error-msg" *ngIf="errors.vigencia_licencia">
+            <ion-icon name="alert-circle-outline"></ion-icon>
+            {{ errors.vigencia_licencia }}
+          </span>
+        </div>
+
+        <!-- Estado -->
+        <div class="field" [class.field--error]="errors.estado_operador">
+          <label>Estado Inicial *</label>
+          <ion-select [(ngModel)]="form.estado_operador" interface="popover">
+            <ion-select-option value="DISPONIBLE">DISPONIBLE</ion-select-option>
+            <ion-select-option value="NO_DISPONIBLE">NO_DISPONIBLE</ion-select-option>
+            <ion-select-option value="INACTIVO">INACTIVO</ion-select-option>
+          </ion-select>
+          <span class="error-msg" *ngIf="errors.estado_operador">
+            <ion-icon name="alert-circle-outline"></ion-icon>
+            {{ errors.estado_operador }}
+          </span>
+        </div>
+
+        <!-- Cliente -->
+        <div class="field field--full">
+          <label>Cliente para Certificaciones <span class="opcional">(opcional)</span></label>
+          <ion-select [(ngModel)]="clienteSeleccionado"
+            (ionChange)="onClienteChange()"
+            interface="popover" placeholder="Selecciona un cliente">
+            <ion-select-option [value]="null">Sin cliente</ion-select-option>
+            <ion-select-option *ngFor="let c of clientes" [value]="c.id_cliente">
+              {{ c.nombre_cliente }}
+            </ion-select-option>
+          </ion-select>
+        </div>
+
+  <!-- Certificaciones -->
+<div class="field field--full" *ngIf="clienteSeleccionado"
+  [class.field--error]="errors.certificaciones">
+  <label>Certificaciones *</label>
+
+  <div *ngIf="loadingCerts" class="certs-loading">
+    Cargando certificaciones...
+  </div>
+
+  <div *ngIf="!loadingCerts && certificacionesFiltradas.length === 0" class="certs-empty">
+    Este cliente no tiene certificaciones registradas.
+  </div>
+
+  <div *ngIf="!loadingCerts && certificacionesFiltradas.length > 0" class="certs-list">
+    <div class="cert-item"
+      *ngFor="let c of certificacionesFiltradas"
+      (click)="toggleCertificacion(c.id_certificacion, {detail:{checked: !isCertSelected(c.id_certificacion)}})">
+      <div class="cert-check" [class.cert-check--active]="isCertSelected(c.id_certificacion)">
+        <ion-icon name="checkmark-outline" *ngIf="isCertSelected(c.id_certificacion)"></ion-icon>
+      </div>
+      <span class="cert-nombre">{{ c.nombre_certificacion }}</span>
+    </div>
+  </div>
+
+  <!-- Resumen de seleccionadas -->
+  <div class="certs-resumen" *ngIf="form.certificaciones.length > 0">
+    <ion-icon name="checkmark-circle-outline"></ion-icon>
+    {{ form.certificaciones.length }} certificación(es) seleccionada(s) en total
+  </div>
+
+  <span class="error-msg" *ngIf="errors.certificaciones">
+    <ion-icon name="alert-circle-outline"></ion-icon>
+    {{ errors.certificaciones }}
+  </span>
+</div>
+        <!-- Nota unidad -->
+        <div class="field field--full">
+          <div class="unidad-nota">
+            <ion-icon name="information-circle-outline"></ion-icon>
+            <span>La unidad se asigna desde la página de
+              <strong>Unidades</strong> una vez creado el operador.</span>
+          </div>
+        </div>
+
+      </div><!-- /crear-grid -->
+
+      <div class="crear-actions">
+        <ion-button class="btn-cancel" (click)="goBack()">Cancelar</ion-button>
+        <ion-button class="btn-save" (click)="save()">
+          <ion-icon name="person-outline" slot="start"></ion-icon>
+          Crear Operador
+        </ion-button>
+      </div>
+
+    </div>
+  </div>
+</ion-content>

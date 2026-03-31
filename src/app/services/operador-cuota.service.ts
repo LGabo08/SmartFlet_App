@@ -6,6 +6,8 @@ export interface OperadorCuota {
   id_op_cuota?: number;
   fk_operador: number;
   periodo: string;
+  fecha_inicio: string;
+  fecha_fin: string;  
   cuota_objetivo: number;
   cuota_realizada: number;
   cuota_restante?: number;
@@ -24,6 +26,10 @@ export class OperadorCuotaService {
     return this.http.get(`${this.apiUrl}/operadores/${idOperador}/cuotas`);
   }
 
+obtenerMovimientos(id_operador: number, periodo?: string): Observable<any> {
+  const params = periodo ? `?periodo=${periodo}` : '';
+  return this.http.get(`${this.apiUrl}/operadores/${id_operador}/movimientos${params}`);
+}
   getCuotaById(id: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/operador-cuotas/${id}`);
   }

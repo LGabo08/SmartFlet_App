@@ -41,4 +41,245 @@
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+
+
+/* =================================================================
+   AGREGAR ESTO EN src/global.scss
+   (los estilos de ion-modal DEBEN ser globales, no del componente)
+================================================================= */
+
+.viaje-modal {
+  --width: min(720px, calc(100vw - 40px));
+  --height: 580px;        /* ← cambia auto por px fijo */
+  --max-height: 88vh;
+  --border-radius: 20px;
+  --box-shadow: 0 32px 80px rgba(11, 42, 74, 0.2), 0 8px 24px rgba(0, 0, 0, 0.08);
+  --backdrop-opacity: 0.45;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Toolbar del modal */
+.viaje-modal ion-toolbar.modal-toolbar {
+  --background: #ffffff;
+  --border-color: #e6edf7;
+  --color: #01265c;
+  --padding-start: 20px;
+  --padding-end: 12px;
+  border-bottom: 1px solid #e6edf7;
+}
+
+.viaje-modal .modal-toolbar-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: #01265c;
+}
+
+.viaje-modal .modal-title-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #01265c;
+  flex-shrink: 0;
+}
+
+/* Botón cerrar del topbar */
+.viaje-modal .btn-modal-close {
+  --background: #f1f3f6;
+  --background-activated: #e5e7eb;
+  --background-hover: #e5e7eb;
+  --color: #374151;
+  --border-radius: 10px;
+  --border-width: 1px;
+  --border-style: solid;
+  --border-color: #d1d5db;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  height: 36px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+  margin: 4px 8px 4px 0;
+}
+.viaje-modal ion-content.modal-content {
+  --background: #ffffff;
+  height: 100%;
+}
+/* Contenido scrolleable del modal */
+.viaje-modal .modal-content {
+  --background: #ffffff;
+}
+
+/* Banner No. Viaje + Estado */
+.viaje-modal .modal-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f7faff;
+  border-bottom: 1px solid #e6edf7;
+  padding: 16px 24px;
+}
+
+.viaje-modal .modal-banner-label {
+  font-size: 11px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.45px;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.viaje-modal .modal-banner-numero {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: #01265c;
+  margin: 0;
+}
+
+/* Cuerpo del modal */
+.viaje-modal .modal-card {
+  padding: 20px 24px 22px;
+}
+
+.viaje-modal .modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+/* Campos */
+.viaje-modal .field {
+  display: grid;
+  gap: 5px;
+  padding: 13px 15px;
+  background: #ffffff;
+  border: 1px solid #e8eef7;
+  border-radius: 12px;
+}
+
+.viaje-modal .field--full {
+  grid-column: span 2;
+}
+
+.viaje-modal .field label {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.45px;
+  color: #6b7280;
+  font-weight: 700;
+}
+
+.viaje-modal .field p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Footer */
+.viaje-modal .modal-footer {
+  border-top: 1px solid #e6edf7;
+  padding-top: 18px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.viaje-modal .btn-close-footer {
+  --background: #01265c;
+  --background-activated: #0b2a4a;
+  --background-hover: #0b2a4a;
+  --color: #ffffff;
+  --border-radius: 12px;
+  --padding-start: 28px;
+  --padding-end: 28px;
+  height: 42px;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0.2px;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 760px) {
+  .viaje-modal {
+    --width: calc(100vw - 20px);
+    --border-radius: 16px;
+  }
+
+  .viaje-modal .modal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .viaje-modal .field--full {
+    grid-column: span 1;
+  }
+
+  .viaje-modal .modal-banner,
+  .viaje-modal .modal-card {
+    padding: 14px 16px;
+  }
+
+}
+
+.cert-modal {
+  --width: min(480px, calc(100vw - 32px));
+  --height: auto;
+  --max-height: 90vh;
+  --border-radius: 20px;
+  --backdrop-opacity: 0.45;
+  align-items: center;
+  justify-content: center;
+}
+
+.op-modal-wrap {
+  --width: min(720px, calc(100vw - 40px));
+  --height: 600px;
+  --max-height: 90vh;
+  --border-radius: 20px;
+  --backdrop-opacity: 0.45;
+  align-items: center;
+  justify-content: center;
+}
+
+.unidad-modal {
+  --width: min(460px, calc(100vw - 32px));
+  --height: auto;
+  --max-height: 85vh;
+  --border-radius: 20px;
+  --backdrop-opacity: 0.45;
+  align-items: center;
+  justify-content: center;
+}
+
+.change-modal-wrap {
+  --width: 100%;
+  --min-width: 100%;
+  --max-width: 100%;
+  --height: auto;
+  --max-height: 85vh;
+  --border-radius: 16px 16px 0 0;
+  --box-shadow: 0 -4px 24px rgba(0,0,0,0.12);
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.historial-modal {
+  --width: min(560px, calc(100vw - 32px));
+  --height: 580px;
+  --max-height: 88vh;
+  --border-radius: 20px;
+  --backdrop-opacity: 0.45;
+  align-items: center;
+  justify-content: center;
+}
+
+

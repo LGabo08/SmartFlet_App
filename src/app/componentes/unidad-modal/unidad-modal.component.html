@@ -1,0 +1,91 @@
+<ion-header class="un-modal-header">
+  <ion-toolbar class="un-modal-toolbar">
+    <div class="un-modal-topbar">
+      <div class="un-modal-title-group">
+        <div class="un-modal-icon">
+          <ion-icon name="bus-outline"></ion-icon>
+        </div>
+        <div>
+          <p class="un-modal-label">{{ isCreate ? 'Nueva unidad' : 'Modificando registro' }}</p>
+          <h2 class="un-modal-title">{{ isCreate ? 'Agregar Unidad' : 'Editar Unidad' }}</h2>
+        </div>
+      </div>
+      <ion-button fill="clear" class="un-close-btn" (click)="dismiss()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="un-modal-content">
+  <form (ngSubmit)="save()" class="un-modal-form">
+
+    <!-- Número Económico — siempre visible -->
+    <div class="un-field">
+      <label class="un-field-label">
+        <ion-icon name="pricetag-outline"></ion-icon>
+        Número Económico
+      </label>
+      <div class="un-input-wrap">
+        <input
+          class="un-input"
+          [(ngModel)]="form.numero_economico"
+          name="numero_economico"
+          placeholder="Ej. UN-101, UN-102..."
+          required
+        />
+      </div>
+    </div>
+
+    <!-- Estado — solo visible al CREAR -->
+    <div class="un-field" *ngIf="isCreate">
+      <label class="un-field-label">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        Estado inicial
+      </label>
+      <div class="un-select-wrap">
+        <select class="un-select" [(ngModel)]="form.estado" name="estado" required>
+          <option value="DISPONIBLE">Disponible</option>
+          <option value="NO_DISPONIBLE">No Disponible</option>
+          <option value="MANTENIMIENTO">En Mantenimiento</option>
+          <option value="BAJA">Baja</option>
+        </select>
+        <ion-icon name="chevron-down-outline" class="un-select-arrow"></ion-icon>
+      </div>
+    </div>
+
+    <!-- Zona — solo al crear -->
+    <div class="un-field" *ngIf="isCreate">
+      <label class="un-field-label">
+        <ion-icon name="location-outline"></ion-icon>
+        Zona
+      </label>
+      <div class="un-select-wrap">
+        <select class="un-select" [(ngModel)]="form.fk_zona_actual" name="fk_zona_actual" required>
+          <option value="" disabled>Selecciona una zona</option>
+          <option *ngFor="let zona of zonas" [value]="zona.id_zona">
+            {{ zona.nombre_zona }}
+          </option>
+        </select>
+        <ion-icon name="chevron-down-outline" class="un-select-arrow"></ion-icon>
+      </div>
+    </div>
+
+    <!-- Info de solo lectura al editar -->
+    <div class="un-readonly-block" *ngIf="!isCreate">
+      <ion-icon name="information-circle-outline"></ion-icon>
+      Para cambiar el estado de la unidad usa el botón <strong>Cambiar Estado</strong> desde el listado.
+    </div>
+
+    <!-- Botón guardar -->
+    <button type="submit" class="un-save-btn">
+      <ion-icon name="{{ isCreate ? 'add-circle-outline' : 'save-outline' }}"></ion-icon>
+      <span>{{ isCreate ? 'Guardar Nueva Unidad' : 'Actualizar Unidad' }}</span>
+    </button>
+
+    <button type="button" class="un-cancel-btn" (click)="dismiss()">
+      Cancelar
+    </button>
+
+  </form>
+</ion-content>

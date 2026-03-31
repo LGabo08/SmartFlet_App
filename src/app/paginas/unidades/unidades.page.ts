@@ -1,110 +1,152 @@
 import { Component, OnInit } from '@angular/core';
-import { UnidadService } from 'src/app/services/unidad.service';
-import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ModalController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
-import { CambioEstadoModalComponent } from 'src/app/componentes/cambio-estado-modal/cambio-estado-modal.component';
+import { Router } from '@angular/router';
+import { addIcons } from 'ionicons';
+import {
+  busOutline, addOutline, informationCircleOutline,
+  searchOutline, filterOutline, closeCircleOutline
+} from 'ionicons/icons';
+import { LoadingController, ToastController } from '@ionic/angular';
+import {
+  IonHeader, IonToolbar, IonTitle, IonContent, IonButton,
+  IonIcon, IonInput, IonSelect, IonSelectOption, IonBadge
+} from '@ionic/angular/standalone';
+
+import { UnidadService } from 'src/app/services/unidad.service';
+import { OperadorService } from 'src/app/services/operador.service';
 
 @Component({
   selector: 'app-unidades',
   standalone: true,
+  imports: [
+    CommonModule, FormsModule,
+    IonHeader, IonToolbar, IonTitle, IonContent,
+    IonButton, IonIcon, IonInput, IonSelect, IonSelectOption, 
+  ],
   templateUrl: './unidades.page.html',
   styleUrls: ['./unidades.page.scss'],
-  imports: [CommonModule, IonicModule, FormsModule],
 })
 export class UnidadesPage implements OnInit {
-  public unidades: any[] = [];
+
+  unidades: any[] = [];
+  unidadesFiltradas: any[] = [];
+  operadores: any[] = [];
+
+  busqueda = '';
+  filtroEstado = '';
+
+  estadosUnidad = ['DISPONIBLE', 'NO_DISPONIBLE', 'EN_VIAJE', 'MANTENIMIENTO', 'BAJA'];
 
   constructor(
-    private unidadService: UnidadService,
-    public router: Router,
-    private modalController: ModalController
-  ) {}
-
-  ngOnInit(): void {
-    this.getUnidades();
+    private unidadSvc: UnidadService,
+    private operadorSvc: OperadorService,
+    private router: Router,
+    private loadingCtrl: LoadingController,
+    private toastCtrl: ToastController,
+  ) {
+    addIcons({
+      busOutline, addOutline, informationCircleOutline,
+      searchOutline, filterOutline, closeCircleOutline
+    });
   }
 
-  getUnidades() {
-    this.unidadService.getUnidades().subscribe({
-      next: (response: any) => {
-        if (response.ok) {
-          this.unidades = response.unidades;
-        } else {
-          console.log('No se encontraron unidades.');
-        }
+  ngOnInit() {
+    this.loadData();
+  }
+
+  ionViewWillEnter() {
+  this.loadData();
+}
+
+  async loadData() {
+    const loading = await this.loadingCtrl.create({ message: 'Cargando unidades...' });
+    await loading.present();
+
+    this.operadorSvc.getOperadores().subscribe({
+      next: (res: any) => {
+        this.operadores = Array.isArray(res) ? res : (res?.operadores ?? []);
+      }
+    });
+
+    this.unidadSvc.getUnidades().subscribe({
+      next: async (res: any) => {
+        this.unidades = Array.isArray(res) ? res : (res?.unidades ?? []);
+        this.aplicarFiltros();
+        await loading.dismiss();
       },
-      error: (err) => {
-        console.error('Error al cargar unidades:', err);
-        alert('Error al cargar unidades');
+      error: async () => {
+        await loading.dismiss();
+        this.toast('No se pudieron cargar las unidades', 'danger');
       }
     });
   }
 
-  async openModal(unidad: any) {
-    const modal = await this.modalController.create({
-      component: CambioEstadoModalComponent,
-      componentProps: {
-        unidad: unidad
-      }
-    });
+  getOperadorId(idUnidad: number): number | null {
+  return this.operadores.find(o => o.fk_unidad_asignada === idUnidad)?.id_operador ?? null;
+}
 
-    await modal.present();
+goToOperador(idUnidad: number) {
+  const id = this.getOperadorId(idUnidad);
+  if (id) this.router.navigate(['operadores', id]);
+}
 
-    const { data } = await modal.onDidDismiss();
+  aplicarFiltros() {
+    let resultado = [...this.unidades];
 
-    if (!data) return;
-
-    const payload = {
-      estado_nuevo: data.estado_nuevo,
-      motivo: data.motivo
-    };
-
-    this.unidadService.cambiarEstado(unidad.id_unidad, payload).subscribe({
-      next: (response: any) => {
-        if (response?.ok) {
-          alert(response.msg || 'Estado actualizado correctamente');
-          this.getUnidades();
-        } else {
-          alert(response?.msg || 'No se pudo actualizar el estado');
-        }
-      },
-      error: (err) => {
-        console.error('Error al cambiar estado:', err);
-        alert(
-          err?.error?.msg ||
-          err?.error?.message ||
-          'Error al cambiar el estado de la unidad'
-        );
-      }
-    });
-  }
-
-  eliminarUnidad(id: string) {
-    if (confirm('¿Seguro que deseas eliminar esta unidad?')) {
-      this.unidadService.deleteUnidad(id).subscribe({
-        next: (response: any) => {
-          if (response.ok) {
-            this.getUnidades();
-          }
-        },
-        error: (err) => {
-          console.error('Error al eliminar unidad:', err);
-          alert('Error al eliminar unidad');
-        }
-      });
+    if (this.busqueda.trim()) {
+      const q = this.busqueda.trim().toLowerCase();
+      resultado = resultado.filter(u =>
+        u.numero_economico?.toLowerCase().includes(q) ||
+        String(u.id_unidad).includes(q) ||
+        this.getOperadorAsignado(u.id_unidad).toLowerCase().includes(q)
+      );
     }
+
+    if (this.filtroEstado) {
+      resultado = resultado.filter(u => u.estado === this.filtroEstado);
+    }
+
+    this.unidadesFiltradas = resultado;
   }
 
-  editarUnidad(id: string) {
-    this.router.navigate([`/editar-unidad/${id}`]);
+  limpiarFiltros() {
+    this.busqueda = '';
+    this.filtroEstado = '';
+    this.aplicarFiltros();
   }
 
-  verHistorial(unidad: any) {
-    // Aquí más adelante puedes abrir otra página o modal
-    // para consultar el historial de la tabla reporte
-    console.log('Ver historial de unidad:', unidad);
-    alert(`Aquí irá el historial de la unidad ${unidad.numero_economico}`);
+  get hayFiltrosActivos(): boolean {
+    return !!this.busqueda.trim() || !!this.filtroEstado;
+  }
+
+  getOperadorAsignado(idUnidad: number): string {
+    const op = this.operadores.find(o => o.fk_unidad_asignada === idUnidad);
+    if (!op) return 'Sin operador';
+    return `${op.nombres ?? ''} ${op.apellidos ?? ''}`.trim();
+  }
+
+  getEstadoBadge(estado: string): string {
+    const map: Record<string, string> = {
+      'DISPONIBLE':    'ok',
+      'NO_DISPONIBLE': 'warn',
+      'EN_VIAJE':      'travel',
+      'MANTENIMIENTO': 'mant',
+      'BAJA':          'off',
+    };
+    return map[estado] ?? '';
+  }
+
+  goToDetalle(id: number) {
+    this.router.navigate(['unidades', id]);
+  }
+
+  goToCrear() {
+    this.router.navigate(['paginas/unidad-crear']);
+  }
+
+  private async toast(message: string, color: 'success'|'warning'|'danger'|'medium' = 'medium') {
+    const t = await this.toastCtrl.create({ message, color, duration: 1600, position: 'top' });
+    await t.present();
   }
 }

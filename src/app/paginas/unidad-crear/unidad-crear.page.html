@@ -1,0 +1,112 @@
+<ion-header>
+  <ion-toolbar class="crear-toolbar">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" class="back-btn">
+        <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+        Unidades
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Nueva Unidad</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="crear-page">
+  <div class="crear-panel">
+    <div class="crear-card">
+      <div class="crear-grid">
+
+        <!-- ID Unidad -->
+        <div class="field" [class.field--error]="errors.id_unidad">
+          <label>ID Unidad *</label>
+          <ion-input
+            [(ngModel)]="form.id_unidad"
+            (ionBlur)="validateField('id_unidad')"
+            (ionInput)="validateField('id_unidad')"
+            inputmode="numeric"
+            placeholder="Ej. 101">
+          </ion-input>
+          <span class="error-msg" *ngIf="errors.id_unidad">
+            <ion-icon name="alert-circle-outline"></ion-icon>
+            {{ errors.id_unidad }}
+          </span>
+        </div>
+
+        <!-- No. Económico -->
+        <div class="field" [class.field--error]="errors.numero_economico">
+          <label>No. Económico *</label>
+          <ion-input
+            [(ngModel)]="form.numero_economico"
+            (ionBlur)="validateField('numero_economico')"
+            (ionInput)="validateField('numero_economico')"
+            placeholder="Ej. UN-101">
+          </ion-input>
+          <span class="error-msg" *ngIf="errors.numero_economico">
+            <ion-icon name="alert-circle-outline"></ion-icon>
+            {{ errors.numero_economico }}
+          </span>
+        </div>
+
+        <!-- Estado -->
+        <div class="field" [class.field--error]="errors.estado">
+          <label>Estado Inicial *</label>
+          <ion-select [(ngModel)]="form.estado" interface="popover">
+            <ion-select-option *ngFor="let e of estadosUnidad" [value]="e">
+              {{ e }}
+            </ion-select-option>
+          </ion-select>
+          <span class="error-msg" *ngIf="errors.estado">
+            <ion-icon name="alert-circle-outline"></ion-icon>
+            {{ errors.estado }}
+          </span>
+        </div>
+
+        <!-- Zona -->
+        <div class="field" [class.field--error]="errors.fk_zona_actual">
+          <label>Zona *</label>
+          <ion-select [(ngModel)]="form.fk_zona_actual"
+            (ionChange)="validateField('fk_zona_actual')"
+            interface="popover" placeholder="Selecciona una zona">
+            <ion-select-option *ngFor="let z of zonas" [value]="z.id_zona">
+              {{ z.nombre_zona }}
+            </ion-select-option>
+          </ion-select>
+          <span class="error-msg" *ngIf="errors.fk_zona_actual">
+            <ion-icon name="alert-circle-outline"></ion-icon>
+            {{ errors.fk_zona_actual }}
+          </span>
+        </div>
+
+        <!-- Licencia -->
+        <div class="field field--full">
+          <label>Licencia Requerida <span class="opcional">(opcional)</span></label>
+          <ion-select [(ngModel)]="form.fk_licencia_requerida"
+            interface="popover" placeholder="Selecciona una licencia">
+            <ion-select-option [value]="null">Sin licencia</ion-select-option>
+            <ion-select-option *ngFor="let l of licencias" [value]="l.id_licencia">
+              {{ l.descripcion_licencia }}
+            </ion-select-option>
+          </ion-select>
+        </div>
+
+        <!-- Nota operador -->
+        <div class="field field--full">
+          <div class="info-nota">
+            <ion-icon name="information-circle-outline"></ion-icon>
+            <span>El operador se asigna desde el <strong>Detalle de la Unidad</strong>
+              una vez creada.</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="crear-actions">
+        <ion-button class="btn-cancel" (click)="goBack()">Cancelar</ion-button>
+        <ion-button class="btn-save" (click)="save()">
+          <ion-icon name="bus-outline" slot="start"></ion-icon>
+          Crear Unidad
+        </ion-button>
+      </div>
+
+    </div>
+  </div>
+</ion-content>

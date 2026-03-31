@@ -1,36 +1,88 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Editar Certificación</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="onClose()">Cerrar</ion-button>
-    </ion-buttons>
+<ion-header class="cert-header">
+  <ion-toolbar class="cert-toolbar">
+    <div class="cert-toolbar-inner">
+      <div class="cert-title-group">
+        <div class="cert-icon">
+          <ion-icon name="ribbon-outline"></ion-icon>
+        </div>
+        <div>
+          <p class="cert-label">Modificando registro</p>
+          <h2 class="cert-title">Editar Certificación</h2>
+        </div>
+      </div>
+      <ion-button fill="clear" class="cert-close-btn" (click)="onClose()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </div>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <form [formGroup]="certificacionesForm">
+<ion-content class="cert-content">
+  <form [formGroup]="certificacionesForm" class="cert-form">
+
     <!-- Nombre -->
-    <ion-item>
-      <ion-label position="floating">Nombre</ion-label>
-      <ion-input formControlName="nombre" type="text"></ion-input>
-    </ion-item>
+    <div class="cert-field">
+      <label class="cert-field-label">
+        <ion-icon name="document-text-outline"></ion-icon>
+        Nombre de la certificación
+      </label>
+      <div class="cert-input-wrap" [class.invalid]="certificacionesForm.get('nombre')?.invalid && certificacionesForm.get('nombre')?.touched">
+        <input
+          class="cert-input"
+          formControlName="nombre"
+          type="text"
+          placeholder="Ej. ISO 9001, Norma 3..."
+        />
+      </div>
+      <p class="cert-error" *ngIf="certificacionesForm.get('nombre')?.invalid && certificacionesForm.get('nombre')?.touched">
+        El nombre es requerido
+      </p>
+    </div>
 
     <!-- Descripción -->
-    <ion-item>
-      <ion-label position="floating">Descripción</ion-label>
-      <ion-input formControlName="descripcion" type="text"></ion-input>
-    </ion-item>
+    <div class="cert-field">
+      <label class="cert-field-label">
+        <ion-icon name="reader-outline"></ion-icon>
+        Descripción
+      </label>
+      <div class="cert-input-wrap" [class.invalid]="certificacionesForm.get('descripcion')?.invalid && certificacionesForm.get('descripcion')?.touched">
+        <textarea
+          class="cert-input cert-textarea"
+          formControlName="descripcion"
+          placeholder="Describe el alcance o requisitos..."
+          rows="3"
+        ></textarea>
+      </div>
+      <p class="cert-error" *ngIf="certificacionesForm.get('descripcion')?.invalid && certificacionesForm.get('descripcion')?.touched">
+        La descripción es requerida
+      </p>
+    </div>
 
     <!-- Cliente -->
-    <ion-item>
-      <ion-label position="floating">Cliente</ion-label>
-      <ion-select formControlName="cliente">
-        <ion-select-option *ngFor="let cliente of clientes" [value]="cliente.id_cliente">
-          {{ cliente.nombre_cliente }}
-        </ion-select-option>
-      </ion-select>
-    </ion-item>
+    <div class="cert-field">
+      <label class="cert-field-label">
+        <ion-icon name="business-outline"></ion-icon>
+        Cliente asignado
+      </label>
+      <div class="cert-select-wrap" [class.invalid]="certificacionesForm.get('cliente')?.invalid && certificacionesForm.get('cliente')?.touched">
+        <select class="cert-select" formControlName="cliente">
+          <option value="" disabled>Selecciona un cliente...</option>
+          <option *ngFor="let cliente of clientes" [value]="cliente.id_cliente">
+            {{ cliente.nombre_cliente }}
+          </option>
+        </select>
+        <ion-icon name="chevron-down-outline" class="cert-select-arrow"></ion-icon>
+      </div>
+      <p class="cert-error" *ngIf="certificacionesForm.get('cliente')?.invalid && certificacionesForm.get('cliente')?.touched">
+        Selecciona un cliente
+      </p>
+    </div>
 
-    <ion-button expand="full" (click)="onSave()" class="save-button">Guardar Cambios</ion-button>
+    <!-- Botón guardar -->
+    <button type="button" class="cert-save-btn" (click)="onSave()">
+      <ion-icon name="checkmark-circle-outline"></ion-icon>
+      <span>Guardar Cambios</span>
+    </button>
+
   </form>
 </ion-content>

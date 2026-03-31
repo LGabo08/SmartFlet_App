@@ -1,0 +1,99 @@
+<div class="confirm-backdrop" (click)="onCancel()">
+  <div class="confirm-sheet" (click)="$event.stopPropagation()">
+
+    <!-- Cabecera -->
+    <div class="confirm-header">
+      <div class="confirm-header__icon">
+        <ion-icon name="file-tray-full-outline"></ion-icon>
+      </div>
+      <div class="confirm-header__text">
+        <span class="confirm-header__label">Confirmar registro</span>
+        <h2 class="confirm-header__title">Resumen del Viaje</h2>
+      </div>
+      <button class="confirm-close" (click)="onCancel()">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+
+    <!-- Cuerpo: resumen de datos -->
+    <div class="confirm-body">
+
+      <div class="confirm-section">
+        <span class="confirm-section__badge">Identificación</span>
+        <div class="confirm-grid">
+          <div class="confirm-row">
+            <span class="confirm-key">No. Embarque</span>
+            <span class="confirm-val">{{ data.numero_viaje }}</span>
+          </div>
+          <div class="confirm-row">
+            <span class="confirm-key">Ruta</span>
+            <span class="confirm-val">{{ data.rutaNombre }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="confirm-section">
+        <span class="confirm-section__badge">Unidad y Licencia</span>
+        <div class="confirm-grid">
+          <div class="confirm-row">
+            <span class="confirm-key">Config. Unidad</span>
+            <span class="confirm-val">{{ data.configuracion_unidad }}</span>
+          </div>
+          <div class="confirm-row">
+            <span class="confirm-key">Licencia</span>
+            <span class="confirm-val">{{ data.licenciaNombre }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="confirm-section">
+        <span class="confirm-section__badge">Carga y Cliente</span>
+        <div class="confirm-grid">
+          <div class="confirm-row">
+            <span class="confirm-key">Producto</span>
+            <span class="confirm-val">{{ data.producto }}</span>
+          </div>
+          <div class="confirm-row">
+            <span class="confirm-key">Cliente</span>
+            <span class="confirm-val">{{ data.clienteNombre }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="confirm-section">
+        <span class="confirm-section__badge">Certificaciones</span>
+        <div class="confirm-tags">
+          <span class="confirm-tag" *ngFor="let cert of data.certificacionesNombres">
+            {{ cert }}
+          </span>
+          <span class="confirm-tag confirm-tag--empty"
+            *ngIf="!data.certificacionesNombres || data.certificacionesNombres.length === 0">
+            Sin certificaciones
+          </span>
+        </div>
+      </div>
+
+      <div class="confirm-section">
+        <span class="confirm-section__badge">Pago</span>
+        <div class="confirm-pago">
+          <span class="confirm-pago__label">Pago del Operador</span>
+          <span class="confirm-pago__amount">{{ data.pago_operador | currency:'MXN':'symbol-narrow':'1.2-2' }}</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Pie: acciones -->
+    <div class="confirm-footer">
+      <button class="confirm-btn confirm-btn--cancel" (click)="onCancel()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+        Regresar
+      </button>
+      <button class="confirm-btn confirm-btn--ok" (click)="onConfirm()" [disabled]="saving">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        {{ saving ? 'Guardando...' : 'Confirmar y Agregar' }}
+      </button>
+    </div>
+
+  </div>
+</div>

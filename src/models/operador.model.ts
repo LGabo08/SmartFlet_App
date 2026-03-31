@@ -7,7 +7,7 @@ export interface Operador {
   fk_zona_actual: number;
   fk_tipo_licencia: number;
   vigencia_licencia: string; // DATE -> string ISO (ej: "2026-03-02")
-  estado_operador: 'DISPONIBLE' | 'NO_DISPONIBLE' | 'INACTIVO' | string;
+  estado_operador: 'DISPONIBLE' | 'NO_DISPONIBLE' | 'INACTIVO' |'EN_VIAJE'| string;
   fk_unidad_asignada: number | null;
 }
 

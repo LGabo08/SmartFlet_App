@@ -1,0 +1,280 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap');
+
+:host {
+  --navy:   #01265c;
+  --accent: #2563eb;
+  --line:   #e4ecf7;
+  --bg:     #f8faff;
+  --text:   #0f172a;
+  --muted:  #64748b;
+  --radius: 14px;
+}
+
+/* ── Header ──────────────────────────────── */
+.hist-header { box-shadow: none; }
+
+.hist-toolbar {
+  --background:    #ffffff;
+  --border-color:  var(--line);
+  --padding-start: 0;
+  --padding-end:   0;
+  --min-height:    72px;
+  border-bottom: 1px solid var(--line);
+}
+
+.hist-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 72px;
+}
+
+.hist-title-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.hist-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  ion-icon {
+    font-size: 22px;
+    color: var(--accent);
+  }
+}
+
+.hist-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10.5px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--muted);
+  margin: 0 0 2px;
+}
+
+.hist-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--navy);
+  margin: 0;
+}
+
+.hist-close-btn {
+  --color: var(--muted);
+  --padding-start: 0;
+  --padding-end: 0;
+  width: 36px;
+  height: 36px;
+  --background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+
+  ion-icon { font-size: 20px; }
+}
+
+/* ── Contenido ───────────────────────────── */
+.hist-content { --background: var(--bg); }
+
+.hist-body {
+  padding: 20px 20px 28px;
+}
+
+.hist-summary {
+  margin-bottom: 20px;
+}
+
+.hist-count {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 4px 12px;
+}
+
+/* ── Timeline ────────────────────────────── */
+.hist-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.hist-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+/* Línea y punto */
+.hist-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  padding-top: 4px;
+}
+
+.hist-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 2px var(--accent);
+  flex-shrink: 0;
+}
+
+.hist-connector {
+  width: 2px;
+  flex: 1;
+  min-height: 20px;
+  background: var(--line);
+  margin: 4px 0;
+}
+
+/* Card del item */
+.hist-card {
+  flex: 1;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 13px 15px;
+  margin-bottom: 12px;
+}
+
+.hist-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.hist-estados {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.hist-arrow {
+  font-size: 14px;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.hist-fecha {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+
+  ion-icon { font-size: 13px; }
+}
+
+/* Motivo */
+.hist-motivo {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: #374151;
+  line-height: 1.5;
+  padding-top: 8px;
+  border-top: 1px solid #f1f5fb;
+
+  ion-icon {
+    font-size: 15px;
+    color: var(--muted);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+}
+
+/* ── Pills de estado ─────────────────────── */
+.estado-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+}
+
+.pill-disponible {
+  background: #e8f7ef;
+  color: #0a6b3b;
+  border-color: #bfe8d0;
+}
+
+.pill-no_disponible {
+  background: #fff4e3;
+  color: #8a5a00;
+  border-color: #ffd7a1;
+}
+
+.pill-mantenimiento {
+  background: #e8f0ff;
+  color: #1e4ed8;
+  border-color: #bfd2ff;
+}
+
+.pill-baja {
+  background: #fef2f2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+/* ── Empty state ─────────────────────────── */
+.hist-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  text-align: center;
+
+  ion-icon {
+    font-size: 52px;
+    color: #c7d6f7;
+    margin-bottom: 16px;
+  }
+
+  h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--navy);
+    margin: 0 0 8px;
+  }
+
+  p {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--muted);
+    margin: 0;
+  }
+}

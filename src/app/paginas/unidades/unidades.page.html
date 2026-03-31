@@ -4,86 +4,132 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding un-page">
-  <section class="un-panel">
-    <div class="un-panel__head">
-      <div>
-        <h2>Gestión de unidades</h2>
-        <p>Consulta, edita y administra el estado operativo de cada unidad.</p>
-      </div>
+<ion-content class="un-page">
+  <div class="un-container">
 
-      <ion-button class="btn-add" (click)="router.navigate(['/crear-unidad'])">
-        Agregar Nueva Unidad
+    <!-- ── CABECERA ── -->
+    <div class="un-head">
+      <div>
+        <h2>Gestión de Unidades</h2>
+        <span class="un-count">{{ unidadesFiltradas.length }} unidad(es)</span>
+      </div>
+      <ion-button class="btn-nuevo" (click)="goToCrear()">
+        <ion-icon name="add-outline" slot="start"></ion-icon>
+        Nueva Unidad
       </ion-button>
     </div>
 
-    <div class="un-board">
-      <ng-container *ngIf="unidades.length > 0; else noHayUnidades">
-        <div class="un-grid">
-          <article class="un-card" *ngFor="let unidad of unidades">
-            <div class="un-card__top">
-              <div class="un-card__identity">
-                <div class="un-avatar"></div>
+    <!-- ── FILTROS ── -->
+    <div class="un-filtros">
+      <div class="filtro-search">
+        <ion-icon name="search-outline"></ion-icon>
+        <ion-input
+          [(ngModel)]="busqueda"
+          (ionInput)="aplicarFiltros()"
+          placeholder="Buscar por número económico, ID u operador...">
+        </ion-input>
+        <ion-icon name="close-circle-outline" class="clear-icon"
+          *ngIf="busqueda" (click)="busqueda = ''; aplicarFiltros()">
+        </ion-icon>
+      </div>
 
-                <div>
-                  <h3>{{ unidad.numero_economico }}</h3>
-                  <p>ID Unidad: {{ unidad.id_unidad }}</p>
-                </div>
-              </div>
+      <div class="filtro-estado">
+        <ion-select [(ngModel)]="filtroEstado"
+          (ionChange)="aplicarFiltros()"
+          interface="popover" placeholder="Todos los estados">
+          <ion-select-option value="">Todos</ion-select-option>
+          <ion-select-option *ngFor="let e of estadosUnidad" [value]="e">{{ e }}</ion-select-option>
+        </ion-select>
+      </div>
 
-              <span
-                class="estado-badge"
-                [ngClass]="{
-                  'estado-disponible': unidad.estado === 'DISPONIBLE',
-                  'estado-no_disponible': unidad.estado === 'NO_DISPONIBLE',
-                  'estado-mantenimiento': unidad.estado === 'MANTENIMIENTO',
-                  'estado-baja': unidad.estado === 'BAJA'
-                }"
-              >
-                {{ unidad.estado }}
-              </span>
-            </div>
-
-            <div class="un-card__body">
-              <div class="un-meta">
-                <span class="un-meta__k">Estado actual</span>
-                <span class="un-meta__v">{{ unidad.estado }}</span>
-              </div>
-
-              <div class="un-meta">
-                <span class="un-meta__k">Número económico</span>
-                <span class="un-meta__v">{{ unidad.numero_economico }}</span>
-              </div>
-            </div>
-
-            <div class="un-card__actions">
-              <ion-button class="btn-primary" (click)="openModal(unidad)">
-                Cambiar Estado
-              </ion-button>
-
-              <ion-button class="btn-secondary" (click)="verHistorial(unidad)">
-                Historial
-              </ion-button>
-
-              <ion-button class="btn-dark" (click)="editarUnidad(unidad.id_unidad)">
-                Editar
-              </ion-button>
-
-              <ion-button class="btn-danger" (click)="eliminarUnidad(unidad.id_unidad)">
-                Eliminar
-              </ion-button>
-            </div>
-          </article>
-        </div>
-      </ng-container>
-
-      <ng-template #noHayUnidades>
-        <div class="empty-state">
-          <div class="empty-state__icon">🚚</div>
-          <h3>No hay unidades disponibles</h3>
-          <p>Cuando registres una unidad, aparecerá aquí para su gestión.</p>
-        </div>
-      </ng-template>
+      <ion-button *ngIf="hayFiltrosActivos" class="btn-limpiar" (click)="limpiarFiltros()">
+        Limpiar
+      </ion-button>
     </div>
-  </section>
+
+    <!-- ── TABLA (desktop) ── -->
+    <div class="un-table-wrap">
+      <table class="un-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>ID</th>
+            <th>No. Económico</th>
+            <th>Estado</th>
+            <th>Zona</th>
+            <th>Operador Asignado</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let u of unidadesFiltradas">
+            <td>
+              <div class="un-avatar">
+                <ion-icon name="bus-outline"></ion-icon>
+              </div>
+            </td>
+            <td><span class="un-id">#{{ u.id_unidad }}</span></td>
+            <td><strong>{{ u.numero_economico }}</strong></td>
+            <td>
+              <span class="estado-badge" [ngClass]="getEstadoBadge(u.estado)">
+                {{ u.estado }}
+              </span>
+            </td>
+            <td>{{ u.nombre_zona ?? '—' }}</td>
+            <td>
+  <span class="op-asignado link-cell"
+    [class.clickable]="getOperadorId(u.id_unidad)"
+    (click)="goToOperador(u.id_unidad)">
+    {{ getOperadorAsignado(u.id_unidad) }}
+  </span>
+</td>
+            <td class="text-center">
+              <ion-button fill="clear" class="icon-btn"
+                (click)="goToDetalle(u.id_unidad)">
+                <ion-icon name="information-circle-outline"></ion-icon>
+              </ion-button>
+            </td>
+          </tr>
+          <tr *ngIf="unidadesFiltradas.length === 0">
+            <td colspan="7" class="empty-row">
+              <div class="empty-state">
+                <ion-icon name="bus-outline"></ion-icon>
+                <p>No se encontraron unidades.</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ── CARDS (mobile) ── -->
+    <div class="un-cards">
+      <div class="un-card" *ngFor="let u of unidadesFiltradas"
+        (click)="goToDetalle(u.id_unidad)">
+        <div class="un-card__top">
+          <div class="un-avatar">
+            <ion-icon name="bus-outline"></ion-icon>
+          </div>
+          <div class="un-card__info">
+            <strong>{{ u.numero_economico }}</strong>
+            <span class="un-id">#{{ u.id_unidad }}</span>
+          </div>
+          <span class="estado-badge" [ngClass]="getEstadoBadge(u.estado)">
+            {{ u.estado }}
+          </span>
+        </div>
+        <div class="un-card__body">
+          <span class="un-meta">
+            <b>Operador:</b> {{ getOperadorAsignado(u.id_unidad) }}
+          </span>
+        </div>
+      </div>
+
+      <div class="empty-state" *ngIf="unidadesFiltradas.length === 0">
+        <ion-icon name="bus-outline"></ion-icon>
+        <p>No se encontraron unidades.</p>
+      </div>
+    </div>
+
+  </div>
 </ion-content>

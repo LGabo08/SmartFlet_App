@@ -1,0 +1,342 @@
+$primary:       #0b2c5d;
+$primary-light: #e8eef7;
+$text-main:     #1a1a2e;
+$text-muted:    #6b7280;
+$border:        #e2e8f0;
+$bg-page:       #f1f4f8;
+$white:         #ffffff;
+
+.det-toolbar {
+  --background: #{$primary};
+  --color: #{$white};
+  .back-btn { --color: #{$white}; font-size: 0.85rem; font-weight: 500; }
+}
+
+.det-page { --background: #{$bg-page}; }
+
+// ── Hero ──────────────────────────────────────────────────────────────────
+.det-hero {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  background: $white;
+  border-bottom: 1px solid $border;
+  box-shadow: 0 2px 8px rgba($primary, 0.08);
+  flex-wrap: wrap;
+
+  &__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    h2 { margin: 0; font-size: 1.1rem; font-weight: 700; color: $text-main; }
+  }
+
+  &__actions { margin-left: auto; }
+}
+
+.det-avatar {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: $primary;
+  color: $white;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 3px 10px rgba($primary, 0.35);
+  ion-icon { font-size: 1.4rem; }
+}
+
+.un-id {
+  font-size: 0.75rem; color: $text-muted; font-family: monospace;
+}
+
+// ── Estado badges ─────────────────────────────────────────────────────────
+.estado-badge {
+  display: inline-block;
+  padding: 2px 10px; border-radius: 20px;
+  font-size: 0.68rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.05em;
+
+  &.ok    { background: #dcfce7; color: #166534; }
+  &.warn  { background: #fef9c3; color: #854d0e; }
+  &.travel{ background: #dbeafe; color: #1e40af; }
+  &.mant  { background: #f3e8ff; color: #6b21a8; }
+  &.off   { background: #fee2e2; color: #991b1b; }
+}
+
+.btn-estado {
+  --background: #{$primary};
+  --color: #{$white};
+  --border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+// ── Segment ───────────────────────────────────────────────────────────────
+.det-segment {
+  --background: #{$white};
+  border-bottom: 1px solid $border;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+
+  ion-segment-button {
+    --color: #{$text-muted};
+    --color-checked: #{$primary};
+    --indicator-color: #{$primary};
+    font-size: 0.78rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+}
+
+// ── Panel ─────────────────────────────────────────────────────────────────
+.det-panel { padding: 16px; }
+
+.det-card {
+  background: $white;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba($primary, 0.1), 0 1px 4px rgba(0,0,0,0.06);
+  padding: 18px;
+  margin-bottom: 12px;
+}
+
+// ── Grid ──────────────────────────────────────────────────────────────────
+.det-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  @media (max-width: 520px) { grid-template-columns: 1fr; }
+}
+
+.field {
+  display: flex; flex-direction: column; gap: 4px;
+
+  label {
+    font-size: 0.68rem; font-weight: 700;
+    color: $text-muted; text-transform: uppercase; letter-spacing: 0.06em;
+  }
+
+  ion-input, ion-select {
+    border: 1.5px solid $border; border-radius: 8px;
+    --padding-start: 10px; --padding-end: 10px;
+    --color: #{$text-main}; background: $white;
+    font-size: 0.88rem; min-height: 38px;
+  }
+
+  &--full { grid-column: 1 / -1; }
+}
+
+.readonly-pill {
+  background: $bg-page; border-radius: 8px;
+  border: 1.5px solid $border; padding: 7px 11px;
+  font-size: 0.88rem; color: $text-main;
+  min-height: 36px; display: flex; align-items: center;
+}
+
+// ── Acciones ──────────────────────────────────────────────────────────────
+.det-actions {
+  display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;
+
+  .btn-edit   { --background: #{$primary}; --color: #{$white}; --border-radius: 8px; font-weight: 600; }
+  .btn-save   { --background: #166534; --color: #{$white}; --border-radius: 8px; font-weight: 600; }
+  .btn-cancel { --background: #f1f4f8; --color: #{$text-muted}; --border-radius: 8px; font-weight: 600; }
+}
+
+// ── Operador card ─────────────────────────────────────────────────────────
+.card-section-title {
+  margin: 0 0 14px;
+  font-size: 0.88rem; font-weight: 700;
+  color: $text-main; text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.operador-info {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+
+.operador-avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: $primary; color: $white;
+  font-size: 1rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.operador-data {
+  flex: 1; display: flex; flex-direction: column; gap: 3px;
+  strong { font-size: 0.95rem; color: $text-main; }
+}
+
+.op-emp { font-size: 0.72rem; color: $text-muted; font-family: monospace; }
+
+.btn-quitar {
+  --background: #fee2e2; --color: #991b1b; --border-radius: 8px;
+  font-size: 0.82rem; font-weight: 600;
+}
+
+.operador-empty {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+
+.btn-asignar {
+  --background: #{$primary}; --color: #{$white}; --border-radius: 8px;
+  font-size: 0.82rem; font-weight: 600;
+}
+
+// ── Filtros ───────────────────────────────────────────────────────────────
+.filter-card { padding: 14px 16px; }
+
+.filter-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  @media (max-width: 520px) { grid-template-columns: 1fr; }
+}
+
+.filter-actions {
+  display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px;
+
+  .btn-apply { --background: #{$primary}; --color: #{$white}; --border-radius: 8px; font-weight: 600; font-size: 0.85rem; }
+  .btn-clear { --background: #f1f4f8; --color: #{$text-muted}; --border-radius: 8px; font-weight: 600; font-size: 0.85rem; }
+}
+
+.historial-meta {
+  font-size: 0.75rem; color: $text-muted;
+  padding: 0 4px 10px; font-style: italic;
+}
+
+// ── Timeline ──────────────────────────────────────────────────────────────
+.timeline { display: flex; flex-direction: column; }
+
+.timeline-item {
+  display: flex; gap: 12px; position: relative;
+
+  &::before {
+    content: ''; position: absolute;
+    left: 7px; top: 24px; width: 2px; bottom: 0;
+    background: $border;
+  }
+  &:last-child::before { display: none; }
+}
+
+.timeline-dot {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: $primary; flex-shrink: 0; margin-top: 16px;
+  border: 3px solid $white; box-shadow: 0 0 0 2px $primary;
+}
+
+.timeline-card {
+  background: $white; border-radius: 10px;
+  padding: 12px 14px; margin-bottom: 12px; flex: 1;
+  box-shadow: 0 3px 12px rgba($primary, 0.1);
+}
+
+.timeline-states {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  ion-icon { font-size: 1rem; color: $text-muted; }
+}
+
+.zone-pill {
+  background: #e0e7ff; color: #3730a3;
+  padding: 2px 10px; border-radius: 20px;
+  font-size: 0.73rem; font-weight: 600;
+  &--new { background: #dcfce7; color: #166534; }
+}
+
+.timeline-motivo { margin: 6px 0 4px; font-size: 0.82rem; color: $text-muted; }
+.timeline-fecha  { font-size: 0.7rem; color: #9ca3af; }
+.nombre-coordinador { font-size: 0.72rem; color: $primary; font-weight: 600; margin-top: 2px; display: block; }
+
+// ── Empty state ───────────────────────────────────────────────────────────
+.empty-state {
+  text-align: center; padding: 48px 0;
+  color: #9ca3af; font-size: 0.9rem;
+}
+
+// ── Modales ───────────────────────────────────────────────────────────────
+.change-modal-wrap { --height: auto; --border-radius: 16px 16px 0 0; align-items: flex-end; }
+
+.change-modal {
+  padding: 20px;
+
+  h3 { margin: 0 0 16px; font-size: 1rem; font-weight: 700; color: $text-main; }
+
+  .modal-field {
+    display: flex; flex-direction: column; gap: 4px; margin-bottom: 14px;
+
+    label { font-size: 0.68rem; font-weight: 700; color: $text-muted; text-transform: uppercase; letter-spacing: 0.06em; }
+
+    ion-select, ion-textarea {
+      border: 1.5px solid $border; border-radius: 8px;
+      --padding-start: 10px; --padding-end: 10px;
+      --color: #{$text-main}; background: $white; font-size: 0.88rem;
+    }
+  }
+
+  .modal-confirm-text { font-size: 0.88rem; color: $text-muted; margin-bottom: 16px; }
+
+  .modal-actions {
+    display: flex; gap: 10px; justify-content: flex-end; margin-top: 8px;
+
+    .btn-confirm     { --background: #{$primary}; --color: #{$white}; --border-radius: 8px; font-weight: 600; }
+    .btn-cancel-modal{ --background: #f1f4f8; --color: #{$text-muted}; --border-radius: 8px; font-weight: 600; }
+    .btn-danger      { --background: #fee2e2; --color: #991b1b; --border-radius: 8px; font-weight: 600; }
+  }
+}
+
+
+.field-action {
+  display: flex; align-items: center; gap: 8px;
+  .readonly-pill { flex: 1; }
+  .btn-change {
+    --background: #{$primary-light};
+    --color: #{$primary};
+    --border-radius: 8px;
+    --padding-start: 10px;
+    --padding-end: 10px;
+    height: 36px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+}
+
+.en-viaje-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 16px 0;
+  padding: 10px 14px;
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  color: #92400e;
+  font-size: 0.85rem;
+  font-weight: 500;
+
+  ion-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    color: #f59e0b;
+  }
+}
+.historial-op-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+
+  .toggle-icon { font-size: 1.1rem; color: $text-muted; }
+  &:hover .toggle-icon { color: $primary; }
+}
+
+.op-tipo-badge {
+  display: inline-block;
+  padding: 2px 10px; border-radius: 20px;
+  font-size: 0.68rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.05em;
+
+  &--asignacion { background: #dcfce7; color: #166534; }
+  &--baja       { background: #fee2e2; color: #991b1b; }
+}
+
+.op-nombre    { font-size: 0.88rem; font-weight: 600; color: $text-main; }
+.op-emp-num   { font-size: 0.72rem; color: $text-muted; font-family: monospace; }

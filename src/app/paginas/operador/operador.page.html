@@ -8,186 +8,236 @@
 
   <section class="op-panel">
     <div class="op-panel__head">
-      <h2>Listado de operadores</h2>
-    </div>
+  <div>
+    <h2>Listado de operadores</h2>
+    <span class="op-count">{{ operadores.length }} operador(es)</span>
+  </div>
+  <ion-button class="btn-nuevo" (click)="openCreate()">
+    <ion-icon name="add-outline" slot="start"></ion-icon>
+    Nuevo Operador
+  </ion-button>
+</div>
 
     <div class="op-board">
+      <div class="op-table-wrapper">
+        <table class="op-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>No. Empleado</th>
+              <th>Nombres</th>
+              <th>Apellidos</th>
+              <th>Unidad</th>
+              <th>Zona</th>
+              <th>Estado</th>
+              <th>Cuota Objetivo</th>
+              <th>Cuota Restante</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let o of operadores">
 
-      <ion-list class="op-list">
-        <ion-item *ngFor="let o of operadores" class="op-row">
-          <ion-label class="op-row__label">
+              <td class="td-avatar">
+                <div class="op-avatar">
+                  {{ o.nombres.charAt(0) }}{{ o.apellidos.charAt(0) }}
+                </div>
+              </td>
 
-            <div class="op-row__grid">
-              <div class="op-avatar"></div>
-
-              <div class="op-col">
-                <span class="op-k">No. Empleado</span>
+              <td data-label="No. Empleado">
                 <span class="op-v">{{ o.numero_empleado }}</span>
-              </div>
+              </td>
 
-              <div class="op-col">
-                <span class="op-k">Nombres</span>
+              <td data-label="Nombres">
                 <span class="op-v">{{ o.nombres }}</span>
-              </div>
+              </td>
 
-              <div class="op-col">
-                <span class="op-k">Apellidos</span>
+              <td data-label="Apellidos">
                 <span class="op-v">{{ o.apellidos }}</span>
-              </div>
+              </td>
 
-              <div class="op-col">
-                <span class="op-k">Vigencia Licencia</span>
-                <span class="op-v">{{ o.vigencia_licencia }}</span>
-              </div>
-
-              <div class="op-col">
-                <span class="op-k">Estado</span>
-                <span class="op-v">
-                  <span class="badge"
-                        [class.ok]="o.estado_operador==='DISPONIBLE'"
-                        [class.warn]="o.estado_operador==='NO_DISPONIBLE'"
-                        [class.off]="o.estado_operador==='INACTIVO'">
-                    {{ o.estado_operador }}
-                  </span>
+              <td data-label="Unidad">
+               <span class="op-v link-cell"
+                  [class.clickable]="o.fk_unidad_asignada"
+                  (click)="o.fk_unidad_asignada && goToUnidad(o.fk_unidad_asignada)">
+                   {{ getUnidadNombre(o.fk_unidad_asignada) }}
                 </span>
-              </div>
+              </td>
+              <td data-label="Zona">
+                <span class="op-v">{{ getZonaNombre(o.fk_zona_actual) }}</span>
+              </td>
 
-              <div class="op-actions">
-              <ion-button fill="clear" class="icon-btn icon-btn--quota" (click)="goToCuotas(o)">
-              <ion-icon name="wallet-outline"></ion-icon>
-              </ion-button>
+              <td data-label="Estado">
+                <span class="badge"
+                  [class.ok]="o.estado_operador === 'DISPONIBLE'"
+                  [class.warn]="o.estado_operador === 'NO_DISPONIBLE'"
+                  [class.travel]="o.estado_operador === 'EN_VIAJE'"
+                  [class.off]="o.estado_operador === 'INACTIVO'"
+                  [class.assigned]="o.estado_operador === 'ASIGNADO'"
+                  >
+                  {{ o.estado_operador }}
+                </span>
+              </td>
 
-                <ion-button fill="clear" class="icon-btn" (click)="openInfo(o.id_operador)">
-                  <ion-icon name="information-circle-outline"></ion-icon>
-                </ion-button>
-              </div>
+              <!-- Cuota Objetivo -->
+              <td data-label="Cuota Objetivo">
+                <span class="op-v cuota-valor">
+                  {{ getCuotaObjetivo(o.id_operador) }}
+                </span>
+              </td>
 
-            </div>
+              <!-- Cuota Restante con badge de estado -->
+              <td data-label="Cuota Restante">
+                <div class="cuota-cell">
+                  <span class="op-v cuota-valor">
+                    {{ getCuotaRestante(o.id_operador) }}
+                  </span>
+                  <span class="badge-cuota"
+                    [class.cuota-activa]="getEstadoCuota(o.id_operador) === 'ACTIVA'"
+                    [class.cuota-baja]="getEstadoCuota(o.id_operador) === 'BAJA'"
+                    [class.cuota-agotada]="getEstadoCuota(o.id_operador) === 'AGOTADA'"
+                    [class.cuota-sin]="getEstadoCuota(o.id_operador) === 'SIN_CONFIGURAR'"
+                    *ngIf="getEstadoCuota(o.id_operador)">
+                    {{ getEstadoCuota(o.id_operador) }}
+                  </span>
+                </div>
+              </td>
 
-          </ion-label>
-        </ion-item>
-      </ion-list>
+              <td data-label="Acciones" class="text-center">
+                <div class="op-actions">
+                  <ion-button fill="clear" class="icon-btn icon-btn--quota" (click)="goToCuotas(o)">
+                    <ion-icon name="wallet-outline"></ion-icon>
+                  </ion-button>
+                  <ion-button fill="clear" class="icon-btn" (click)="openInfo(o.id_operador)">
+                    <ion-icon name="information-circle-outline"></ion-icon>
+                  </ion-button>
+                </div>
+              </td>
+            </tr>
 
-      <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button class="fab" (click)="openCreate()">
-          <ion-icon name="add"></ion-icon>
-        </ion-fab-button>
-      </ion-fab>
-
+            <tr *ngIf="operadores.length === 0">
+              <td colspan="10" class="empty-state">No hay operadores registrados.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </section>
 
-  <!-- MODAL: Info / Edit / Create -->
-  <ion-modal [isOpen]="showModal" (didDismiss)="closeModal()">
+
+  <!-- MODAL -->
+  <ion-modal [isOpen]="showModal" (didDismiss)="closeModal()" [canDismiss]="true" [backdropDismiss]="true" [cssClass]="'op-modal-wrap'">
     <ng-template>
-
-      <ion-content class="op-modal">
-
-        <div class="modal-shell">
-          <div class="modal-topbar">
-            <div class="modal-title">
-              {{ isCreate ? 'Nuevo Operador' : (editMode ? 'Editar Operador' : 'Detalle Operador') }}
-            </div>
-
-            <ion-button fill="clear" class="icon-btn" (click)="closeModal()">
-              <ion-icon name="close-outline"></ion-icon>
+      <ion-header>
+        <ion-toolbar class="modal-toolbar">
+          <ion-title class="modal-toolbar-title">
+            {{ isCreate ? 'Nuevo Operador' : (editMode ? 'Editar Operador' : 'Detalle Operador') }}
+          </ion-title>
+          <ion-buttons slot="end">
+            <ion-button class="btn-modal-close" (click)="closeModal()">
+              <ion-icon slot="start" name="close-outline"></ion-icon>
+              Cerrar
             </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="modal-content">
+        <div class="modal-card">
+          <div class="modal-avatar">
+            {{ form.nombres.charAt(0) }}{{ form.apellidos.charAt(0) }}
           </div>
 
-          <div class="modal-card">
-            <div class="modal-avatar"></div>
-
-            <div class="modal-grid">
-
-              <div class="field">
-                <label>Nombres</label>
-                <ion-input [disabled]="!editMode" [(ngModel)]="form.nombres"></ion-input>
-              </div>
-
-              <div class="field">
-                <label>Apellidos</label>
-                <ion-input [disabled]="!editMode" [(ngModel)]="form.apellidos"></ion-input>
-              </div>
-
-              <div class="field">
-                <label>No. Empleado</label>
-                <ion-input [disabled]="!editMode" [(ngModel)]="form.numero_empleado"></ion-input>
-              </div>
-
-              <div class="field">
-                <label>Vigencia Licencia</label>
-                <ion-datetime
-                  [disabled]="!editMode"
-                  [(ngModel)]="form.vigencia_licencia"
-                  displayFormat="YYYY-MM-DD"
-                  placeholder="Selecciona la vigencia"
-                ></ion-datetime>
-              </div>
-
-              <div class="field">
-                <label>Licencia</label>
-                <ion-select *ngIf="editMode" [(ngModel)]="form.fk_tipo_licencia" interface="popover">
-                  <ion-select-option value="" disabled>Selecciona una licencia</ion-select-option>
-                  <ion-select-option *ngFor="let licencia of licencias" [value]="licencia.id_licencia">
-                    {{ licencia.descripcion_licencia }}
-                  </ion-select-option>
-                </ion-select>
-              </div>
-
-              <div class="field">
-                <label>Estado del Operador</label>
-                <ion-select [disabled]="!editMode" [(ngModel)]="form.estado_operador" interface="popover">
-                  <ion-select-option value="DISPONIBLE">DISPONIBLE</ion-select-option>
-                  <ion-select-option value="NO_DISPONIBLE">NO_DISPONIBLE</ion-select-option>
-                  <ion-select-option value="INACTIVO">INACTIVO</ion-select-option>
-                </ion-select>
-              </div>
-
-              <div class="field">
-                <label>Unidad Asignada</label>
-
-                <div *ngIf="!editMode" class="readonly-pill">
-                  {{ getUnidadNombre(form.fk_unidad_asignada) }}
-                </div>
-
-                <ion-select *ngIf="editMode" [(ngModel)]="form.fk_unidad_asignada" interface="popover">
-                  <ion-select-option [value]="null">Sin unidad</ion-select-option>
-                  <ion-select-option *ngFor="let u of unidades" [value]="u.id_unidad">
-                    {{ u.numero_economico }}
-                  </ion-select-option>
-                </ion-select>
-              </div>
-
-              <div class="field">
-                <label>Certificaciones</label>
-
-                <ion-select *ngIf="editMode" [(ngModel)]="form.certificaciones" interface="popover" multiple="true">
-                  <ion-select-option *ngFor="let c of certificaciones" [value]="c.id_certificacion">
-                    {{ c.nombre_certificacion }}
-                  </ion-select-option>
-                </ion-select>
-              </div>
-
+          <div class="modal-grid">
+            <div class="field">
+              <label>Zona Actual</label>
+              <ion-select *ngIf="editMode" [(ngModel)]="form.fk_zona_actual" interface="popover">
+                <ion-select-option value="" disabled>Selecciona una zona</ion-select-option>
+                <ion-select-option *ngFor="let zona of zonas" [value]="zona.id_zona">
+                  {{ zona.nombre_zona }}
+                </ion-select-option>
+              </ion-select>
+              <div *ngIf="!editMode" class="readonly-pill">{{ getZonaNombre(form.fk_zona_actual) }}</div>
             </div>
 
-            <ion-button *ngIf="!isCreate && !editMode" class="edit-fab" (click)="enableEdit()">
-              <ion-icon name="create-outline"></ion-icon>
-            </ion-button>
-
-            <div class="modal-actions" *ngIf="editMode">
-              <ion-button class="btn-cancel" (click)="cancelEdit()">Cancelar</ion-button>
-              <ion-button class="btn-save" (click)="save()">Guardar</ion-button>
+            <div class="field">
+              <label>Nombres</label>
+              <ion-input [disabled]="!editMode" [(ngModel)]="form.nombres"></ion-input>
             </div>
 
-            <div class="modal-actions" *ngIf="!editMode">
-              <ion-button class="btn-close" (click)="closeModal()">Cerrar</ion-button>
+            <div class="field">
+              <label>Apellidos</label>
+              <ion-input [disabled]="!editMode" [(ngModel)]="form.apellidos"></ion-input>
             </div>
 
+            <div class="field">
+              <label>No. Empleado</label>
+              <ion-input [disabled]="!editMode" [(ngModel)]="form.numero_empleado"></ion-input>
+            </div>
+
+            <div class="field">
+              <label>Vigencia Licencia</label>
+              <ion-datetime
+                [disabled]="!editMode"
+                [(ngModel)]="form.vigencia_licencia"
+                displayFormat="YYYY-MM-DD"
+                placeholder="Selecciona la vigencia">
+              </ion-datetime>
+            </div>
+
+            <div class="field">
+              <label>Licencia</label>
+              <div *ngIf="!editMode" class="readonly-pill">{{ getLicenciaDescripcion(form.fk_tipo_licencia ?? 0) }}</div>
+              <ion-select *ngIf="editMode" [(ngModel)]="form.fk_tipo_licencia" interface="popover">
+                <ion-select-option value="" disabled>Selecciona una licencia</ion-select-option>
+                <ion-select-option *ngFor="let licencia of licencias" [value]="licencia.id_licencia">
+                  {{ licencia.descripcion_licencia }}
+                </ion-select-option>
+              </ion-select>
+            </div>
+
+            <div class="field">
+              <label>Estado del Operador</label>
+              <ion-select [disabled]="!editMode" [(ngModel)]="form.estado_operador" interface="popover">
+                <ion-select-option value="DISPONIBLE">DISPONIBLE</ion-select-option>
+                <ion-select-option value="NO_DISPONIBLE">NO_DISPONIBLE</ion-select-option>
+                <ion-select-option value="INACTIVO">INACTIVO</ion-select-option>
+                <ion-select-option value="EN_VIAJE">EN_VIAJE</ion-select-option>
+              </ion-select>
+            </div>
+
+            <div class="field">
+              <label>Unidad Asignada</label>
+              <div *ngIf="!editMode" class="readonly-pill">{{ getUnidadNombre(form.fk_unidad_asignada) }}</div>
+              <ion-select *ngIf="editMode" [(ngModel)]="form.fk_unidad_asignada" interface="popover">
+                <ion-select-option [value]="null">Sin unidad</ion-select-option>
+                <ion-select-option *ngFor="let u of unidades" [value]="u.id_unidad">
+                  {{ u.numero_economico }}
+                </ion-select-option>
+              </ion-select>
+            </div>
+
+            <div class="field field--full">
+              <label>Certificaciones</label>
+              <div *ngIf="!editMode" class="readonly-pill">{{ getCertificacionNombre(form.certificaciones[0]) }}</div>
+              <ion-select *ngIf="editMode" [(ngModel)]="form.certificaciones" interface="popover" multiple="true">
+                <ion-select-option *ngFor="let c of certificaciones" [value]="c.id_certificacion">
+                  {{ c.nombre_certificacion }}
+                </ion-select-option>
+              </ion-select>
+            </div>
+          </div>
+
+          <ion-button *ngIf="!isCreate && !editMode" class="edit-fab" (click)="enableEdit()">
+            <ion-icon name="create-outline"></ion-icon>
+          </ion-button>
+
+          <div class="modal-actions" *ngIf="editMode">
+            <ion-button class="btn-cancel-modal" (click)="cancelEdit()">Cancelar</ion-button>
+            <ion-button class="btn-save" (click)="save()">Guardar</ion-button>
           </div>
         </div>
-
       </ion-content>
-
     </ng-template>
   </ion-modal>
 

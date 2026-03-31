@@ -1,0 +1,271 @@
+$primary:       #0b2c5d;
+$primary-light: #e8eef7;
+$text-main:     #1a1a2e;
+$text-muted:    #6b7280;
+$border:        #e2e8f0;
+$bg-page:       #f1f4f8;
+$white:         #ffffff;
+
+.det-toolbar {
+  --background: #{$primary};
+  --color: #{$white};
+  .back-btn { --color: #{$white}; font-size: 0.85rem; font-weight: 500; }
+}
+
+.det-page { --background: #{$bg-page}; }
+
+.det-hero {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  background: $white;
+  border-bottom: 1px solid $border;
+  box-shadow: 0 2px 8px rgba($primary, 0.08);
+
+  &__info {
+    display: flex; flex-direction: column; gap: 3px;
+    h2 { margin: 0; font-size: 1.1rem; font-weight: 700; color: $text-main; }
+  }
+}
+
+.det-avatar {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: $primary; color: $white;
+  font-size: 1.2rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; box-shadow: 0 3px 10px rgba($primary, 0.35);
+}
+
+.emp-num { font-size: 0.75rem; color: $text-muted; font-family: monospace; letter-spacing: 0.04em; }
+
+// ── Badges ────────────────────────────────────────────────────────────────
+.badge {
+  display: inline-block;
+  padding: 2px 10px; border-radius: 20px;
+  font-size: 0.68rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.05em;
+
+  &.ok       { background: #dcfce7; color: #166534; }
+  &.warn     { background: #fef9c3; color: #854d0e; }
+  &.travel   { background: #dbeafe; color: #1e40af; }
+  &.off      { background: #fee2e2; color: #991b1b; }
+  &.assigned { background: #fef3c7; color: #92400e; } // ✅ ASIGNADO
+}
+
+.det-segment {
+  --background: #{$white};
+  border-bottom: 1px solid $border;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+
+  ion-segment-button {
+    --color: #{$text-muted};
+    --color-checked: #{$primary};
+    --indicator-color: #{$primary};
+    font-size: 0.78rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+}
+
+.det-panel { padding: 16px; }
+
+.det-card {
+  background: $white; border-radius: 14px;
+  box-shadow: 0 4px 16px rgba($primary, 0.1), 0 1px 4px rgba(0,0,0,0.06);
+  padding: 18px; margin-bottom: 12px;
+}
+
+.det-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  @media (max-width: 520px) { grid-template-columns: 1fr; }
+}
+
+.field {
+  display: flex; flex-direction: column; gap: 3px;
+
+  label {
+    font-size: 0.68rem; font-weight: 700;
+    color: $text-muted; text-transform: uppercase; letter-spacing: 0.06em;
+  }
+
+  ion-input, ion-select {
+    border: 1.5px solid $border; border-radius: 8px;
+    --padding-start: 10px; --padding-end: 10px;
+    --color: #{$text-main}; background: $white;
+    font-size: 0.88rem; min-height: 38px;
+    &:focus-within { border-color: $primary; }
+  }
+
+  ion-datetime {
+    border: 1.5px solid $border; border-radius: 8px;
+    --padding-start: 10px; font-size: 0.88rem; background: $white;
+  }
+
+  &--full { grid-column: 1 / -1; }
+}
+
+.readonly-pill {
+  background: $bg-page; border-radius: 8px; border: 1.5px solid $border;
+  padding: 7px 11px; font-size: 0.88rem; color: $text-main;
+  min-height: 36px; display: flex; align-items: center;
+}
+
+.field-action {
+  display: flex; align-items: center; gap: 8px;
+  .readonly-pill { flex: 1; }
+  .btn-change {
+    --background: #{$primary-light}; --color: #{$primary};
+    --border-radius: 8px; --padding-start: 10px; --padding-end: 10px;
+    height: 36px; font-size: 0.78rem; font-weight: 600; flex-shrink: 0;
+  }
+}
+
+// ── Mensaje campo bloqueado ───────────────────────────────────────────────
+.field-blocked-msg {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 0.72rem; color: #92400e; font-weight: 600; margin-top: 2px;
+  ion-icon { font-size: 0.8rem; }
+}
+
+.det-actions {
+  display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;
+  .btn-edit   { --background: #{$primary}; --color: #{$white}; --border-radius: 8px; font-weight: 600; }
+  .btn-save   { --background: #166534; --color: #{$white}; --border-radius: 8px; font-weight: 600; }
+  .btn-cancel { --background: #f1f4f8; --color: #{$text-muted}; --border-radius: 8px; font-weight: 600; }
+}
+
+.timeline { display: flex; flex-direction: column; }
+
+.timeline-item {
+  display: flex; gap: 12px; position: relative;
+  &::before {
+    content: ''; position: absolute; left: 7px; top: 24px;
+    width: 2px; bottom: 0; background: $border;
+  }
+  &:last-child::before { display: none; }
+}
+
+.timeline-dot {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: $primary; flex-shrink: 0; margin-top: 16px;
+  border: 3px solid $white; box-shadow: 0 0 0 2px $primary;
+}
+
+.timeline-card {
+  background: $white; border-radius: 10px; padding: 12px 14px;
+  margin-bottom: 12px; flex: 1;
+  box-shadow: 0 3px 12px rgba($primary, 0.1), 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.timeline-states {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  ion-icon { font-size: 1rem; color: $text-muted; }
+}
+
+.zone-pill {
+  background: #e0e7ff; color: #3730a3;
+  padding: 2px 10px; border-radius: 20px;
+  font-size: 0.73rem; font-weight: 600;
+  &--new { background: #dcfce7; color: #166534; }
+}
+
+.timeline-motivo { margin: 6px 0 4px; font-size: 0.82rem; color: $text-muted; }
+.timeline-fecha  { font-size: 0.7rem; color: #9ca3af; }
+.nombre-coordinador { font-size: 0.72rem; color: $primary; font-weight: 600; margin-top: 2px; display: block; }
+
+.empty-state { text-align: center; padding: 48px 0; color: #9ca3af; font-size: 0.9rem; }
+
+.change-modal-wrap { --height: auto; --border-radius: 16px 16px 0 0; align-items: flex-end; }
+
+.change-modal {
+  padding: 20px;
+  h3 { margin: 0 0 16px; font-size: 1rem; font-weight: 700; color: $text-main; }
+
+  .modal-field {
+    display: flex; flex-direction: column; gap: 4px; margin-bottom: 14px;
+    label { font-size: 0.68rem; font-weight: 700; color: $text-muted; text-transform: uppercase; letter-spacing: 0.06em; }
+    ion-select, ion-textarea {
+      border: 1.5px solid $border; border-radius: 8px;
+      --padding-start: 10px; --padding-end: 10px;
+      --color: #{$text-main}; background: $white; font-size: 0.88rem;
+    }
+    ion-textarea { min-height: 80px; }
+  }
+
+  .modal-actions {
+    display: flex; gap: 10px; justify-content: flex-end; margin-top: 8px;
+    ion-button {
+      --border-radius: 8px; font-weight: 600;
+      &.btn-confirm     { --background: #{$primary}; --color: #{$white}; }
+      &.btn-cancel-modal{ --background: #f1f4f8; --color: #{$text-muted}; }
+    }
+  }
+}
+
+.filter-card { margin-bottom: 12px; padding: 14px 16px; }
+
+.filter-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  @media (max-width: 520px) { grid-template-columns: 1fr; }
+}
+
+.filter-actions {
+  display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px;
+  .btn-apply { --background: #{$primary}; --color: #{$white}; --border-radius: 8px; font-weight: 600; font-size: 0.85rem; }
+  .btn-clear { --background: #f1f4f8; --color: #{$text-muted}; --border-radius: 8px; font-weight: 600; font-size: 0.85rem; }
+}
+
+.historial-meta { font-size: 0.75rem; color: $text-muted; padding: 0 4px 10px; font-style: italic; }
+
+.unidad-card {
+  background: $bg-page; border: 1.5px solid $border; border-radius: 10px;
+  padding: 12px 14px; display: flex; flex-direction: column; gap: 8px;
+  &__head { display: flex; align-items: center; gap: 10px; }
+}
+
+.unidad-numero { font-size: 0.95rem; font-weight: 700; color: $text-main; font-family: monospace; }
+.unidad-hint   { font-size: 0.75rem; color: $text-muted; strong { color: $primary; } }
+.unidad-empty  { display: flex; flex-direction: column; gap: 4px; }
+
+.unidad-advertencias { display: flex; flex-direction: column; gap: 6px; }
+
+.advertencia {
+  display: flex; align-items: flex-start; gap: 7px;
+  padding: 8px 10px; border-radius: 8px; font-size: 0.8rem; line-height: 1.4;
+  ion-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+  &--error   { background: #fee2e2; color: #991b1b; ion-icon { color: #dc2626; } }
+  &--warning { background: #fef9c3; color: #854d0e; ion-icon { color: #ca8a04; } }
+}
+
+.certs-loading, .certs-empty {
+  font-size: 0.82rem; color: $text-muted; padding: 8px 12px;
+  background: $bg-page; border-radius: 8px; border: 1.5px dashed $border;
+}
+
+.certs-list {
+  display: flex; flex-direction: column; gap: 6px;
+  max-height: 220px; overflow-y: auto;
+  border: 1.5px solid $border; border-radius: 8px; padding: 8px; background: $white;
+}
+
+.cert-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: 6px; cursor: pointer; transition: background 0.15s;
+  &:hover { background: $primary-light; }
+}
+
+.cert-check {
+  width: 20px; height: 20px; border-radius: 4px; border: 2px solid $border;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all 0.15s;
+  ion-icon { font-size: 0.85rem; color: $white; }
+  &--active { background: $primary; border-color: $primary; }
+}
+
+.cert-nombre { font-size: 0.85rem; color: $text-main; }
+
+.certs-resumen {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.78rem; color: $primary; font-weight: 600; margin-top: 6px;
+  ion-icon { font-size: 1rem; }
+}

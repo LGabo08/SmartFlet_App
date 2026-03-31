@@ -10,7 +10,7 @@ export interface Viaje {
   fk_operador: number;
   fk_unidad: number;
   fecha_salida: string;
-  fecha_llegada: string;
+  fecha_llegada: string;  // Nuevo campo
   estado: string;
   pago_operador: number;
 

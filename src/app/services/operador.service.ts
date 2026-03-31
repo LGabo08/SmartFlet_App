@@ -56,4 +56,40 @@ getLicencias(): Observable<any> {
     map(res => res?.licencias ?? []) // Aseguramos que se regrese la propiedad `licencias` de la respuesta.
   );
 }
+
+getHistorialEstado(idOperador: number, filtros?: {
+  estado_anterior?: string;
+  estado_nuevo?: string;
+  fecha_desde?: string;
+  fecha_hasta?: string;
+}): Observable<any> {
+  let params: any = {};
+  if (filtros?.estado_anterior) params.estado_anterior = filtros.estado_anterior;
+  if (filtros?.estado_nuevo)    params.estado_nuevo    = filtros.estado_nuevo;
+  if (filtros?.fecha_desde)     params.fecha_desde     = filtros.fecha_desde;
+  if (filtros?.fecha_hasta)     params.fecha_hasta     = filtros.fecha_hasta;
+  return this.http.get(`${this.baseUrl}/${idOperador}/historial-estado`, { params });
+}
+
+getHistorialZona(idOperador: number, filtros?: {
+  zona_anterior?: string;
+  zona_nueva?: string;
+  fecha_desde?: string;
+  fecha_hasta?: string;
+}): Observable<any> {
+  let params: any = {};
+  if (filtros?.zona_anterior) params.zona_anterior = filtros.zona_anterior;
+  if (filtros?.zona_nueva)    params.zona_nueva    = filtros.zona_nueva;
+  if (filtros?.fecha_desde)   params.fecha_desde   = filtros.fecha_desde;
+  if (filtros?.fecha_hasta)   params.fecha_hasta   = filtros.fecha_hasta;
+  return this.http.get(`${this.baseUrl}/${idOperador}/historial-zona`, { params });
+}
+
+cambiarEstadoOperador(idOperador: number, payload: { estado_nuevo: string; motivo: string }): Observable<any> {
+  return this.http.post(`${this.baseUrl}/${idOperador}/cambiar-estado`, payload);
+}
+
+cambiarZonaOperador(idOperador: number, payload: { zona_nueva: number; motivo: string }): Observable<any> {
+  return this.http.post(`${this.baseUrl}/${idOperador}/cambiar-zona`, payload);
+}
 }

@@ -1,0 +1,509 @@
+<ion-header>
+  <ion-toolbar class="det-toolbar">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" class="back-btn">
+        <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+        Operadores
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Detalle Operador</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="det-page">
+
+  <!-- ── HERO ── -->
+  <div class="det-hero">
+    <div class="det-avatar">{{ getInitials() }}</div>
+    <div class="det-hero__info">
+      <h2>{{ form.nombres }} {{ form.apellidos }}</h2>
+      <span class="emp-num"># {{ form.numero_empleado }}</span>
+      <span class="badge"
+        [class.ok]="form.estado_operador === 'DISPONIBLE'"
+        [class.warn]="form.estado_operador === 'NO_DISPONIBLE'"
+        [class.travel]="form.estado_operador === 'EN_VIAJE'"
+        [class.off]="form.estado_operador === 'INACTIVO'">
+        {{ form.estado_operador }}
+      </span>
+    </div>
+  </div>
+
+  <!-- ── TABS ── -->
+  <ion-segment [value]="activeTab" (ionChange)="onTabChange($event)" class="det-segment">
+    <ion-segment-button value="info">
+      <ion-icon name="person-outline"></ion-icon>
+      <ion-label>Información</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="historial-estado">
+      <ion-icon name="swap-horizontal-outline"></ion-icon>
+      <ion-label>Estados</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="historial-zona">
+      <ion-icon name="location-outline"></ion-icon>
+      <ion-label>Zonas</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <!-- ══════════════════════════════════════════════════
+       TAB: INFORMACIÓN
+  ══════════════════════════════════════════════════ -->
+  <div *ngIf="activeTab === 'info'" class="det-panel">
+    <div class="det-card">
+      <div class="det-grid">
+
+        <div class="field">
+          <label>No. Empleado</label>
+          <ion-input *ngIf="editMode" [(ngModel)]="form.numero_empleado"></ion-input>
+          <div *ngIf="!editMode" class="readonly-pill">{{ form.numero_empleado }}</div>
+        </div>
+
+        <div class="field">
+          <label>Nombres</label>
+          <ion-input *ngIf="editMode" [(ngModel)]="form.nombres"></ion-input>
+          <div *ngIf="!editMode" class="readonly-pill">{{ form.nombres }}</div>
+        </div>
+
+        <div class="field">
+          <label>Apellidos</label>
+          <ion-input *ngIf="editMode" [(ngModel)]="form.apellidos"></ion-input>
+          <div *ngIf="!editMode" class="readonly-pill">{{ form.apellidos }}</div>
+        </div>
+
+       <!-- ZONA ACTUAL -->
+<div class="field">
+  <label>Zona Actual</label>
+  <div class="field-action">
+    <div class="readonly-pill">{{ getZonaNombre(form.fk_zona_actual) }}</div>
+    <ion-button class="btn-change"
+      [disabled]="!puedeModificarZona"
+      (click)="openModalZona()">
+      <ion-icon name="pencil-outline" slot="start"></ion-icon>
+      Cambiar
+    </ion-button>
+  </div>
+  <span class="field-blocked-msg"
+    *ngIf="!puedeModificarZona">
+    <ion-icon name="lock-closed-outline"></ion-icon>
+    {{ form.estado_operador === 'EN_VIAJE' ? 'En viaje activo' : 'Viaje asignado' }}
+  </span>
+</div>
+
+<!-- ESTADO DEL OPERADOR -->
+<div class="field">
+  <label>Estado del Operador</label>
+  <div class="field-action">
+    <div class="readonly-pill">
+      <span class="badge"
+        [class.ok]="form.estado_operador === 'DISPONIBLE'"
+        [class.warn]="form.estado_operador === 'NO_DISPONIBLE'"
+        [class.travel]="form.estado_operador === 'EN_VIAJE'"
+        [class.off]="form.estado_operador === 'INACTIVO'"
+        [class.assigned]="form.estado_operador === 'ASIGNADO'">
+        {{ form.estado_operador }}
+      </span>
+    </div>
+    <ion-button class="btn-change"
+      [disabled]="!puedeModificarEstado"
+      (click)="openModalEstado()">
+      <ion-icon name="pencil-outline" slot="start"></ion-icon>
+      Cambiar
+    </ion-button>
+  </div>
+  <span class="field-blocked-msg"
+    *ngIf="!puedeModificarEstado">
+    <ion-icon name="lock-closed-outline"></ion-icon>
+    {{ form.estado_operador === 'EN_VIAJE' ? 'En viaje activo' : 'Viaje asignado' }}
+  </span>
+</div>
+<!-- UNIDAD ASIGNADA — solo lectura con estado y advertencias -->
+<div class="field field--full">
+  <label>Unidad Asignada</label>
+
+  <!-- Sin unidad -->
+  <div *ngIf="!form.fk_unidad_asignada" class="unidad-empty">
+    <span class="readonly-pill">Sin unidad asignada</span>
+    <span class="unidad-hint">Para asignar una unidad ve a la página de <strong>Unidades</strong>.</span>
+  </div>
+
+  <!-- Con unidad -->
+  <div *ngIf="form.fk_unidad_asignada" class="unidad-card">
+    <div class="unidad-card__head">
+      <span class="unidad-numero">{{ unidadInfo?.numero_economico ?? getUnidadNombre(form.fk_unidad_asignada) }}</span>
+      <span class="badge" [ngClass]="unidadBadgeClass" *ngIf="unidadInfo">
+        {{ unidadInfo.estado }}
+      </span>
+    </div>
+
+    <!-- Advertencias -->
+    <div class="unidad-advertencias" *ngIf="advertenciasUnidad.length > 0">
+      <div class="advertencia"
+        *ngFor="let adv of advertenciasUnidad"
+        [class.advertencia--error]="adv.tipo === 'error'"
+        [class.advertencia--warning]="adv.tipo === 'warning'">
+        <ion-icon [name]="adv.tipo === 'error' ? 'alert-circle-outline' : 'warning-outline'"></ion-icon>
+        <span>{{ adv.mensaje }}</span>
+      </div>
+    </div>
+
+    <span class="unidad-hint">Para cambiar la unidad asignada ve a la página de <strong>Unidades</strong>.</span>
+  </div>
+</div>
+        <div class="field">
+          <label>Licencia</label>
+          <ion-select *ngIf="editMode" [(ngModel)]="form.fk_tipo_licencia" interface="popover">
+            <ion-select-option [value]="null" disabled>Selecciona licencia</ion-select-option>
+            <ion-select-option *ngFor="let l of licencias" [value]="l.id_licencia">
+              {{ l.descripcion_licencia }}
+            </ion-select-option>
+          </ion-select>
+          <div *ngIf="!editMode" class="readonly-pill">{{ getLicenciaDescripcion(form.fk_tipo_licencia) }}</div>
+        </div>
+
+        <div class="field">
+          <label>Vigencia Licencia</label>
+          <ion-datetime *ngIf="editMode" [(ngModel)]="form.vigencia_licencia"
+            displayFormat="YYYY-MM-DD" placeholder="Selecciona fecha">
+          </ion-datetime>
+          <div *ngIf="!editMode" class="readonly-pill">{{ form.vigencia_licencia || '—' }}</div>
+        </div>
+
+   <!-- CLIENTE PARA CERTIFICACIONES -->
+<div class="field field--full" *ngIf="editMode">
+  <label>Cliente para Certificaciones</label>
+  <ion-select [(ngModel)]="clienteSeleccionado"
+    (ionChange)="onClienteChange()"
+    interface="popover"
+    placeholder="Selecciona un cliente">
+    <ion-select-option [value]="null">Sin cliente</ion-select-option>
+    <ion-select-option *ngFor="let c of clientes" [value]="c.id_cliente">
+      {{ c.nombre_cliente }}
+    </ion-select-option>
+  </ion-select>
+</div>
+
+<!-- CERTIFICACIONES -->
+<div class="field field--full">
+  <label>Certificaciones</label>
+
+  <!-- Vista readonly -->
+  <div *ngIf="!editMode" class="readonly-pill">
+    <span *ngFor="let id of form.certificaciones; let last = last">
+      {{ getCertificacionNombre(id) }}<span *ngIf="!last">, </span>
+    </span>
+    <span *ngIf="form.certificaciones.length === 0">Sin certificaciones</span>
+  </div>
+
+  <!-- Vista edición sin cliente -->
+  <div *ngIf="editMode && !clienteSeleccionado" class="certs-empty">
+    Selecciona un cliente para ver sus certificaciones.
+  </div>
+
+  <!-- Cargando -->
+  <div *ngIf="editMode && clienteSeleccionado && loadingCerts" class="certs-loading">
+    Cargando certificaciones...
+  </div>
+
+  <!-- Sin certs del cliente -->
+  <div *ngIf="editMode && clienteSeleccionado && !loadingCerts && certificacionesFiltradas.length === 0"
+    class="certs-empty">
+    Este cliente no tiene certificaciones registradas.
+  </div>
+
+  <!-- Lista checkboxes -->
+  <div *ngIf="editMode && clienteSeleccionado && !loadingCerts && certificacionesFiltradas.length > 0"
+    class="certs-list">
+    <div class="cert-item"
+      *ngFor="let c of certificacionesFiltradas"
+      (click)="toggleCertificacion(c.id_certificacion, {detail:{checked: !isCertSelected(c.id_certificacion)}})">
+      <div class="cert-check" [class.cert-check--active]="isCertSelected(c.id_certificacion)">
+        <ion-icon name="checkmark-outline" *ngIf="isCertSelected(c.id_certificacion)"></ion-icon>
+      </div>
+      <span class="cert-nombre">{{ c.nombre_certificacion }}</span>
+    </div>
+  </div>
+
+  <!-- Resumen acumulado -->
+  <div class="certs-resumen" *ngIf="editMode && form.certificaciones.length > 0">
+    <ion-icon name="checkmark-circle-outline"></ion-icon>
+    {{ form.certificaciones.length }} certificación(es) seleccionada(s) en total
+  </div>
+</div>
+      </div><!-- /det-grid -->
+
+      <div class="det-actions" *ngIf="!editMode">
+        <ion-button class="btn-edit" (click)="enableEdit()">
+          <ion-icon name="create-outline" slot="start"></ion-icon>
+          Editar
+        </ion-button>
+      </div>
+
+      <div class="det-actions" *ngIf="editMode">
+        <ion-button class="btn-cancel" (click)="cancelEdit()">Cancelar</ion-button>
+        <ion-button class="btn-save" (click)="save()">Guardar</ion-button>
+      </div>
+    </div><!-- /det-card -->
+  </div>
+
+ <!-- ══════════════════════════════════════════════════
+     TAB: HISTORIAL ESTADO
+══════════════════════════════════════════════════ -->
+<div *ngIf="activeTab === 'historial-estado'" class="det-panel">
+
+  <!-- Filtros -->
+  <div class="det-card filter-card">
+    <div class="filter-grid">
+
+      <div class="field">
+        <label>Estado de Origen</label>
+        <ion-select [(ngModel)]="filtroEstado.estado_anterior"
+          interface="popover" placeholder="Todos">
+          <ion-select-option value="">Todos</ion-select-option>
+          <ion-select-option *ngFor="let e of estadosOperador" [value]="e">{{ e }}</ion-select-option>
+        </ion-select>
+      </div>
+
+      <div class="field">
+        <label>Estado al que Cambió</label>
+        <ion-select [(ngModel)]="filtroEstado.estado_nuevo"
+          interface="popover" placeholder="Todos">
+          <ion-select-option value="">Todos</ion-select-option>
+          <ion-select-option *ngFor="let e of estadosOperador" [value]="e">{{ e }}</ion-select-option>
+        </ion-select>
+      </div>
+
+      <div class="field">
+        <label>Fecha Desde</label>
+        <ion-input type="date" [(ngModel)]="filtroEstado.fecha_desde"></ion-input>
+      </div>
+
+      <div class="field">
+        <label>Fecha Hasta</label>
+        <ion-input type="date" [(ngModel)]="filtroEstado.fecha_hasta"></ion-input>
+      </div>
+
+    </div>
+
+    <div class="filter-actions">
+      <ion-button class="btn-clear" (click)="limpiarFiltroEstado()">
+        Limpiar
+      </ion-button>
+      <ion-button class="btn-apply" (click)="aplicarFiltroEstado()">
+        Aplicar Filtros
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Contador -->
+  <div class="historial-meta" *ngIf="!loadingHistorialEstado">
+    <span *ngIf="!filtradoEstado">Mostrando los últimos {{ totalEstado }} registros</span>
+    <span *ngIf="filtradoEstado">{{ totalEstado }} resultado(s) encontrado(s)</span>
+  </div>
+
+  <div *ngIf="loadingHistorialEstado" class="empty-state">Cargando historial...</div>
+
+  <div *ngIf="!loadingHistorialEstado && historialEstado.length === 0" class="empty-state">
+    Sin registros de cambios de estado.
+  </div>
+
+  <div class="timeline" *ngIf="!loadingHistorialEstado && historialEstado.length > 0">
+    <div class="timeline-item" *ngFor="let h of historialEstado">
+      <div class="timeline-dot"></div>
+      <div class="timeline-card">
+        <div class="timeline-states">
+          <span class="badge off">{{ h.estado_anterior }}</span>
+          <ion-icon name="arrow-forward-outline"></ion-icon>
+          <span class="badge ok">{{ h.estado_nuevo }}</span>
+        </div>
+        <p class="timeline-motivo" *ngIf="h.motivo">{{ h.motivo }}</p>
+        <span class="timeline-fecha">{{ h.created_at | date:'dd/MM/yyyy HH:mm' }}</span>
+        <span class="nombre-coordinador" *ngIf="h.nombre_coordinador">
+          {{ h.nombre_coordinador }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     TAB: HISTORIAL ZONA
+══════════════════════════════════════════════════ -->
+<div *ngIf="activeTab === 'historial-zona'" class="det-panel">
+
+  <!-- Filtros -->
+  <div class="det-card filter-card">
+    <div class="filter-grid">
+
+      <div class="field">
+        <label>Zona de Origen</label>
+        <ion-select [(ngModel)]="filtroZona.zona_anterior"
+          interface="popover" placeholder="Todas">
+          <ion-select-option value="">Todas</ion-select-option>
+          <ion-select-option *ngFor="let z of zonas" [value]="z.nombre_zona">
+            {{ z.nombre_zona }}
+          </ion-select-option>
+        </ion-select>
+      </div>
+
+      <div class="field">
+        <label>Zona a la que Viajó</label>
+        <ion-select [(ngModel)]="filtroZona.zona_nueva"
+          interface="popover" placeholder="Todas">
+          <ion-select-option value="">Todas</ion-select-option>
+          <ion-select-option *ngFor="let z of zonas" [value]="z.nombre_zona">
+            {{ z.nombre_zona }}
+          </ion-select-option>
+        </ion-select>
+      </div>
+
+      <div class="field">
+        <label>Fecha Desde</label>
+        <ion-input type="date" [(ngModel)]="filtroZona.fecha_desde"></ion-input>
+      </div>
+
+      <div class="field">
+        <label>Fecha Hasta</label>
+        <ion-input type="date" [(ngModel)]="filtroZona.fecha_hasta"></ion-input>
+      </div>
+
+    </div>
+
+    <div class="filter-actions">
+      <ion-button class="btn-clear" (click)="limpiarFiltroZona()">
+        Limpiar
+      </ion-button>
+      <ion-button class="btn-apply" (click)="aplicarFiltroZona()">
+        Aplicar Filtros
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Contador -->
+  <div class="historial-meta" *ngIf="!loadingHistorialZona">
+    <span *ngIf="!filtradoZona">Mostrando los últimos {{ totalZona }} registros</span>
+    <span *ngIf="filtradoZona">{{ totalZona }} resultado(s) encontrado(s)</span>
+  </div>
+
+  <div *ngIf="loadingHistorialZona" class="empty-state">Cargando historial...</div>
+
+  <div *ngIf="!loadingHistorialZona && historialZona.length === 0" class="empty-state">
+    Sin registros de cambios de zona.
+  </div>
+
+  <div class="timeline" *ngIf="!loadingHistorialZona && historialZona.length > 0">
+    <div class="timeline-item" *ngFor="let h of historialZona">
+      <div class="timeline-dot"></div>
+      <div class="timeline-card">
+        <div class="timeline-states">
+          <span class="zone-pill">{{ h.zona_anterior }}</span>
+          <ion-icon name="arrow-forward-outline"></ion-icon>
+          <span class="zone-pill zone-pill--new">{{ h.zona_nueva }}</span>
+        </div>
+        <p class="timeline-motivo" *ngIf="h.motivo">{{ h.motivo }}</p>
+        <span class="timeline-fecha">{{ h.created_at | date:'dd/MM/yyyy HH:mm' }}</span>
+        <span class="nombre-coordinador" *ngIf="h.nombre_coordinador">
+          {{ h.nombre_coordinador }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+  <!-- ══════════════════════════════════════════════════
+       MODAL: CAMBIAR ESTADO
+  ══════════════════════════════════════════════════ -->
+  <ion-modal [isOpen]="showModalEstado" (didDismiss)="showModalEstado = false"
+    [cssClass]="'change-modal-wrap'" [backdropDismiss]="true">
+    <ng-template>
+      <div class="change-modal">
+        <h3>Cambiar Estado del Operador</h3>
+
+        <div class="modal-field">
+          <label>Estado Actual</label>
+          <div class="readonly-pill">
+            <span class="badge"
+              [class.ok]="form.estado_operador === 'DISPONIBLE'"
+              [class.warn]="form.estado_operador === 'NO_DISPONIBLE'"
+              [class.travel]="form.estado_operador === 'EN_VIAJE'"
+              [class.off]="form.estado_operador === 'INACTIVO'">
+              {{ form.estado_operador }}
+            </span>
+          </div>
+        </div>
+
+        <div class="modal-field">
+          <label>Nuevo Estado *</label>
+          <ion-select [(ngModel)]="cambioEstado.estado_nuevo" interface="popover"
+            placeholder="Selecciona el nuevo estado">
+            <ion-select-option value="DISPONIBLE">DISPONIBLE</ion-select-option>
+            <ion-select-option value="NO_DISPONIBLE">NO_DISPONIBLE</ion-select-option>
+            <ion-select-option value="INACTIVO">INACTIVO</ion-select-option>
+            <ion-select-option value="EN_VIAJE">EN_VIAJE</ion-select-option>
+          </ion-select>
+        </div>
+
+        <div class="modal-field">
+          <label>Motivo del Cambio *</label>
+          <ion-textarea [(ngModel)]="cambioEstado.motivo"
+            placeholder="Describe el motivo del cambio de estado..."
+            [autoGrow]="true">
+          </ion-textarea>
+        </div>
+
+        <div class="modal-actions">
+          <ion-button class="btn-cancel-modal" (click)="showModalEstado = false">
+            Cancelar
+          </ion-button>
+          <ion-button class="btn-confirm" [disabled]="savingCambio"
+            (click)="confirmarCambioEstado()">
+            {{ savingCambio ? 'Guardando...' : 'Confirmar' }}
+          </ion-button>
+        </div>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+  <!-- ══════════════════════════════════════════════════
+       MODAL: CAMBIAR ZONA
+  ══════════════════════════════════════════════════ -->
+  <ion-modal [isOpen]="showModalZona" (didDismiss)="showModalZona = false"
+    [cssClass]="'change-modal-wrap'" [backdropDismiss]="true">
+    <ng-template>
+      <div class="change-modal">
+        <h3>Cambiar Zona del Operador</h3>
+
+        <div class="modal-field">
+          <label>Zona Actual</label>
+          <div class="readonly-pill">{{ getZonaNombre(form.fk_zona_actual) }}</div>
+        </div>
+
+        <div class="modal-field">
+          <label>Nueva Zona *</label>
+          <ion-select [(ngModel)]="cambioZona.zona_nueva" interface="popover"
+            placeholder="Selecciona la nueva zona">
+            <ion-select-option *ngFor="let z of zonas" [value]="z.id_zona">
+              {{ z.nombre_zona }}
+            </ion-select-option>
+          </ion-select>
+        </div>
+
+        <div class="modal-field">
+          <label>Motivo del Cambio *</label>
+          <ion-textarea [(ngModel)]="cambioZona.motivo"
+            placeholder="Describe el motivo del cambio de zona..."
+            [autoGrow]="true">
+          </ion-textarea>
+        </div>
+
+        <div class="modal-actions">
+          <ion-button class="btn-cancel-modal" (click)="showModalZona = false">
+            Cancelar
+          </ion-button>
+          <ion-button class="btn-confirm" [disabled]="savingCambio"
+            (click)="confirmarCambioZona()">
+            {{ savingCambio ? 'Guardando...' : 'Confirmar' }}
+          </ion-button>
+        </div>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+</ion-content>

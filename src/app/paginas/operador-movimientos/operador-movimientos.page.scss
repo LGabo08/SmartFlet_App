@@ -1,0 +1,291 @@
+// ── Toolbar ───────────────────────────────────────────────────────────────────
+.mov-toolbar {
+  --background: #0b2c5d;
+  --color: #fff;
+}
+
+// ── Filtros ───────────────────────────────────────────────────────────────────
+.mov-filters {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.mov-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mov-filter-label {
+  font-size: 11px;
+  color: #9e9e9e;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.mov-filter-input {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  input {
+    height: 36px;
+    padding: 0 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    width: 120px;
+    outline: none;
+
+    &:focus { border-color: #0b2c5d; }
+  }
+}
+
+.mov-select {
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  background: #fff;
+  outline: none;
+  min-width: 160px;
+
+  &:focus { border-color: #0b2c5d; }
+}
+
+.btn-limpiar {
+  --border-color: #0b2c5d;
+  --color: #0b2c5d;
+  height: 36px;
+}
+
+// ── Tarjetas de totales ───────────────────────────────────────────────────────
+.mov-totales {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.total-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: #f4f5f8;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+
+  ion-icon {
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+
+  &--ingreso {
+    background: #e8f5e9;
+    ion-icon { color: #2e7d32; }
+  }
+
+  &--egreso {
+    background: #fdecea;
+    ion-icon { color: #c62828; }
+  }
+
+  &--positivo {
+    background: #e8eaf6;
+    ion-icon { color: #0b2c5d; }
+  }
+
+  &--negativo {
+    background: #fdecea;
+    ion-icon { color: #c62828; }
+  }
+
+  &__label {
+    display: block;
+    font-size: 11px;
+    color: #9e9e9e;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 2px;
+  }
+
+  &__value {
+    display: block;
+    font-size: 16px;
+    font-weight: 700;
+    color: #333;
+  }
+}
+
+// ── Loading ───────────────────────────────────────────────────────────────────
+.mov-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 0;
+  gap: 10px;
+  color: var(--ion-color-medium);
+  ion-spinner { width: 32px; height: 32px; }
+  p { font-size: 13px; margin: 0; }
+}
+
+// ── Error ─────────────────────────────────────────────────────────────────────
+.mov-error-card {
+  text-align: center;
+  p { color: #c62828; margin-bottom: 10px; }
+}
+
+// ── Empty ─────────────────────────────────────────────────────────────────────
+.mov-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 0;
+  gap: 8px;
+  color: var(--ion-color-medium);
+  ion-icon { font-size: 40px; }
+  p { font-size: 13px; margin: 0; }
+}
+
+// ── Lista de movimientos ──────────────────────────────────────────────────────
+.mov-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mov-item {
+  display: flex;
+  gap: 12px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 14px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  align-items: flex-start;
+}
+
+// Indicador lateral
+.mov-item__indicator {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  ion-icon { font-size: 18px; }
+
+  &--ingreso {
+    background: #e8f5e9;
+    ion-icon { color: #2e7d32; }
+  }
+
+  &--egreso {
+    background: #fdecea;
+    ion-icon { color: #c62828; }
+  }
+}
+
+// Cuerpo
+.mov-item__body { flex: 1; }
+
+.mov-item__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+// Badge tipo
+.mov-tipo-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 12px;
+
+  &--success { background: #e8f5e9; color: #2e7d32; }
+  &--primary { background: #e8eaf6; color: #0b2c5d; }
+  &--danger  { background: #fdecea; color: #c62828; }
+  &--medium  { background: #f5f5f5; color: #616161; }
+}
+
+// Monto
+.mov-monto {
+  font-size: 16px;
+  font-weight: 700;
+
+  &--ingreso { color: #2e7d32; }
+  &--egreso  { color: #c62828; }
+}
+
+// Viaje
+.mov-viaje {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: #444;
+  margin: 4px 0;
+
+  ion-icon { font-size: 14px; color: #0b2c5d; }
+}
+
+.mov-estado-badge {
+  font-size: 11px;
+  background: #f0f0f0;
+  color: #555;
+  padding: 2px 6px;
+  border-radius: 8px;
+  margin-left: 4px;
+}
+
+// Descripción
+.mov-desc {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  font-size: 12px;
+  color: #777;
+  margin: 4px 0;
+  font-style: italic;
+
+  ion-icon { font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+}
+
+// Footer
+.mov-item__foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.mov-coordinador {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #888;
+
+  ion-icon { font-size: 13px; color: #0b2c5d; }
+}
+
+.mov-fecha {
+  font-size: 12px;
+  color: #aaa;
+  white-space: nowrap;
+}

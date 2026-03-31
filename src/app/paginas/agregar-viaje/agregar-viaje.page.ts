@@ -1,5 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  AbstractControl,
+  ValidationErrors,
+} from '@angular/forms';
+import { Router } from '@angular/router';
 import { DatosViajeService } from 'src/app/services/datos-viaje.service';
 import { ViajeService } from 'src/app/services/viaje.service';
 
@@ -11,12 +18,40 @@ import { Licencia } from 'src/models/licencia.model';
 import { Certificacion } from 'src/models/certificacion.model';
 import { Cliente } from 'src/models/cliente.model';
 
+// Importamos el modal y su interfaz de datos
+import {
+  ConfirmarViajeModalComponent,
+  ConfirmarViajeData,
+} from 'src/app/componentes/confirmar-viaje-modal/confirmar-viaje-modal.component';
+
+// ─── Validadores ─────────────────────────────────────────────────────────────
+
+function noScriptValidator(control: AbstractControl): ValidationErrors | null {
+  const value: string = control.value ?? '';
+  const dangerous = /<[^>]*>|<script|javascript:|on\w+\s*=|&#|&lt;|&gt;/i;
+  return dangerous.test(value) ? { noScript: true } : null;
+}
+
+function embarqueFormatValidator(control: AbstractControl): ValidationErrors | null {
+  const value: string = (control.value ?? '').trim();
+  const valid = /^[a-zA-Z0-9\-\.]+$/.test(value);
+  return value && !valid ? { embarqueFormat: true } : null;
+}
+
+function sanitizeString(value: string): string {
+  if (!value) return '';
+  return value
+    .replace(/<[^>]*>/g, '')
+    .replace(/[<>"'`;]/g, '')
+    .trim();
+}
+
 @Component({
   selector: 'app-agregar-viaje',
   standalone: true,
   templateUrl: './agregar-viaje.page.html',
   styleUrls: ['./agregar-viaje.page.scss'],
-  imports: [CommonModule, ReactiveFormsModule, IonicModule],
+  imports: [CommonModule, ReactiveFormsModule, IonicModule, ConfirmarViajeModalComponent],
 })
 export class AgregarViajePage implements OnInit {
   viajeForm: FormGroup;
@@ -24,25 +59,45 @@ export class AgregarViajePage implements OnInit {
   licencias: Licencia[] = [];
   licenciasDisponibles: Licencia[] = [];
   certificaciones: Certificacion[] = [];
-  clientes: Cliente[] = [];  // Lista de clientes
-  configuracionesUnidad: string[] = ['Configuración 1', 'Configuración 2', 'Configuración 3']; // Configuraciones disponibles
+  clientes: Cliente[] = [];
+  configuracionesUnidad: string[] = ['Configuración 1', 'Configuración 2', 'Configuración 3'];
   saving = false;
+
+  // ── Estado del modal de confirmación ─────────────────────────────────────
+  showConfirmModal = false;
+  confirmData: ConfirmarViajeData | null = null;
+  // Payload listo para enviarse cuando el usuario confirme
+  private pendingPayload: any = null;
 
   constructor(
     private fb: FormBuilder,
     private viajeService: ViajeService,
-    private datosViajeService: DatosViajeService
+    private datosViajeService: DatosViajeService,
+    private router: Router,
   ) {
     this.viajeForm = this.fb.group({
-      numero_viaje: ['', Validators.required],
+      numero_viaje: [
+        '',
+        [Validators.required, Validators.maxLength(50), noScriptValidator, embarqueFormatValidator],
+      ],
       fk_ruta: ['', Validators.required],
       configuracion_unidad: ['', Validators.required],
       fk_licencia_requerida: ['', Validators.required],
-      producto: ['', Validators.required],
-      cliente: ['', Validators.required], // Campo cliente
-      certificaciones: [[], [Validators.required]],
-      pago_operador: ['', [Validators.required, Validators.min(0)]],
+      producto: [
+        '',
+        [Validators.required, Validators.maxLength(100), noScriptValidator],
+      ],
+      cliente: ['', Validators.required],
+      certificaciones: [[], Validators.required],
+      pago_operador: [
+        '',
+        [Validators.required, Validators.min(0), Validators.max(9_999_999)],
+      ],
     });
+  }
+
+  goBack() {
+    this.router.navigate(['/viajes']);
   }
 
   ngOnInit() {
@@ -52,101 +107,131 @@ export class AgregarViajePage implements OnInit {
 
     this.datosViajeService.getLicencias().subscribe((data: any) => {
       this.licencias = Array.isArray(data) ? data : [];
-      this.licenciasDisponibles = this.licencias; // Inicializamos licencias disponibles
+      this.licenciasDisponibles = this.licencias;
     });
 
     this.datosViajeService.getCertificaciones().subscribe((data: any) => {
       this.certificaciones = Array.isArray(data) ? data : [];
     });
 
-    // Obtener clientes
     this.datosViajeService.getClientes().subscribe((data: any) => {
-      this.clientes = Array.isArray(data) ? data : [];
+      this.clientes = Array.isArray(data) ? data : (data?.clientes ?? []);
     });
   }
 
-  // Método para actualizar las licencias disponibles según la configuración de unidad seleccionada
   onConfiguracionUnidadChange(configId: string) {
     if (configId === 'Configuración 1' || configId === 'Configuración 2') {
-      this.licenciasDisponibles = this.licencias.filter(licencia => licencia.descripcion_licencia === 'Licencia demo Tipo A');
+      this.licenciasDisponibles = this.licencias.filter(
+        (l) => l.descripcion_licencia === 'Licencia demo Tipo A',
+      );
     } else if (configId === 'Configuración 3') {
-      this.licenciasDisponibles = this.licencias.filter(licencia => licencia.descripcion_licencia === 'Licencia demo Tipo B');
+      this.licenciasDisponibles = this.licencias.filter(
+        (l) => l.descripcion_licencia === 'Licencia demo Tipo B',
+      );
     } else {
       this.licenciasDisponibles = [];
     }
-
-    // Reseteamos el campo de licencia seleccionada
-    this.viajeForm.patchValue({
-      fk_licencia_requerida: '',
-    });
+    this.viajeForm.patchValue({ fk_licencia_requerida: '' });
   }
 
-  // Método para cargar las certificaciones basadas en el cliente seleccionado
-onClienteChange(event: Event) {
-  const clienteId = (event.target as HTMLSelectElement).value; // Usamos 'HTMLSelectElement' para acceder al 'value'
-  if (!clienteId) return;
+  onClienteChange(event: Event) {
+    const clienteId = (event.target as HTMLSelectElement).value;
+    if (!clienteId) return;
 
-  // Filtrar certificaciones por cliente
-  this.datosViajeService.getCertificacionesPorCliente(clienteId).subscribe((data: any) => {
-    this.certificaciones = Array.isArray(data) ? data : [];
-  });
+    this.datosViajeService
+      .getCertificacionesPorCliente(Number(clienteId))
+      .subscribe((data: any) => {
+        this.certificaciones = Array.isArray(data) ? data : [];
+      });
 
-  // Reseteamos el campo de certificaciones seleccionadas
-  this.viajeForm.patchValue({
-    certificaciones: [],
-  });
-}
+    this.viajeForm.patchValue({ certificaciones: [] });
+  }
 
-  async onSubmit() {
+  // ── Paso 1: Validar formulario y abrir modal de confirmación ─────────────
+  onSubmit() {
+    this.viajeForm.markAllAsTouched();
     if (this.viajeForm.invalid) return;
 
     const raw = this.viajeForm.value;
-    console.log('Datos enviados:', raw);
 
-    const viajeData: any = {
-      numero_viaje: String(raw.numero_viaje ?? '').trim(),
-      fk_ruta: parseInt(raw.fk_ruta, 10),
-      configuracion_unidad: raw.configuracion_unidad,
-      fk_licencia_requerida: raw.fk_licencia_requerida,
-      producto: raw.producto.trim(),
-      cliente: raw.cliente.trim(),
-      estado: 'PENDIENTE',
-      certificaciones: [],
+    // Resolvemos nombres legibles para el resumen visual
+    const rutaObj = this.rutas.find((r) => String(r.id_ruta) === String(raw.fk_ruta));
+    const licenciaObj = this.licenciasDisponibles.find(
+      (l) => String(l.id_licencia) === String(raw.fk_licencia_requerida),
+    );
+    const clienteObj = this.clientes.find(
+      (c) => String(c.id_cliente) === String(raw.cliente),
+    );
+
+    // IDs de certificaciones → nombres legibles
+    const certIds: number[] = Array.isArray(raw.certificaciones)
+      ? raw.certificaciones.map((x: any) => parseInt(x, 10)).filter((n: number) => !isNaN(n))
+      : [];
+
+    const certNombres = certIds
+      .map(
+        (id) =>
+          this.certificaciones.find((c) => c.id_certificacion === id)?.nombre_certificacion ?? '',
+      )
+      .filter(Boolean);
+
+    // Datos para el modal de confirmación
+    this.confirmData = {
+      numero_viaje: sanitizeString(String(raw.numero_viaje ?? '')),
+      rutaNombre: rutaObj?.nombre_ruta ?? String(raw.fk_ruta),
+      configuracion_unidad: sanitizeString(raw.configuracion_unidad),
+      licenciaNombre:
+        licenciaObj?.descripcion_licencia ?? String(raw.fk_licencia_requerida),
+      producto: sanitizeString(raw.producto),
+      clienteNombre: clienteObj?.nombre_cliente ?? String(raw.cliente),
+      certificacionesNombres: certNombres,
       pago_operador: parseFloat(raw.pago_operador),
     };
 
-    const selected = raw.certificaciones;
-    if (Array.isArray(selected)) {
-      viajeData.certificaciones = selected
-        .map((x: any) => parseInt(x, 10))
-        .filter((n: any) => !isNaN(n));
-    } else if (selected != null && selected !== '') {
-      const n = parseInt(selected, 10);
-      viajeData.certificaciones = isNaN(n) ? [] : [n];
-    }
+    // Payload sanitizado listo para el POST
+    this.pendingPayload = {
+      numero_viaje: this.confirmData.numero_viaje,
+      fk_ruta: parseInt(raw.fk_ruta, 10),
+      configuracion_unidad: this.confirmData.configuracion_unidad,
+      fk_licencia_requerida: raw.fk_licencia_requerida,
+      producto: this.confirmData.producto,
+      cliente: clienteObj
+        ? sanitizeString(clienteObj.nombre_cliente)
+        : sanitizeString(raw.cliente),
+      id_cliente: parseInt(raw.cliente, 10),
+      estado: 'PENDIENTE',
+      certificaciones: certIds,
+      pago_operador: parseFloat(raw.pago_operador),
+    };
+
+    this.showConfirmModal = true;
+  }
+
+  // ── Paso 2a: El usuario cancela → cierra modal, formulario intacto ───────
+  onModalCancelled() {
+    this.showConfirmModal = false;
+    this.confirmData = null;
+    this.pendingPayload = null;
+  }
+
+  // ── Paso 2b: El usuario confirma → ejecutamos el POST ────────────────────
+  async onModalConfirmed() {
+    if (!this.pendingPayload) return;
 
     this.saving = true;
 
     try {
-      const res = await this.viajeService.createViaje(viajeData).toPromise();
+      const res = await this.viajeService.createViaje(this.pendingPayload).toPromise();
+
       if (res?.ok) {
-        alert('Viaje agregado correctamente');
-        this.viajeForm.reset({
-          numero_viaje: '',
-          fk_ruta: '',
-          configuracion_unidad: '',
-          fk_licencia_requerida: '',
-          producto: '',
-          cliente: '',
-          certificaciones: [],
-          pago_operador: '',
-        });
+        this.showConfirmModal = false;
+        await this.router.navigate(['/viajes']);
       } else {
-        alert('Error al agregar el viaje');
+        alert('Error al agregar el viaje. Por favor intenta de nuevo.');
       }
     } catch (error) {
-      alert('Error al agregar el viaje');
-      console.error(error);
+      alert('Ocurrió un error inesperado al agregar el viaje.');
+      console.error('[AgregarViaje] Error:', error);
     } finally {
       this.saving = false;
     }

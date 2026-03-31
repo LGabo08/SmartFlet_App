@@ -1,97 +1,114 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { Router, RouterLink } from '@angular/router';
-
-type Id = string | number;
+import { Router } from '@angular/router';
+import { ViewWillEnter } from '@ionic/angular';
+import { PanelService } from 'src/app/services/panel.service';
 
 @Component({
   selector: 'app-panel',
   standalone: true,
-  imports: [CommonModule, IonicModule, RouterLink],
+  imports: [CommonModule, IonicModule, ],
   templateUrl: './panel.page.html',
   styleUrls: ['./panel.page.scss'],
 })
-export class PanelPage {
+export class PanelPage implements OnInit, ViewWillEnter {
 
-  // ====== KPIs (demo) ======
-  equilibrioPct = 78;            // 0 - 120 (ejemplo)
-  dineroTotal = 42000;
-  cuotaTotal = 60000;
+  cargando = true;
+  error    = false;
 
-  viajesTotal = 32;
-  viajesFinalizados = 18;
-  viajesEnRuta = 9;
+  // ── KPIs ─────────────────────────────────────────────────────────────────
+  kpisOperadores = {
+    total: 0, disponibles: 0, en_viaje: 0,
+    asignados: 0, no_disponibles: 0, inactivos: 0,
+  };
 
-  operadoresActivos = 12;
-  operadoresDisponibles = 4;
-  operadoresEnViaje = 8;
+  kpisViajes = {
+    total: 0, pendientes: 0, asignados: 0,
+    en_curso: 0, terminados: 0, cancelados: 0,
+  };
 
-  // ====== Listas (demo) ======
-  operadoresDisponiblesList = [
-    { id: 1, nombre: 'Juan Pérez', unidad: 'T-01', ultimoViaje: 'Ayer' },
-    { id: 2, nombre: 'Luis García', unidad: 'T-07', ultimoViaje: 'Hoy 09:10' },
-  ];
+  kpisCuotas = { objetivo: 0, realizada: 0, equilibrio_pct: 0 };
 
-  viajesAsignadosList = [
-    { id: 101, origen: 'Veracruz', destino: 'Xalapa', operador: 'Juan Pérez', unidad: 'T-01', eta: '2h', estado: 'asignado', estadoLabel: 'Asignado' },
-    { id: 102, origen: 'Puebla', destino: 'CDMX', operador: 'Ana Díaz', unidad: 'T-03', eta: '3h', estado: 'confirmado', estadoLabel: 'Confirmado' },
-  ];
+  // ── Listas ────────────────────────────────────────────────────────────────
+  viajesEnCurso: any[] = [];
+  rezagados: any[]     = [];
+  alertas: any[]       = [];
 
-  viajesEnProcesoList = [
-    { id: 201, origen: 'Orizaba', destino: 'Córdoba', operador: 'Carlos Ruiz', unidad: 'T-05', salida: 'Hoy 08:30' },
-  ];
+  // ── Gráfica chips ─────────────────────────────────────────────────────────
+  periodoActivo: 'dia' | 'semana' | 'mes' = 'dia';
 
-  rezagadosList = [
-    { id: 10, nombre: 'Mario López', pctCuota: 35, viajes: 2, dinero: 12000 },
-    { id: 11, nombre: 'Ernesto Cruz', pctCuota: 42, viajes: 7, dinero: 18000 },
-    { id: 12, nombre: 'Sergio Méndez', pctCuota: 50, viajes: 3, dinero: 21000 },
-  ];
+  constructor(
+    private router: Router,
+    private panelService: PanelService,
+  ) {}
 
-  constructor(private router: Router) {}
+  ngOnInit() { this.cargarResumen(); }
+  ionViewWillEnter() { this.cargarResumen(); }
 
-  // ====== Derivados ======
-  get equilibrioBarWidth(): number {
-    // Limitar visualmente 0..120
-    const v = Math.max(0, Math.min(120, this.equilibrioPct));
-    return v;
+  cargarResumen() {
+    this.cargando = true;
+    this.error    = false;
+    this.panelService.getResumen().subscribe({
+      next: (res: any) => {
+        if (res?.ok) {
+          this.kpisOperadores = res.kpis.operadores;
+          this.kpisViajes     = res.kpis.viajes;
+          this.kpisCuotas     = res.kpis.cuotas;
+          this.viajesEnCurso  = res.viajes_en_curso ?? [];
+          this.rezagados      = res.rezagados ?? [];
+          this.alertas        = res.alertas ?? [];
+        }
+        this.cargando = false;
+      },
+      error: () => {
+        this.error    = true;
+        this.cargando = false;
+      }
+    });
   }
 
-  get equilibrioEstado(): string {
-    if (this.equilibrioPct < 70) return 'bad';
-    if (this.equilibrioPct < 100) return 'ok';
+  // ── Helpers ───────────────────────────────────────────────────────────────
+  get equilibrioBarWidth(): number {
+    return Math.min(100, this.kpisCuotas.equilibrio_pct);
+  }
+
+  get equilibrioEstado(): 'bad' | 'ok' | 'good' {
+    if (this.kpisCuotas.equilibrio_pct < 50) return 'bad';
+    if (this.kpisCuotas.equilibrio_pct < 85) return 'ok';
     return 'good';
   }
 
   get equilibrioTexto(): string {
-    if (this.equilibrioPct < 70) return 'Desequilibrio (alerta)';
-    if (this.equilibrioPct < 100) return 'En balance';
-    return 'Excelente balance';
+    if (this.kpisCuotas.equilibrio_pct < 50) return 'Cuota baja — atención';
+    if (this.kpisCuotas.equilibrio_pct < 85) return 'En progreso';
+    return 'Cuota en buen ritmo';
   }
 
-  // ====== Helpers / acciones ======
-  trackById(_: number, item: { id: Id }) { return item.id; }
-
-  asignar(op: any) {
-    console.log('Asignar operador', op);
-    this.router.navigateByUrl('/panel/operadores/asignaciones');
+  getPctCuota(r: any): number {
+    return parseFloat(r.pct_cuota ?? 0);
   }
 
-  verDetalle(v: any) {
-    console.log('Detalle viaje', v);
-    this.router.navigateByUrl('/panel/viajes/detalles');
+  getPctColor(pct: number): string {
+    if (pct < 30) return '#dc2626';
+    if (pct < 60) return '#f59e0b';
+    return '#16a34a';
   }
 
-  sugerirAsignacion(r: any) {
-    console.log('Sugerir asignación a rezagado', r);
-    this.router.navigateByUrl('/panel/operadores/asignaciones');
+  getNivelColor(nivel: string): string {
+    return nivel === 'danger' ? '#dc2626' : '#f59e0b';
   }
 
-  irAsignaciones() {
-    this.router.navigateByUrl('/panel/operadores/asignaciones');
+  setPeriodo(p: 'dia' | 'semana' | 'mes') {
+    this.periodoActivo = p;
   }
 
-  irReportes() {
-    this.router.navigateByUrl('/panel/unidades/reportes');
-  }
+  // ── Navegación ────────────────────────────────────────────────────────────
+  irAsignaciones()  { this.router.navigate(['/asignaciones']); }
+  irOperadores()    { this.router.navigate(['/operador']); }
+  irUnidades()      { this.router.navigate(['/unidades']); }
+  irViajes()        { this.router.navigate(['/viajes']); }
+  irDetalle(id: number) { this.router.navigate(['/viajes', id, 'historial']); }
+
+  trackById(_: number, item: any) { return item.id_viaje ?? item.id_operador; }
 }

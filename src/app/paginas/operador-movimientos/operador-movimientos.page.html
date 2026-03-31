@@ -1,0 +1,147 @@
+<ion-header>
+  <ion-toolbar class="mov-toolbar">
+    <ion-buttons slot="start">
+    <ion-back-button [defaultHref]="'/paginas/cuotas-operador/' + idOperador" text="Volver"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Movimientos del Operador</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding mov-page">
+
+  <!-- ── Filtros ── -->
+  <div class="mov-filters">
+
+    <div class="mov-filter-group">
+      <label class="mov-filter-label">Periodo</label>
+      <div class="mov-filter-input">
+        <input
+          type="text"
+          [(ngModel)]="periodoFiltro"
+          placeholder="Ej. 202603"
+          maxlength="6"
+        />
+        <ion-button size="small" (click)="buscarPorPeriodo()" style="--background:#0b2c5d;">
+          <ion-icon name="search-outline"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+
+    <div class="mov-filter-group">
+      <label class="mov-filter-label">Tipo</label>
+      <select class="mov-select" [(ngModel)]="tipoFiltro" (change)="aplicarFiltros()">
+        <option value="">Todos</option>
+        <option value="ASIGNACION">Asignación</option>
+        <option value="CAMBIO_TARIFA">Cambio de tarifa</option>
+        <option value="CANCELACION">Cancelación</option>
+      </select>
+    </div>
+
+    <ion-button fill="outline" size="small" class="btn-limpiar" (click)="limpiarFiltros()">
+      <ion-icon slot="start" name="refresh-outline"></ion-icon>
+      Limpiar
+    </ion-button>
+
+  </div>
+
+  <!-- ── Tarjetas de totales ── -->
+  <div class="mov-totales" *ngIf="!cargando && !error">
+    <div class="total-card total-card--ingreso">
+      <ion-icon name="arrow-up-circle-outline"></ion-icon>
+      <div>
+        <span class="total-card__label">Ingresos</span>
+        <span class="total-card__value">{{ totales.ingresos | currency }}</span>
+      </div>
+    </div>
+
+    <div class="total-card total-card--egreso">
+      <ion-icon name="arrow-down-circle-outline"></ion-icon>
+      <div>
+        <span class="total-card__label">Egresos</span>
+        <span class="total-card__value">{{ totales.egresos | currency }}</span>
+      </div>
+    </div>
+
+    <div class="total-card"
+      [class.total-card--positivo]="totales.balance >= 0"
+      [class.total-card--negativo]="totales.balance < 0">
+      <ion-icon name="wallet-outline"></ion-icon>
+      <div>
+        <span class="total-card__label">Balance</span>
+        <span class="total-card__value">
+          {{ totales.balance >= 0 ? '+' : '' }}{{ totales.balance | currency }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Loading ── -->
+  <div class="mov-loading" *ngIf="cargando">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando movimientos...</p>
+  </div>
+
+  <!-- ── Error ── -->
+  <ion-card class="mov-error-card" *ngIf="!cargando && error">
+    <ion-card-content>
+      <p>No se pudieron cargar los movimientos.</p>
+      <ion-button fill="outline" (click)="cargarMovimientos()">Reintentar</ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- ── Empty ── -->
+  <div class="mov-empty" *ngIf="!cargando && !error && movimientosFiltrados.length === 0">
+    <ion-icon name="receipt-outline"></ion-icon>
+    <p>Sin movimientos para este periodo.</p>
+  </div>
+
+  <!-- ── Lista de movimientos ── -->
+  <div class="mov-lista" *ngIf="!cargando && !error && movimientosFiltrados.length > 0">
+    <div *ngFor="let m of movimientosFiltrados" class="mov-item">
+
+      <!-- Indicador izquierdo -->
+      <div class="mov-item__indicator"
+        [class.mov-item__indicator--ingreso]="esIngreso(m.monto)"
+        [class.mov-item__indicator--egreso]="!esIngreso(m.monto)">
+        <ion-icon
+          [name]="esIngreso(m.monto) ? 'arrow-up-outline' : 'arrow-down-outline'">
+        </ion-icon>
+      </div>
+
+      <!-- Contenido -->
+      <div class="mov-item__body">
+        <div class="mov-item__head">
+          <span class="mov-tipo-badge" [ngClass]="'mov-tipo-badge--' + colorTipo(m.tipo)">
+            {{ labelTipo(m.tipo) }}
+          </span>
+          <span class="mov-monto"
+            [class.mov-monto--ingreso]="esIngreso(m.monto)"
+            [class.mov-monto--egreso]="!esIngreso(m.monto)">
+            {{ esIngreso(m.monto) ? '+' : '' }}{{ m.monto | currency }}
+          </span>
+        </div>
+
+        <p class="mov-viaje" *ngIf="m.numero_viaje">
+          <ion-icon name="car-outline"></ion-icon>
+          Viaje: <strong>{{ m.numero_viaje }}</strong>
+          <span class="mov-estado-badge" *ngIf="m.estado_viaje">{{ m.estado_viaje }}</span>
+        </p>
+
+        <p class="mov-desc" *ngIf="m.descripcion">
+          <ion-icon name="document-text-outline"></ion-icon>
+          {{ m.descripcion }}
+        </p>
+
+        <div class="mov-item__foot">
+          <span class="mov-coordinador" *ngIf="m.nombre_coordinador">
+            <ion-icon name="shield-checkmark-outline"></ion-icon>
+            {{ m.nombre_coordinador }}
+          </span>
+          <span class="mov-fecha">{{ m.created_at | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</ion-content>
