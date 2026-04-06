@@ -3,14 +3,39 @@ import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import { CertificacionService } from 'src/app/services/certificacion.service';
-import { IonicModule } from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import {
+  ribbonOutline,
+  closeOutline,
+  documentTextOutline,
+  readerOutline,
+  businessOutline,
+  checkmarkCircleOutline,
+  chevronDownOutline,
+} from 'ionicons/icons';
+
+import {
+  IonHeader,
+  IonToolbar,
+  IonContent,
+  IonButton,
+  IonIcon,
+} from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-certificacion-modal',
   templateUrl: './certificacion-modal.component.html',
   styleUrls: ['./certificacion-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, IonicModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    IonHeader,
+    IonToolbar,
+    IonContent,
+    IonButton,
+    IonIcon,
+  ],
 })
 export class CertificacionModalComponent implements OnInit {
   @Input() isOpen: boolean = false;
@@ -26,6 +51,16 @@ export class CertificacionModalComponent implements OnInit {
     private modalController: ModalController,
     private certificacionService: CertificacionService
   ) {
+    addIcons({
+      ribbonOutline,
+      closeOutline,
+      documentTextOutline,
+      readerOutline,
+      businessOutline,
+      checkmarkCircleOutline,
+      chevronDownOutline,
+    });
+
     this.certificacionesForm = this.fb.group({
       nombre:      ['', Validators.required],
       cliente:     ['', Validators.required],
@@ -33,14 +68,12 @@ export class CertificacionModalComponent implements OnInit {
     });
   }
 
-  // ✅ ngOnInit en lugar de ngOnChanges — con ModalController los @Input
-  // llegan antes de OnInit pero ngOnChanges nunca se dispara
   ngOnInit() {
     if (this.selectedCertification) {
       this.certificacionesForm.patchValue({
         nombre:      this.selectedCertification.nombre_certificacion,
         descripcion: this.selectedCertification.descripcion,
-        cliente:     this.selectedCertification.fk_cliente,
+        cliente:     String(this.selectedCertification.fk_cliente),
       });
     }
   }

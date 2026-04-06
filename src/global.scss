@@ -283,3 +283,12 @@
 }
 
 
+.cert-modal {
+  --height: 70%;
+  --border-radius: 16px;
+
+  &::part(content) {
+    height: var(--height);
+    border-radius: var(--border-radius);
+  }
+}

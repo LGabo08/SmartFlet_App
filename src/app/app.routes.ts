@@ -18,36 +18,41 @@ export const routes: Routes = [
     path: '',
     component: ShellComponent,
     canActivate: [authGuard],
-children: [
-  { path: '', pathMatch: 'full', redirectTo: 'panel' },
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'panel' },
 
-  { path: 'panel',        loadComponent: () => import('./paginas/panel/panel.page').then(m => m.PanelPage) },
-  { path: 'viajes',       loadComponent: () => import('./paginas/viajes/viajes.page').then(m => m.ViajesPage) },
-  { path: 'asignaciones', loadComponent: () => import('./paginas/asignaciones/asignaciones.page').then(m => m.AsignacionesPage) },
-  { path: 'register',     loadComponent: () => import('./paginas/register/register.page').then(m => m.RegisterPage) },
-  { path: 'usuarios',     loadComponent: () => import('./paginas/usuarios/usuarios.page').then(m => m.UsuariosPage) },
+      { path: 'panel',        loadComponent: () => import('./paginas/panel/panel.page').then(m => m.PanelPage) },
+      { path: 'viajes',       loadComponent: () => import('./paginas/viajes/viajes.page').then(m => m.ViajesPage) },
+      { path: 'asignaciones', loadComponent: () => import('./paginas/asignaciones/asignaciones.page').then(m => m.AsignacionesPage) },
+      { path: 'register',     loadComponent: () => import('./paginas/register/register.page').then(m => m.RegisterPage) },
+      { path: 'usuarios',     loadComponent: () => import('./paginas/usuarios/usuarios.page').then(m => m.UsuariosPage) },
 
-  { path: 'agregar-viaje',   loadComponent: () => import('./paginas/agregar-viaje/agregar-viaje.page').then(m => m.AgregarViajePage) },
-  { path: 'operador',        loadComponent: () => import('./paginas/operador/operador.page').then(m => m.OperadorPage) },
-  { path: 'certificaciones', loadComponent: () => import('./paginas/certificaciones/certificaciones.page').then(m => m.CertificacionesPage) },
-  { path: 'unidades',        loadComponent: () => import('./paginas/unidades/unidades.page').then(m => m.UnidadesPage) },
+      { path: 'agregar-viaje',   loadComponent: () => import('./paginas/agregar-viaje/agregar-viaje.page').then(m => m.AgregarViajePage) },
+      { path: 'operador',        loadComponent: () => import('./paginas/operador/operador.page').then(m => m.OperadorPage) },
+      { path: 'certificaciones', loadComponent: () => import('./paginas/certificaciones/certificaciones.page').then(m => m.CertificacionesPage) },
+      { path: 'unidades',        loadComponent: () => import('./paginas/unidades/unidades.page').then(m => m.UnidadesPage) },
 
-  { path: 'usuarios/:id/editar', loadComponent: () => import('./paginas/register/register.page').then(m => m.RegisterPage) },
+      { path: 'usuarios/:id/editar', loadComponent: () => import('./paginas/register/register.page').then(m => m.RegisterPage) },
 
-  { path: 'viajes/:id/historial', loadComponent: () => import('./paginas/viaje-historial/viaje-historial.page').then(m => m.ViajeHistorialPage) },
+      { path: 'viajes/:id/historial', loadComponent: () => import('./paginas/viaje-historial/viaje-historial.page').then(m => m.ViajeHistorialPage) },
 
-  // ── Operadores — movimientos ANTES que :id para evitar conflicto ──
-  { path: 'operadores/:id/movimientos', loadComponent: () => import('./paginas/operador-movimientos/operador-movimientos.page').then(m => m.OperadorMovimientosPage) },
-  { path: 'operadores/:id',             loadComponent: () => import('./paginas/operador-detalle/operador-detalle.page').then(m => m.OperadorDetallePage) },
+      // ── Operadores — movimientos ANTES que :id para evitar conflicto ──
+      { path: 'operadores/:id/movimientos', loadComponent: () => import('./paginas/operador-movimientos/operador-movimientos.page').then(m => m.OperadorMovimientosPage) },
+      { path: 'operadores/:id',             loadComponent: () => import('./paginas/operador-detalle/operador-detalle.page').then(m => m.OperadorDetallePage) },
 
-  // ── Unidades ──
-  { path: 'unidades/:id', loadComponent: () => import('./paginas/unidad-detalle/unidad-detalle.page').then(m => m.UnidadDetallePage) },
+      // ── Unidades ──
+      { path: 'unidades/:id', loadComponent: () => import('./paginas/unidad-detalle/unidad-detalle.page').then(m => m.UnidadDetallePage) },
 
-  // ── Rutas con prefijo paginas/ (mantener para no romper navegación existente) ──
-  { path: 'paginas/cuotas-operador/:id', loadComponent: () => import('./paginas/cuotas-operador/cuotas-operador.page').then(m => m.CuotasOperadorPage) },
-  { path: 'paginas/operador-crear',      loadComponent: () => import('./paginas/operador-crear/operador-crear.page').then(m => m.OperadorCrearPage) },
-  { path: 'paginas/unidad-crear',        loadComponent: () => import('./paginas/unidad-crear/unidad-crear.page').then(m => m.UnidadCrearPage) },
-],
+      // ── Nueva página global de cuotas ──
+      { path: 'cuotas', loadComponent: () => import('./paginas/cuotas-global/cuotas-global.page').then(m => m.CuotasGlobalPage) },
+
+      // ── Rutas con prefijo paginas/ (se mantienen para no romper navegación existente) ──
+      { path: 'paginas/cuotas-operador/:id', loadComponent: () => import('./paginas/cuotas-operador/cuotas-operador.page').then(m => m.CuotasOperadorPage) },
+      { path: 'paginas/operador-crear',      loadComponent: () => import('./paginas/operador-crear/operador-crear.page').then(m => m.OperadorCrearPage) },
+      { path: 'paginas/unidad-crear',        loadComponent: () => import('./paginas/unidad-crear/unidad-crear.page').then(m => m.UnidadCrearPage) },
+
+      { path: 'configurador', loadComponent: () => import('./paginas/configurador/configurador.page').then(m => m.ConfiguradorPage) },
+    ],
   },
 
   { path: '**', redirectTo: 'login' },

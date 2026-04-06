@@ -26,7 +26,8 @@
         <ion-icon name="document-text-outline"></ion-icon>
         Nombre de la certificación
       </label>
-      <div class="cert-input-wrap" [class.invalid]="certificacionesForm.get('nombre')?.invalid && certificacionesForm.get('nombre')?.touched">
+      <div class="cert-input-wrap"
+        [class.invalid]="certificacionesForm.get('nombre')?.invalid && certificacionesForm.get('nombre')?.touched">
         <input
           class="cert-input"
           formControlName="nombre"
@@ -34,7 +35,8 @@
           placeholder="Ej. ISO 9001, Norma 3..."
         />
       </div>
-      <p class="cert-error" *ngIf="certificacionesForm.get('nombre')?.invalid && certificacionesForm.get('nombre')?.touched">
+      <p class="cert-error"
+        *ngIf="certificacionesForm.get('nombre')?.invalid && certificacionesForm.get('nombre')?.touched">
         El nombre es requerido
       </p>
     </div>
@@ -45,7 +47,8 @@
         <ion-icon name="reader-outline"></ion-icon>
         Descripción
       </label>
-      <div class="cert-input-wrap" [class.invalid]="certificacionesForm.get('descripcion')?.invalid && certificacionesForm.get('descripcion')?.touched">
+      <div class="cert-input-wrap"
+        [class.invalid]="certificacionesForm.get('descripcion')?.invalid && certificacionesForm.get('descripcion')?.touched">
         <textarea
           class="cert-input cert-textarea"
           formControlName="descripcion"
@@ -53,7 +56,8 @@
           rows="3"
         ></textarea>
       </div>
-      <p class="cert-error" *ngIf="certificacionesForm.get('descripcion')?.invalid && certificacionesForm.get('descripcion')?.touched">
+      <p class="cert-error"
+        *ngIf="certificacionesForm.get('descripcion')?.invalid && certificacionesForm.get('descripcion')?.touched">
         La descripción es requerida
       </p>
     </div>
@@ -64,16 +68,19 @@
         <ion-icon name="business-outline"></ion-icon>
         Cliente asignado
       </label>
-      <div class="cert-select-wrap" [class.invalid]="certificacionesForm.get('cliente')?.invalid && certificacionesForm.get('cliente')?.touched">
+      <div class="cert-select-wrap"
+        [class.invalid]="certificacionesForm.get('cliente')?.invalid && certificacionesForm.get('cliente')?.touched">
         <select class="cert-select" formControlName="cliente">
           <option value="" disabled>Selecciona un cliente...</option>
-          <option *ngFor="let cliente of clientes" [value]="cliente.id_cliente">
+          <!-- ✅ FIX: .toString() para que el value sea siempre string -->
+          <option *ngFor="let cliente of clientes" [value]="cliente.id_cliente.toString()">
             {{ cliente.nombre_cliente }}
           </option>
         </select>
         <ion-icon name="chevron-down-outline" class="cert-select-arrow"></ion-icon>
       </div>
-      <p class="cert-error" *ngIf="certificacionesForm.get('cliente')?.invalid && certificacionesForm.get('cliente')?.touched">
+      <p class="cert-error"
+        *ngIf="certificacionesForm.get('cliente')?.invalid && certificacionesForm.get('cliente')?.touched">
         Selecciona un cliente
       </p>
     </div>

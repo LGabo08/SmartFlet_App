@@ -40,7 +40,7 @@ export class RegisterPage implements OnInit {
       nombre: ['', [Validators.required, Validators.maxLength(120)]],
       apellidos: ['', [Validators.required, Validators.maxLength(255)]],
       role_id: [2, Validators.required],
-      estado: ['activo', Validators.required],
+      estado: ['ACTIVO', Validators.required],
 
       // En REGISTRO son requeridas; en EDIT serán opcionales (ajustamos en ngOnInit)
       contrasena: ['', [Validators.required, Validators.minLength(6)]],
@@ -108,7 +108,7 @@ export class RegisterPage implements OnInit {
       nombre: String(this.registerForm.value.nombre ?? '').trim(),
       apellidos: String(this.registerForm.value.apellidos ?? '').trim(),
       role_id: Number(this.registerForm.value.role_id),
-      estado: String(this.registerForm.value.estado ?? 'activo').toLowerCase(),
+      estado: String(this.registerForm.value.estado ?? 'ACTIVO').toUpperCase(),
     };
 
     const pass = String(this.registerForm.value.contrasena ?? '');

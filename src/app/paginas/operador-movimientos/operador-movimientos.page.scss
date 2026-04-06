@@ -289,3 +289,231 @@
   color: #aaa;
   white-space: nowrap;
 }
+
+
+/* operador-movimientos.page.scss
+   Mantiene todos los estilos que ya tenías y agrega los del date range */
+
+/* ── Filtros ── */
+.mov-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
+  margin-bottom: 16px;
+  background: white;
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+}
+
+.mov-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  &--range { flex: 1; min-width: 130px; }
+}
+
+.mov-filter-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #777;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+/* Input de fecha nativo */
+.mov-date-input {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 14px;
+  color: #0f172a;
+  background: #f8fafc;
+  outline: none;
+  cursor: pointer;
+  transition: border-color .2s;
+  &:focus { border-color: #01265c; }
+}
+
+.btn-buscar {
+  --background: #01265c;
+  --color: white;
+  --border-radius: 8px;
+  align-self: flex-end;
+  height: 36px;
+}
+
+.btn-limpiar {
+  --border-radius: 8px;
+  --color: #333;
+  --border-color: #ddd;
+  align-self: flex-end;
+}
+
+/* ── Select de tipo ── */
+.mov-select {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 14px;
+  color: #0f172a;
+  background: #f8fafc;
+  outline: none;
+  min-width: 150px;
+  cursor: pointer;
+  &:focus { border-color: #01265c; }
+}
+
+/* ── Tarjetas de totales ── */
+.mov-totales {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+
+  @media (max-width: 400px) { grid-template-columns: 1fr; }
+}
+
+.total-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+
+  ion-icon { font-size: 1.5rem; color: #94a3b8; flex-shrink: 0; }
+
+  &__label { display: block; font-size: 12px; color: #777; text-transform: uppercase; letter-spacing: .04em; }
+  &__value { display: block; font-size: 1rem; font-weight: 700; color: #0f172a; }
+
+  &--ingreso  { ion-icon { color: #16a34a; } .total-card__value { color: #16a34a; } }
+  &--egreso   { ion-icon { color: #dc2626; } .total-card__value { color: #dc2626; } }
+  &--positivo { ion-icon { color: #01265c; } .total-card__value { color: #01265c; } }
+  &--negativo { ion-icon { color: #dc2626; } .total-card__value { color: #dc2626; } }
+}
+
+/* ── Loading / empty / error ── */
+.mov-loading, .mov-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 40px 20px;
+  color: #777;
+  text-align: center;
+  ion-icon { font-size: 2.5rem; color: #bbb; }
+}
+
+.mov-error-card {
+  --background: #fff5f5;
+  border-radius: 12px;
+}
+
+/* ── Lista ── */
+.mov-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mov-item {
+  display: flex;
+  gap: 12px;
+  background: white;
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+
+  &__indicator {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1rem;
+
+    &--ingreso { background: rgba(22,163,74,.1);  color: #16a34a; }
+    &--egreso  { background: rgba(220,38,38,.1); color: #dc2626; }
+  }
+
+  &__body { flex: 1; min-width: 0; }
+
+  &__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  &__foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+}
+
+.mov-monto {
+  font-weight: 700;
+  font-size: 1rem;
+  white-space: nowrap;
+  &--ingreso { color: #16a34a; }
+  &--egreso  { color: #dc2626; }
+}
+
+.mov-tipo-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 700;
+
+  &--success { background: rgba(22,163,74,.1);   color: #16a34a; }
+  &--primary { background: rgba(1,38,92,.1);      color: #01265c; }
+  &--danger  { background: rgba(220,38,38,.1);   color: #dc2626; }
+  &--medium  { background: rgba(100,116,139,.1); color: #64748b; }
+}
+
+.mov-viaje, .mov-desc {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #64748b;
+  ion-icon { font-size: 14px; flex-shrink: 0; }
+}
+
+.mov-estado-badge {
+  font-size: 11px;
+  background: rgba(217,119,6,.1);
+  color: #d97706;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.mov-coordinador {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #64748b;
+  ion-icon { font-size: 13px; }
+}
+
+.mov-fecha {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-left: auto;
+}

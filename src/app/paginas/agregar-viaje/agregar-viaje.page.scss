@@ -49,7 +49,7 @@
   border-radius: var(--sf-radius);
   box-shadow: var(--sf-shadow);
   border: 1px solid var(--sf-border);
-  overflow: hidden;
+  /* ✅ quitamos overflow: hidden para que el dropdown no se corte */
   position: relative;
 }
 
@@ -59,6 +59,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
+  border-radius: var(--sf-radius);
   background:
     radial-gradient(700px 220px at 10% 0%, rgba(5, 17, 242, .14), transparent 60%),
     radial-gradient(700px 220px at 90% 0%, rgba(36, 92, 166, .12), transparent 60%);
@@ -75,6 +76,7 @@
   letter-spacing: .6px;
   text-transform: uppercase;
   border-bottom: 4px solid var(--sf-red);
+  border-radius: var(--sf-radius) var(--sf-radius) 0 0;
 }
 
 /* ===== Title ===== */
@@ -96,19 +98,28 @@
   gap: 14px;
 }
 
-/* ===== Grid (3 cols -> responsive) ===== */
+/* ===== Grid ===== */
 .sf-grid {
   display: grid;
   gap: 14px;
+}
+
+.sf-grid--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .sf-grid--3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-/* ✅ responsive */
 @media (max-width: 980px) {
   .sf-grid--3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .sf-grid--2 {
     grid-template-columns: 1fr;
   }
 }
@@ -117,6 +128,7 @@
 .sf-field {
   display: grid;
   gap: 8px;
+  position: relative; /* ✅ necesario para el dropdown */
 }
 
 /* Labels */
@@ -254,6 +266,38 @@ ion-chip {
   cursor: not-allowed;
   filter: grayscale(.15);
   box-shadow: none;
+}
+
+/* ===== Dropdown buscador de rutas ===== */
+.sf-dropdown {
+  position: absolute;
+  top: calc(var(--sf-input-h) + 30px); /* ✅ debajo del label + input */
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  max-height: 220px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid var(--sf-border-2);
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(13, 13, 13, 0.18);
+}
+
+.sf-dropdown-item {
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--sf-text);
+  cursor: pointer;
+  transition: background 120ms ease;
+
+  &:hover {
+    background: rgba(5, 17, 242, 0.06);
+    color: var(--sf-blue);
+  }
+
+  &:first-child { border-radius: 14px 14px 0 0; }
+  &:last-child  { border-radius: 0 0 14px 14px; }
 }
 
 /* ===== Pequeños detalles ===== */

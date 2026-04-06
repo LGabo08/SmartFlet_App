@@ -98,13 +98,18 @@
               <ion-icon name="chevron-down-outline"></ion-icon>
             </div>
 
-            <div slot="content" class="sf-acc__content">
-              <ion-menu-toggle auto-hide="false">
-                <a class="sf-item" routerLink="/operador" routerDirection="root">
-                  Listado de operadores
-                </a>
-              </ion-menu-toggle>
-            </div>
+       <div slot="content" class="sf-acc__content">
+  <ion-menu-toggle auto-hide="false">
+    <a class="sf-item" routerLink="/operador" routerDirection="root">
+      Listado de operadores
+    </a>
+  </ion-menu-toggle>
+  <ion-menu-toggle auto-hide="false">
+    <a class="sf-item" routerLink="/cuotas" routerDirection="root">
+      Cuotas de operadores
+    </a>
+  </ion-menu-toggle>
+</div>
           </ion-accordion>
 
           <!-- UNIDADES -->
@@ -152,6 +157,13 @@
                   Listado de usuarios
                 </a>
               </ion-menu-toggle>
+
+                  <ion-menu-toggle auto-hide="false">
+                 <a class="sf-item" routerLink="/configurador">
+                  Configurador de permisos
+                </a>
+              </ion-menu-toggle>
+             
             </div>
           </ion-accordion>
 

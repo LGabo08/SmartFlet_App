@@ -1,0 +1,312 @@
+<ion-header>
+  <ion-toolbar class="cfg-toolbar">
+    <ion-title>Configurador de permisos</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="confirmarSincronizar()" [disabled]="sincronizando"
+        style="--color:#fff; font-size:13px;">
+        <ion-icon name="sync-outline" slot="start"></ion-icon>
+        {{ sincronizando ? 'Sincronizando...' : 'Sincronizar' }}
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <ion-toolbar>
+    <ion-segment [(ngModel)]="tab" style="--background:#f5f5f5;">
+      <ion-segment-button value="roles">
+        <ion-label>Roles</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="nuevo-rol">
+        <ion-label>Nuevo rol</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="usuarios">
+        <ion-label>Usuarios</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!--  TAB: ROLES                                                           -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <ng-container *ngIf="tab === 'roles'">
+
+    <div class="info-cards">
+      <div class="info-card">
+        <div class="info-card__icon">🛡️</div>
+        <div class="info-card__body">
+          <span class="info-card__title">¿Qué es un rol?</span>
+          <span class="info-card__text">Un rol es un conjunto de permisos que se asigna a varios usuarios a la vez.</span>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-card__icon">✅</div>
+        <div class="info-card__body">
+          <span class="info-card__title">Activar / desactivar</span>
+          <span class="info-card__text">Usa el toggle del módulo para activar o desactivar todos sus permisos de un golpe.</span>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-card__icon">💾</div>
+        <div class="info-card__body">
+          <span class="info-card__title">Guardar cambios</span>
+          <span class="info-card__text">Los cambios no se aplican hasta que presiones "Guardar permisos del rol".</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="gap-16"></div>
+
+    <div class="cfg-loading" *ngIf="cargandoRoles">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando roles...</p>
+    </div>
+
+    <ng-container *ngIf="!cargandoRoles">
+
+      <div *ngFor="let rol of roles"
+        class="rol-item"
+        [class.rol-item--activo]="rolSeleccionado === rol.id"
+        (click)="seleccionarRol(rol.id)">
+        <span class="rol-item__nombre">{{ rol.nombre }}</span>
+        <span class="rol-item__badge">{{ rol.permisos.length }} permisos</span>
+      </div>
+
+      <div class="gap-16"></div>
+
+      <div class="modulo-section" *ngFor="let mod of modulos">
+        <div class="modulo-header" (click)="toggleExpandModulo(mod)">
+          <ion-toggle
+            [checked]="moduloCompleto(mod)"
+            (ionChange)="toggleModulo(mod, $event.detail.checked)"
+            (click)="$event.stopPropagation()">
+          </ion-toggle>
+          <span class="modulo-header__nombre">{{ mod.modulo }}</span>
+          <span class="modulo-header__contador">{{ contarActivos(mod) }}/{{ mod.permisos.length }}</span>
+          <ion-icon name="chevron-down-outline" [class.rotado]="mod.expandido"></ion-icon>
+        </div>
+        <ng-container *ngIf="mod.expandido">
+          <div class="permiso-item" *ngFor="let permiso of mod.permisos">
+            <ion-toggle
+              [checked]="tienePermiso(permiso.id)"
+              (ionChange)="togglePermiso(permiso.id, $event.detail.checked)">
+            </ion-toggle>
+            <div class="permiso-item__info">
+              <span class="permiso-item__desc">{{ permiso.descripcion }}</span>
+              <span class="permiso-item__clave">{{ permiso.clave }}</span>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+
+      <div class="gap-16"></div>
+
+      <button class="btn-guardar" (click)="guardarRol()" [disabled]="guardandoRol || !rolSeleccionado">
+        <ion-spinner *ngIf="guardandoRol" name="crescent"></ion-spinner>
+        <ion-icon *ngIf="!guardandoRol" name="save-outline"></ion-icon>
+        {{ guardandoRol ? 'Guardando...' : 'Guardar permisos del rol' }}
+      </button>
+
+      <div class="gap-24"></div>
+    </ng-container>
+  </ng-container>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!--  TAB: NUEVO ROL                                                       -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <ng-container *ngIf="tab === 'nuevo-rol'">
+
+    <div class="info-cards">
+      <div class="info-card">
+        <div class="info-card__icon">🆕</div>
+        <div class="info-card__body">
+          <span class="info-card__title">Crear un rol nuevo</span>
+          <span class="info-card__text">Define el nombre, descripción y los permisos que tendrá el rol desde el inicio.</span>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-card__icon">👥</div>
+        <div class="info-card__body">
+          <span class="info-card__title">Asignación posterior</span>
+          <span class="info-card__text">Una vez creado, podrás asignar este rol a usuarios desde la pantalla de registro.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="gap-16"></div>
+
+    <!-- Formulario -->
+    <div class="form-section">
+
+      <div class="form-field">
+        <label class="form-label">Nombre del rol *</label>
+        <input
+          class="form-input"
+          type="text"
+          [(ngModel)]="nuevoRol.nombre"
+          placeholder="Ej. SUPERVISOR"
+          maxlength="60"
+          style="text-transform: uppercase;"
+          (input)="nuevoRol.nombre = nuevoRol.nombre.toUpperCase()">
+        <span class="form-hint">{{ nuevoRol.nombre.length }}/60 caracteres</span>
+      </div>
+
+      <div class="form-field">
+        <label class="form-label">Descripción <span class="form-label--opt">(opcional)</span></label>
+        <textarea
+          class="form-textarea"
+          [(ngModel)]="nuevoRol.descripcion"
+          placeholder="Describe brevemente las responsabilidades de este rol..."
+          rows="3"
+          maxlength="255">
+        </textarea>
+        <span class="form-hint">{{ nuevoRol.descripcion.length }}/255 caracteres</span>
+      </div>
+
+    </div>
+
+    <div class="gap-16"></div>
+
+    <!-- Permisos del nuevo rol -->
+    <div class="seccion-titulo">
+      <ion-icon name="shield-checkmark-outline"></ion-icon>
+      <span>Permisos del nuevo rol</span>
+    </div>
+
+    <div class="gap-8"></div>
+
+    <div class="cfg-loading" *ngIf="cargandoRoles">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando permisos...</p>
+    </div>
+
+    <ng-container *ngIf="!cargandoRoles">
+      <div class="modulo-section" *ngFor="let mod of modulosNuevoRol">
+        <div class="modulo-header" (click)="toggleExpandModuloNuevo(mod)">
+          <ion-toggle
+            [checked]="moduloCompletoNuevo(mod)"
+            (ionChange)="toggleModuloNuevo(mod, $event.detail.checked)"
+            (click)="$event.stopPropagation()">
+          </ion-toggle>
+          <span class="modulo-header__nombre">{{ mod.modulo }}</span>
+          <span class="modulo-header__contador">{{ contarActivosNuevo(mod) }}/{{ mod.permisos.length }}</span>
+          <ion-icon name="chevron-down-outline" [class.rotado]="mod.expandido"></ion-icon>
+        </div>
+        <ng-container *ngIf="mod.expandido">
+          <div class="permiso-item" *ngFor="let permiso of mod.permisos">
+            <ion-toggle
+              [checked]="nuevoRolPermisos.has(permiso.id)"
+              (ionChange)="togglePermisoNuevo(permiso.id, $event.detail.checked)">
+            </ion-toggle>
+            <div class="permiso-item__info">
+              <span class="permiso-item__desc">{{ permiso.descripcion }}</span>
+              <span class="permiso-item__clave">{{ permiso.clave }}</span>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </ng-container>
+
+    <div class="gap-16"></div>
+
+    <button class="btn-guardar" (click)="crearRol()" [disabled]="creandoRol || !nuevoRol.nombre.trim()">
+      <ion-spinner *ngIf="creandoRol" name="crescent"></ion-spinner>
+      <ion-icon *ngIf="!creandoRol" name="add-circle-outline"></ion-icon>
+      {{ creandoRol ? 'Creando rol...' : 'Crear rol' }}
+    </button>
+
+    <div class="gap-24"></div>
+
+  </ng-container>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!--  TAB: USUARIOS                                                        -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <ng-container *ngIf="tab === 'usuarios'">
+
+    <div class="info-cards">
+      <div class="info-card">
+        <div class="info-card__icon">👤</div>
+        <div class="info-card__body">
+          <span class="info-card__title">Personalización</span>
+          <span class="info-card__text">Ajusta los permisos de un usuario en específico, sin cambiar su rol.</span>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-card__icon">➕</div>
+        <div class="info-card__body">
+          <span class="info-card__title">GRANT — Agregar</span>
+          <span class="info-card__text">Da un permiso extra que el rol del usuario no tiene por defecto.</span>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-card__icon">✕</div>
+        <div class="info-card__body">
+          <span class="info-card__title">DENY — Quitar</span>
+          <span class="info-card__text">Quita un permiso que el usuario tendría por su rol, solo para este usuario.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="gap-16"></div>
+
+    <div class="usuario-select-wrap">
+      <label>Selecciona un usuario</label>
+      <select class="usuario-select" (change)="seleccionarUsuario($event)">
+        <option value="">— Elige un usuario —</option>
+        <option *ngFor="let u of usuarios" [value]="u.idUsuario">
+          {{ u.nombre }} {{ u.apellidos }} · {{ u.email }}
+        </option>
+      </select>
+    </div>
+
+    <div class="cfg-loading" *ngIf="cargandoUsuario">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando permisos del usuario...</p>
+    </div>
+
+    <ng-container *ngIf="!cargandoUsuario && modulosUsuario.length">
+
+      <div class="modulo-section" *ngFor="let mod of modulosUsuario">
+        <div class="modulo-header" (click)="mod.expandido = !mod.expandido">
+          <span class="modulo-header__nombre">{{ mod.modulo }}</span>
+          <ion-icon name="chevron-down-outline" [class.rotado]="mod.expandido"></ion-icon>
+        </div>
+        <ng-container *ngIf="mod.expandido">
+          <div class="permiso-usuario-item" *ngFor="let permiso of mod.permisos">
+            <div class="permiso-usuario-item__info">
+              <span class="permiso-usuario-item__desc">{{ permiso.descripcion }}</span>
+              <span class="permiso-usuario-item__clave">{{ permiso.clave }}</span>
+              <span class="permiso-usuario-item__en-rol" *ngIf="permiso.en_rol">✓ Incluido en el rol</span>
+            </div>
+            <div class="tipo-select-wrap">
+              <select
+                class="tipo-select"
+                [class.tipo-select--grant]="permiso.tipo === 'GRANT'"
+                [class.tipo-select--deny]="permiso.tipo === 'DENY'"
+                [value]="permiso.tipo ?? 'NINGUNO'"
+                (change)="setTipoUsuario(permiso, $any($event.target).value)">
+                <option value="NINGUNO">Del rol</option>
+                <option value="GRANT">+ Agregar</option>
+                <option value="DENY">✕ Quitar</option>
+              </select>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+
+      <div class="gap-16"></div>
+
+      <button class="btn-guardar" (click)="guardarUsuario()" [disabled]="guardandoUsuario">
+        <ion-spinner *ngIf="guardandoUsuario" name="crescent"></ion-spinner>
+        <ion-icon *ngIf="!guardandoUsuario" name="save-outline"></ion-icon>
+        {{ guardandoUsuario ? 'Guardando...' : 'Guardar permisos del usuario' }}
+      </button>
+
+      <div class="gap-24"></div>
+    </ng-container>
+
+  </ng-container>
+
+</ion-content>

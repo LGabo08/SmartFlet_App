@@ -256,17 +256,29 @@ export class CuotasOperadorPage implements OnInit {
       return !term || inicio.includes(term) || fin.includes(term) || estado.includes(term);
     });
   }
-
-  getEstadoLabel(c: OperadorCuota): string { return c.estado_cuota || 'SIN_CONFIGURAR'; }
-
-  getEstadoClass(c: OperadorCuota): string {
-    switch ((c.estado_cuota || '').toUpperCase()) {
-      case 'ACTIVA':  return 'ok';
-      case 'BAJA':    return 'warn';
-      case 'AGOTADA': return 'off';
-      default:        return 'off';
-    }
+getEstadoLabel(c: OperadorCuota): string {
+  switch ((c.estado_cuota ?? '').toUpperCase()) {
+    case 'ACTIVA':         return 'Activa';
+    case 'CUMPLIDA':       return 'Cumplida';
+    case 'EXCEDIDA':       return 'Excedida';
+    case 'PENDIENTE':      return 'Pendiente';
+    case 'AGOTADA':        return 'Agotada';
+    case 'SIN_CONFIGURAR': return 'Sin configurar';
+    default:               return c.estado_cuota ?? 'Sin configurar';
   }
+}
+
+getEstadoClass(c: OperadorCuota): string {
+  switch ((c.estado_cuota ?? '').toUpperCase()) {
+    case 'ACTIVA':         return 'ok';
+    case 'CUMPLIDA':       return 'cumplida';
+    case 'EXCEDIDA':       return 'excedida';
+    case 'PENDIENTE':      return 'pendiente';
+    case 'AGOTADA':        return 'off';
+    case 'SIN_CONFIGURAR': return 'off';
+    default:               return 'off';
+  }
+}
 
   esCuotaActiva(c: OperadorCuota): boolean {
     const hoy = new Date().toISOString().split('T')[0];

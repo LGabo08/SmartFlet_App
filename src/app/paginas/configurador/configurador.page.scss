@@ -1,0 +1,653 @@
+$primary:     #0b2c5d;
+$primary-light: #e8f0fe;
+$success:     #2e7d32;
+$danger:      #c62828;
+$medium:      #9e9e9e;
+$border:      #f0f0f0;
+$bg-light:    #f9f9f9;
+
+// ── Toolbar ───────────────────────────────────────────────────────────────────
+.cfg-toolbar {
+  --background: #{$primary};
+  --color: #fff;
+}
+
+// ── Loading ───────────────────────────────────────────────────────────────────
+.cfg-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 0;
+  gap: 10px;
+  color: $medium;
+  ion-spinner { width: 32px; height: 32px; }
+  p { font-size: 13px; margin: 0; }
+}
+
+// ── Cards explicativas ────────────────────────────────────────────────────────
+.info-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.info-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: $primary-light;
+  border: 1.5px solid $primary;
+  border-radius: 10px;
+  padding: 12px 14px;
+
+  &__icon {
+    font-size: 22px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  &__title {
+    font-size: 13px;
+    font-weight: 700;
+    color: $primary;
+  }
+
+  &__text {
+    font-size: 12px;
+    color: #3c5fa0;
+    line-height: 1.5;
+  }
+}
+
+// ── Selector de roles ─────────────────────────────────────────────────────────
+.rol-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  background: $primary-light;
+  border: 1.5px solid $primary;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &--activo {
+    background: $primary;
+    .rol-item__nombre { color: #fff; }
+    .rol-item__badge  { background: rgba(255,255,255,0.2); color: #fff; }
+  }
+
+  &__nombre {
+    font-size: 14px;
+    font-weight: 700;
+    color: $primary;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  &__badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: $primary;
+    color: #fff;
+  }
+}
+
+// ── Sección módulo ────────────────────────────────────────────────────────────
+.modulo-section {
+  margin-bottom: 10px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1.5px solid $primary;
+  box-shadow: 0 1px 4px rgba(11,44,93,0.08);
+}
+
+.modulo-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: $primary;
+  padding: 12px 16px;
+  cursor: pointer;
+
+  &__nombre {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  &__contador {
+    font-size: 11px;
+    color: rgba(255,255,255,0.7);
+  }
+
+  ion-toggle {
+    --track-background: rgba(255,255,255,0.3);
+    --track-background-checked: #4ade80;
+    --handle-background: #fff;
+    --handle-background-checked: #fff;
+    width: 44px;
+    height: 24px;
+  }
+
+  ion-icon {
+    color: rgba(255,255,255,0.8);
+    font-size: 16px;
+    transition: transform 0.2s;
+    &.rotado { transform: rotate(180deg); }
+  }
+}
+
+// ── Items de permiso ──────────────────────────────────────────────────────────
+.permiso-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid $primary-light;
+  background: #fff;
+
+  &:last-child { border-bottom: none; }
+
+  &:hover { background: $primary-light; }
+
+  ion-toggle { flex-shrink: 0; margin-top: 2px; }
+
+  &__info { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+  &__desc  { font-size: 13px; font-weight: 500; color: #1a2e6e; }
+  &__clave { font-size: 11px; color: $medium; font-family: monospace; }
+}
+
+// ── Botón guardar ─────────────────────────────────────────────────────────────
+.btn-guardar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: $primary;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: opacity 0.15s;
+
+  &:disabled { opacity: 0.55; cursor: not-allowed; }
+  &:not(:disabled):hover { opacity: 0.88; }
+  ion-spinner { width: 18px; height: 18px; }
+}
+
+// ── Selector de usuario ───────────────────────────────────────────────────────
+.usuario-select-wrap {
+  margin-bottom: 16px;
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: $primary;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+  }
+}
+
+.usuario-select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid $primary;
+  border-radius: 8px;
+  background: $primary-light;
+  font-size: 13px;
+  color: $primary;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 500;
+  &:focus { outline: none; }
+}
+
+// ── Item permiso usuario ──────────────────────────────────────────────────────
+.permiso-usuario-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid $primary-light;
+  background: #fff;
+  &:last-child { border-bottom: none; }
+  &:hover { background: $primary-light; }
+
+  &__info    { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  &__desc    { font-size: 13px; font-weight: 500; color: #1a2e6e; }
+  &__clave   { font-size: 11px; color: $medium; font-family: monospace; }
+  &__en-rol  { font-size: 11px; color: $success; font-weight: 600; }
+}
+
+.tipo-select-wrap {
+  position: relative;
+  min-width: 100px;
+  &::after {
+    content: '▾';
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 11px;
+    color: $medium;
+  }
+}
+
+.tipo-select {
+  width: 100%;
+  padding: 6px 24px 6px 10px;
+  border: 1.5px solid $primary;
+  border-radius: 8px;
+  background: $primary-light;
+  font-size: 12px;
+  color: $primary;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+  &:focus { outline: none; }
+  &--grant { border-color: #4ade80; background: #f0fdf4; color: $success; }
+  &--deny  { border-color: #f87171; background: #fff5f5; color: $danger;  }
+}
+
+.gap-16 { height: 16px; }
+.gap-24 { height: 24px; }
+
+
+
+$primary:     #0b2c5d;
+$primary-light: #e8f0fe;
+$success:     #2e7d32;
+$danger:      #c62828;
+$medium:      #9e9e9e;
+$border:      #f0f0f0;
+$bg-light:    #f9f9f9;
+
+// ── Toolbar ───────────────────────────────────────────────────────────────────
+.cfg-toolbar {
+  --background: #{$primary};
+  --color: #fff;
+}
+
+// ── Loading ───────────────────────────────────────────────────────────────────
+.cfg-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 0;
+  gap: 10px;
+  color: $medium;
+  ion-spinner { width: 32px; height: 32px; }
+  p { font-size: 13px; margin: 0; }
+}
+
+// ── Cards explicativas ────────────────────────────────────────────────────────
+.info-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.info-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: $primary-light;
+  border: 1.5px solid $primary;
+  border-radius: 10px;
+  padding: 12px 14px;
+
+  &__icon {
+    font-size: 22px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  &__title {
+    font-size: 13px;
+    font-weight: 700;
+    color: $primary;
+  }
+
+  &__text {
+    font-size: 12px;
+    color: #3c5fa0;
+    line-height: 1.5;
+  }
+}
+
+// ── Selector de roles ─────────────────────────────────────────────────────────
+.rol-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  background: $primary-light;
+  border: 1.5px solid $primary;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &--activo {
+    background: $primary;
+    .rol-item__nombre { color: #fff; }
+    .rol-item__badge  { background: rgba(255,255,255,0.2); color: #fff; }
+  }
+
+  &__nombre {
+    font-size: 14px;
+    font-weight: 700;
+    color: $primary;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  &__badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: $primary;
+    color: #fff;
+  }
+}
+
+// ── Sección módulo ────────────────────────────────────────────────────────────
+.modulo-section {
+  margin-bottom: 10px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1.5px solid $primary;
+  box-shadow: 0 1px 4px rgba(11,44,93,0.08);
+}
+
+.modulo-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: $primary;
+  padding: 12px 16px;
+  cursor: pointer;
+
+  &__nombre {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  &__contador {
+    font-size: 11px;
+    color: rgba(255,255,255,0.7);
+  }
+
+  ion-toggle {
+    --track-background: rgba(255,255,255,0.3);
+    --track-background-checked: #4ade80;
+    --handle-background: #fff;
+    --handle-background-checked: #fff;
+    width: 44px;
+    height: 24px;
+  }
+
+  ion-icon {
+    color: rgba(255,255,255,0.8);
+    font-size: 16px;
+    transition: transform 0.2s;
+    &.rotado { transform: rotate(180deg); }
+  }
+}
+
+// ── Items de permiso ──────────────────────────────────────────────────────────
+.permiso-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid $primary-light;
+  background: #fff;
+
+  &:last-child { border-bottom: none; }
+
+  &:hover { background: $primary-light; }
+
+  ion-toggle { flex-shrink: 0; margin-top: 2px; }
+
+  &__info { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+  &__desc  { font-size: 13px; font-weight: 500; color: #1a2e6e; }
+  &__clave { font-size: 11px; color: $medium; font-family: monospace; }
+}
+
+// ── Botón guardar ─────────────────────────────────────────────────────────────
+.btn-guardar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: $primary;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: opacity 0.15s;
+
+  &:disabled { opacity: 0.55; cursor: not-allowed; }
+  &:not(:disabled):hover { opacity: 0.88; }
+  ion-spinner { width: 18px; height: 18px; }
+}
+
+// ── Selector de usuario ───────────────────────────────────────────────────────
+.usuario-select-wrap {
+  margin-bottom: 16px;
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: $primary;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+  }
+}
+
+.usuario-select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid $primary;
+  border-radius: 8px;
+  background: $primary-light;
+  font-size: 13px;
+  color: $primary;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 500;
+  &:focus { outline: none; }
+}
+
+// ── Item permiso usuario ──────────────────────────────────────────────────────
+.permiso-usuario-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid $primary-light;
+  background: #fff;
+  &:last-child { border-bottom: none; }
+  &:hover { background: $primary-light; }
+
+  &__info    { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  &__desc    { font-size: 13px; font-weight: 500; color: #1a2e6e; }
+  &__clave   { font-size: 11px; color: $medium; font-family: monospace; }
+  &__en-rol  { font-size: 11px; color: $success; font-weight: 600; }
+}
+
+.tipo-select-wrap {
+  position: relative;
+  min-width: 100px;
+  &::after {
+    content: '▾';
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 11px;
+    color: $medium;
+  }
+}
+
+.tipo-select {
+  width: 100%;
+  padding: 6px 24px 6px 10px;
+  border: 1.5px solid $primary;
+  border-radius: 8px;
+  background: $primary-light;
+  font-size: 12px;
+  color: $primary;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+  &:focus { outline: none; }
+  &--grant { border-color: #4ade80; background: #f0fdf4; color: $success; }
+  &--deny  { border-color: #f87171; background: #fff5f5; color: $danger;  }
+}
+
+.gap-16 { height: 16px; }
+.gap-24 { height: 24px; }
+
+// ── Formulario nuevo rol ──────────────────────────────────────────────────────
+.form-section {
+  background: #fff;
+  border: 1.5px solid #0b2c5d;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #e8f0fe;
+
+  &:last-child { border-bottom: none; }
+}
+
+.form-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #0b2c5d;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  &--opt {
+    font-weight: 400;
+    color: #9e9e9e;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 11px;
+  }
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8faff;
+  font-size: 14px;
+  font-weight: 600;
+  color: #0b2c5d;
+  font-family: inherit;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+    border-color: #0b2c5d;
+    background: #fff;
+  }
+
+  &::placeholder { color: #b0bec5; font-weight: 400; }
+}
+
+.form-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8faff;
+  font-size: 13px;
+  color: #333;
+  font-family: inherit;
+  resize: vertical;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+    border-color: #0b2c5d;
+    background: #fff;
+  }
+
+  &::placeholder { color: #b0bec5; }
+}
+
+.form-hint {
+  font-size: 11px;
+  color: #9e9e9e;
+  text-align: right;
+}
+
+// ── Título de sección ─────────────────────────────────────────────────────────
+.seccion-titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0b2c5d;
+
+  ion-icon { font-size: 18px; }
+}
+
+.gap-8 { height: 8px; }

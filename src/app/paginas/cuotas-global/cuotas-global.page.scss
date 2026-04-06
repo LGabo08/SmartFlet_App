@@ -1,0 +1,291 @@
+/* cuotas-global.page.scss
+   Reutiliza las mismas clases del proyecto (.quota-toolbar, .quota-metrics,
+   .metric-card, .quota-panel, .quota-form, .quota-table, .badge, etc.)
+   y solo agrega lo nuevo para los bloques de operador. */
+
+/* ── Page ── */
+.quota-global-page {
+  background: #f4f6f9;
+}
+
+/* ── Toolbar (igual que cuotas-operador) ── */
+.quota-toolbar {
+  --background: #01265c;
+  --color: white;
+}
+.back-btn { color: white; }
+
+/* ── Buscador (mismo estilo que .quota-search existente) ── */
+.quota-search {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 6px 10px;
+  gap: 6px;
+  background: white;
+
+  input {
+    border: none;
+    outline: none;
+    font-size: 14px;
+    flex: 1;
+  }
+}
+
+/* ── Métricas globales (reutiliza .quota-metrics / .metric-card) ── */
+.quota-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.metric-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  &__label { font-size: 13px; color: #777; }
+  &__value { font-size: 22px; font-weight: bold; color: #01265c; }
+}
+
+/* ── Formulario (reutiliza .quota-panel / .quota-form) ── */
+.quota-panel {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+
+  &__head {
+    h2 { margin: 0; }
+    p  { margin: 4px 0 16px; font-size: 13px; color: #777; }
+  }
+}
+
+.quota-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+
+  .field {
+    display: flex;
+    flex-direction: column;
+
+    label { font-size: 13px; margin-bottom: 4px; color: #555; }
+
+    input, select {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 14px;
+      outline: none;
+      &:focus { border-color: #01265c; }
+      &:disabled { opacity: .5; }
+    }
+  }
+
+  &__actions {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+  }
+}
+
+.btn-primary   { --background: #01265c; --color: white; }
+.btn-secondary { --background: #e7e7e7; --color: #333; }
+.dias-hint     { font-size: 0.72rem; color: #6b7280; font-weight: 400; }
+.field-warn    { font-size: 0.72rem; color: #dc2626; font-weight: 600; margin-top: 2px; }
+
+/* ── Bloque de operador ── */
+.operador-block {
+  background: white;
+  border-radius: 12px;
+  margin-bottom: 14px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+/* Cabecera clicable */
+.operador-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: background .15s;
+  &:hover { background: #f8f9fb; }
+
+  &__avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #01265c;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    letter-spacing: .03em;
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+    h3 { margin: 0 0 2px; font-size: 0.95rem; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    p  { margin: 0; font-size: 0.78rem; color: #64748b; }
+  }
+
+  &__right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+}
+
+/* Barra de progreso */
+.prog-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+.prog-label {
+  font-size: 0.7rem;
+  color: #64748b;
+}
+.prog-bar {
+  width: 100px;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 99px;
+  overflow: hidden;
+
+  &__fill {
+    height: 100%;
+    background: #01265c;
+    border-radius: 99px;
+    transition: width .4s ease;
+  }
+}
+
+.chevron-icon {
+  font-size: 1.2rem;
+  color: #94a3b8;
+  margin-left: 6px;
+}
+
+/* Acciones rápidas */
+.operador-quick {
+  display: flex;
+  gap: 8px;
+  padding: 0 16px 12px;
+  border-bottom: 1px solid #eee;
+  flex-wrap: wrap;
+
+  ion-button {
+    --border-radius: 8px;
+    --border-color: #ddd;
+    --color: #01265c;
+    font-size: 0.82rem;
+  }
+}
+
+/* Cuotas expandibles */
+.operador-cuotas {
+  padding: 12px 16px;
+  animation: fadeDown .2s ease;
+}
+
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Tabla (igual que en cuotas-operador) ── */
+.table-wrapper { overflow-x: auto; }
+
+.quota-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead { background: #01265c; color: white; }
+  th    { text-align: left; padding: 10px; font-size: 14px; }
+  td    { padding: 10px; border-bottom: 1px solid #eee; font-size: 14px; vertical-align: middle; }
+  tbody tr:hover { background: #f8f9fb; }
+  .text-center { text-align: center; }
+}
+
+.row-active td { background: #f0fdf4 !important; }
+
+.semana-cell { display: flex; flex-direction: column; gap: 2px; }
+.activa-tag  {
+  display: inline-block; padding: 1px 8px; border-radius: 20px;
+  background: #dcfce7; color: #166534;
+  font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+}
+
+/* ── Badges ── */
+.badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  &.ok   { background: #d1fae5; color: #065f46; }
+  &.warn { background: #fef3c7; color: #92400e; }
+  &.off  { background: #fee2e2; color: #991b1b; }
+}
+
+/* ── Acciones de fila ── */
+.quota-actions { display: flex; justify-content: center; gap: 8px; }
+.icon-btn         { --background: #eef2ff; --color: #01265c; }
+.icon-btn--danger { --background: #fff1f1; --color: #b42318; }
+
+/* ── Empty / loading ── */
+.empty-state {
+  text-align: center;
+  padding: 30px;
+  color: #666;
+  ion-icon { font-size: 40px; color: #bbb; }
+  h3 { margin: 8px 0 4px; }
+  p  { margin: 0; }
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .quota-table thead { display: none; }
+  .quota-table tr    { display: block; margin-bottom: 14px; border-bottom: 2px solid #eee; }
+  .quota-table td    { display: flex; justify-content: space-between; padding: 8px; }
+  .quota-table td::before { content: attr(data-label); font-weight: bold; color: #555; }
+
+  .operador-header {
+    flex-wrap: wrap;
+    &__right { flex-direction: row; align-items: center; }
+    .prog-wrap { display: none; } /* ocultar barra en móvil para no saturar */
+  }
+}
+
+.badge.cumplida {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.badge.excedida {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+
+.badge.pendiente {
+  background: #f3f4f6;
+  color: #6b7280;
+}

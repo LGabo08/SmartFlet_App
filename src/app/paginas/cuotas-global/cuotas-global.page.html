@@ -1,0 +1,231 @@
+<ion-header>
+  <ion-toolbar class="quota-toolbar">
+    <ion-buttons slot="start">
+      <ion-button fill="clear" class="back-btn" (click)="goBack()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Cuotas de Operadores</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" class="back-btn" (click)="toggleForm()">
+        <ion-icon [name]="showForm ? 'close-outline' : 'add-circle-outline'"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="quota-global-page ion-padding">
+
+  <!-- BUSCADOR -->
+  <div class="quota-search" style="margin-bottom: 16px;">
+    <ion-icon name="search-outline"></ion-icon>
+    <input
+      type="text"
+      [(ngModel)]="searchTerm"
+      (input)="applyFilter()"
+      placeholder="Buscar por nombre, empleado o estado..."
+    />
+  </div>
+
+  <!-- RESUMEN GLOBAL -->
+  <section class="quota-metrics" *ngIf="resumenGlobal.total_operadores > 0">
+    <div class="metric-card">
+      <span class="metric-card__label">Operadores</span>
+      <strong class="metric-card__value">{{ resumenGlobal.total_operadores }}</strong>
+    </div>
+    <div class="metric-card">
+      <span class="metric-card__label">Objetivo (semana activa)</span>
+      <strong class="metric-card__value">{{ resumenGlobal.total_objetivo | currency }}</strong>
+    </div>
+    <div class="metric-card">
+      <span class="metric-card__label">Realizado</span>
+      <strong class="metric-card__value">{{ resumenGlobal.total_realizado | currency }}</strong>
+    </div>
+    <div class="metric-card">
+      <span class="metric-card__label">Restante</span>
+      <strong class="metric-card__value">{{ resumenGlobal.total_restante | currency }}</strong>
+    </div>
+  </section>
+
+  <!-- FORMULARIO (colapsable con el botón + del header) -->
+  <section class="quota-panel" *ngIf="showForm">
+    <div class="quota-panel__head">
+      <h2>{{ editingId ? 'Actualizar cuota' : 'Registrar cuota semanal' }}</h2>
+      <p>El rango no puede exceder 7 días.</p>
+    </div>
+
+    <div class="quota-form">
+
+      <div class="field">
+        <label>Operador *</label>
+        <select [(ngModel)]="form.fk_operador">
+          <option value="">Seleccionar operador...</option>
+          <option *ngFor="let op of operadores" [value]="op.id_operador">
+            {{ op.nombre_completo }} — #{{ op.numero_empleado }}
+          </option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Fecha de inicio *</label>
+        <input type="date"
+          [(ngModel)]="form.fecha_inicio"
+          (change)="onFechaInicioChange()"/>
+      </div>
+
+      <div class="field">
+        <label>Fecha de fin * <span class="dias-hint">({{ diasRango }} día(s))</span></label>
+        <input type="date"
+          [(ngModel)]="form.fecha_fin"
+          [min]="form.fecha_inicio"
+          [max]="maxFechaFin"/>
+        <span class="field-warn" *ngIf="diasRango > 7">⚠️ El rango no puede exceder 7 días</span>
+      </div>
+
+      <div class="field">
+        <label>Cuota objetivo</label>
+        <input type="number" [(ngModel)]="form.cuota_objetivo" placeholder="Ej. 10000" min="0"/>
+      </div>
+
+      <div class="field">
+        <label>Cuota realizada</label>
+        <input type="number" [(ngModel)]="form.cuota_realizada" placeholder="Ej. 0" min="0"/>
+      </div>
+
+      <div class="field">
+        <label>Cuota restante</label>
+        <input type="number"
+          [value]="(form.cuota_objetivo || 0) - (form.cuota_realizada || 0)"
+          disabled/>
+      </div>
+
+      <div class="quota-form__actions">
+        <ion-button class="btn-secondary" (click)="resetForm()">Limpiar</ion-button>
+        <ion-button class="btn-primary" (click)="saveCuota()"
+          [disabled]="saving || diasRango > 7">
+          {{ saving ? 'Guardando...' : (editingId ? 'Actualizar cuota' : 'Guardar cuota') }}
+        </ion-button>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOADING -->
+  <div class="empty-state" *ngIf="cargando">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando cuotas...</p>
+  </div>
+
+  <!-- LISTA DE OPERADORES -->
+  <ng-container *ngIf="!cargando">
+
+    <div class="operador-block" *ngFor="let op of operadoresFiltrados">
+
+      <!-- Cabecera (click para expandir/colapsar historial) -->
+      <div class="operador-header" (click)="toggleOperador(op.id_operador)">
+        <div class="operador-header__avatar">{{ getInitials(op.nombre_completo) }}</div>
+        <div class="operador-header__info">
+          <h3>{{ op.nombre_completo }}</h3>
+          <p>Empleado: <b>{{ op.numero_empleado }}</b></p>
+        </div>
+        <div class="operador-header__right">
+          <span class="badge ok"  *ngIf="op.cuota_activa">Activa</span>
+          <span class="badge off" *ngIf="!op.cuota_activa">Sin cuota activa</span>
+          <div class="prog-wrap" *ngIf="op.cuota_activa">
+            <span class="prog-label">
+              {{ op.cuota_activa.cuota_realizada | currency }} / {{ op.cuota_activa.cuota_objetivo | currency }}
+            </span>
+            <div class="prog-bar">
+              <div class="prog-bar__fill" [style.width.%]="getProgreso(op.cuota_activa)"></div>
+            </div>
+          </div>
+          <ion-icon
+            [name]="expandedIds.has(op.id_operador) ? 'chevron-up-outline' : 'chevron-down-outline'"
+            class="chevron-icon">
+          </ion-icon>
+        </div>
+      </div>
+
+      <!-- Acciones rápidas (siempre visibles) -->
+      <div class="operador-quick">
+        <ion-button fill="outline" size="small" (click)="prepararNuevaCuota(op)">
+          <ion-icon slot="start" name="add-outline"></ion-icon>
+          Nueva cuota
+        </ion-button>
+        <ion-button fill="outline" size="small"
+          [routerLink]="['/operadores', op.id_operador, 'movimientos']">
+          <ion-icon slot="start" name="swap-vertical-outline"></ion-icon>
+          Movimientos
+        </ion-button>
+      </div>
+
+      <!-- Historial de cuotas expandible -->
+      <div class="operador-cuotas" *ngIf="expandedIds.has(op.id_operador)">
+
+        <div class="table-wrapper" *ngIf="op.cuotas.length > 0; else sinCuotas">
+          <table class="quota-table">
+            <thead>
+              <tr>
+                <th>Semana</th>
+                <th>Objetivo</th>
+                <th>Realizada</th>
+                <th>Restante</th>
+                <th>Estado</th>
+                <th class="text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let c of op.cuotas" [class.row-active]="esCuotaActiva(c)">
+                <td data-label="Semana">
+                  <div class="semana-cell">
+                    <span>{{ c.fecha_inicio | date:'dd/MM/yy' }} — {{ c.fecha_fin | date:'dd/MM/yy' }}</span>
+                    <span class="activa-tag" *ngIf="esCuotaActiva(c)">Esta semana</span>
+                  </div>
+                </td>
+                <td data-label="Objetivo">{{ c.cuota_objetivo | currency }}</td>
+                <td data-label="Realizada">{{ c.cuota_realizada | currency }}</td>
+                <td data-label="Restante">{{ c.cuota_restante | currency }}</td>
+                <td data-label="Estado">
+                  <span class="badge" [ngClass]="getEstadoClass(c)">{{ c.estado_cuota || 'SIN_CONFIGURAR' }}</span>
+                </td>
+                <td data-label="Acciones" class="text-center">
+                  <div class="quota-actions">
+                    <ion-button fill="clear" class="icon-btn" (click)="editCuota(c, op)" title="Editar">
+                      <ion-icon name="create-outline"></ion-icon>
+                    </ion-button>
+                    <ion-button fill="clear" class="icon-btn"
+                      [routerLink]="['/operadores', op.id_operador, 'movimientos']"
+                      [queryParams]="{ fecha_inicio: c.fecha_inicio, fecha_fin: c.fecha_fin }"
+                      title="Ver movimientos de esta semana">
+                      <ion-icon name="swap-vertical-outline"></ion-icon>
+                    </ion-button>
+                    <ion-button fill="clear" class="icon-btn icon-btn--danger"
+                      (click)="deleteCuota(c)" [disabled]="deleting" title="Eliminar">
+                      <ion-icon name="trash-outline"></ion-icon>
+                    </ion-button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <ng-template #sinCuotas>
+          <div class="empty-state" style="padding: 20px;">
+            <ion-icon name="wallet-outline"></ion-icon>
+            <p>Sin cuotas registradas.</p>
+          </div>
+        </ng-template>
+
+      </div>
+    </div>
+
+    <!-- Sin resultados -->
+    <div class="empty-state" *ngIf="operadoresFiltrados.length === 0">
+      <ion-icon name="people-outline"></ion-icon>
+      <h3>Sin resultados</h3>
+      <p>No se encontraron operadores.</p>
+    </div>
+
+  </ng-container>
+
+</ion-content>

@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar class="mov-toolbar">
     <ion-buttons slot="start">
-    <ion-back-button [defaultHref]="'/paginas/cuotas-operador/' + idOperador" text="Volver"></ion-back-button>
+      <ion-back-button [defaultHref]="'/cuotas'" text="Volver"></ion-back-button>
     </ion-buttons>
     <ion-title>Movimientos del Operador</ion-title>
   </ion-toolbar>
@@ -12,21 +12,32 @@
   <!-- ── Filtros ── -->
   <div class="mov-filters">
 
-    <div class="mov-filter-group">
-      <label class="mov-filter-label">Periodo</label>
-      <div class="mov-filter-input">
-        <input
-          type="text"
-          [(ngModel)]="periodoFiltro"
-          placeholder="Ej. 202603"
-          maxlength="6"
-        />
-        <ion-button size="small" (click)="buscarPorPeriodo()" style="--background:#0b2c5d;">
-          <ion-icon name="search-outline"></ion-icon>
-        </ion-button>
-      </div>
+    <!-- Rango de fechas (reemplaza al campo periodo) -->
+    <div class="mov-filter-group mov-filter-group--range">
+      <label class="mov-filter-label">Desde</label>
+      <input
+        type="date"
+        class="mov-date-input"
+        [(ngModel)]="fechaInicio"
+        [max]="fechaFin"
+      />
     </div>
 
+    <div class="mov-filter-group mov-filter-group--range">
+      <label class="mov-filter-label">Hasta</label>
+      <input
+        type="date"
+        class="mov-date-input"
+        [(ngModel)]="fechaFin"
+        [min]="fechaInicio"
+      />
+    </div>
+
+    <ion-button size="small" class="btn-buscar" (click)="buscarPorRango()">
+      <ion-icon name="search-outline"></ion-icon>
+    </ion-button>
+
+    <!-- Tipo -->
     <div class="mov-filter-group">
       <label class="mov-filter-label">Tipo</label>
       <select class="mov-select" [(ngModel)]="tipoFiltro" (change)="aplicarFiltros()">
@@ -53,7 +64,6 @@
         <span class="total-card__value">{{ totales.ingresos | currency }}</span>
       </div>
     </div>
-
     <div class="total-card total-card--egreso">
       <ion-icon name="arrow-down-circle-outline"></ion-icon>
       <div>
@@ -61,7 +71,6 @@
         <span class="total-card__value">{{ totales.egresos | currency }}</span>
       </div>
     </div>
-
     <div class="total-card"
       [class.total-card--positivo]="totales.balance >= 0"
       [class.total-card--negativo]="totales.balance < 0">
@@ -92,23 +101,19 @@
   <!-- ── Empty ── -->
   <div class="mov-empty" *ngIf="!cargando && !error && movimientosFiltrados.length === 0">
     <ion-icon name="receipt-outline"></ion-icon>
-    <p>Sin movimientos para este periodo.</p>
+    <p>Sin movimientos para el rango seleccionado.</p>
   </div>
 
   <!-- ── Lista de movimientos ── -->
   <div class="mov-lista" *ngIf="!cargando && !error && movimientosFiltrados.length > 0">
     <div *ngFor="let m of movimientosFiltrados" class="mov-item">
 
-      <!-- Indicador izquierdo -->
       <div class="mov-item__indicator"
         [class.mov-item__indicator--ingreso]="esIngreso(m.monto)"
         [class.mov-item__indicator--egreso]="!esIngreso(m.monto)">
-        <ion-icon
-          [name]="esIngreso(m.monto) ? 'arrow-up-outline' : 'arrow-down-outline'">
-        </ion-icon>
+        <ion-icon [name]="esIngreso(m.monto) ? 'arrow-up-outline' : 'arrow-down-outline'"></ion-icon>
       </div>
 
-      <!-- Contenido -->
       <div class="mov-item__body">
         <div class="mov-item__head">
           <span class="mov-tipo-badge" [ngClass]="'mov-tipo-badge--' + colorTipo(m.tipo)">

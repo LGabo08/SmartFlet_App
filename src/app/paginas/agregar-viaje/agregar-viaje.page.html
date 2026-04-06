@@ -21,6 +21,7 @@
 
         <!-- Fila 1: No. Embarque | Ruta -->
         <div class="sf-grid sf-grid--2">
+
           <div class="sf-field">
             <label class="sf-label">No. Embarque</label>
             <input
@@ -41,13 +42,30 @@
 
           <div class="sf-field">
             <label class="sf-label">Ruta</label>
-            <select class="sf-input" formControlName="fk_ruta" autocomplete="off">
-              <option value="" disabled selected>Selecciona una ruta</option>
-              <option *ngFor="let ruta of rutas" [value]="ruta.id_ruta">
+            <input
+              class="sf-input"
+              type="text"
+              [value]="rutaBusqueda"
+              (input)="filtrarRutas($event)"
+              (blur)="cerrarDropdown()"
+              placeholder="Buscar ruta..."
+              autocomplete="off"
+            />
+            <div class="sf-dropdown" *ngIf="rutasFiltradas.length > 0 && mostrarDropdown">
+              <div
+                class="sf-dropdown-item"
+                *ngFor="let ruta of rutasFiltradas"
+                (click)="seleccionarRuta(ruta)"
+              >
                 {{ ruta.nombre_ruta }}
-              </option>
-            </select>
+              </div>
+            </div>
+            <small class="sf-error"
+              *ngIf="viajeForm.get('fk_ruta')?.invalid && viajeForm.get('fk_ruta')?.touched">
+              Selecciona una ruta válida.
+            </small>
           </div>
+
         </div>
 
         <!-- Fila 2: Configuración de Unidad | Licencia -->
@@ -139,28 +157,25 @@
           </div>
         </div>
 
-        <!-- Fila 5: Pago del Operador -->
-        <div class="sf-grid sf-grid--2">
-          <div class="sf-field">
-            <label class="sf-label">Pago del Operador</label>
-            <input
-              class="sf-input"
-              type="number"
-              formControlName="pago_operador"
-              autocomplete="off"
-              placeholder="Ej. 2500"
-              min="0"
-              max="9999999"
-              step="0.01"
-            />
-            <small class="sf-error"
-              *ngIf="viajeForm.get('pago_operador')?.invalid && viajeForm.get('pago_operador')?.touched">
-              Ingresa un monto válido (mayor o igual a 0).
-            </small>
-          </div>
+        <!-- Fila 5: Pago del Operador (ancho completo) -->
+        <div class="sf-field">
+          <label class="sf-label">Pago del Operador</label>
+          <input
+            class="sf-input"
+            type="number"
+            formControlName="pago_operador"
+            autocomplete="off"
+            placeholder="Ej. 2500"
+            min="0"
+            max="9999999"
+            step="0.01"
+          />
+          <small class="sf-error"
+            *ngIf="viajeForm.get('pago_operador')?.invalid && viajeForm.get('pago_operador')?.touched">
+            Ingresa un monto válido (mayor o igual a 0).
+          </small>
         </div>
 
-        <!-- Botón: valida y abre el modal de confirmación -->
         <button class="sf-btn" type="submit" [disabled]="viajeForm.invalid || saving">
           {{ saving ? 'Guardando...' : 'Revisar y Agregar Viaje' }}
         </button>
@@ -169,10 +184,6 @@
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════════════
-       MODAL DE CONFIRMACIÓN
-       Se monta inline; el componente gestiona el overlay.
-  ═══════════════════════════════════════════════════ -->
   <app-confirmar-viaje-modal
     *ngIf="showConfirmModal && confirmData"
     [data]="confirmData"

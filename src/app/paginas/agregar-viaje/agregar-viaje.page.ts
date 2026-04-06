@@ -12,13 +12,12 @@ import { ViajeService } from 'src/app/services/viaje.service';
 
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Ruta } from 'src/models/ruta.model';
 import { Licencia } from 'src/models/licencia.model';
 import { Certificacion } from 'src/models/certificacion.model';
 import { Cliente } from 'src/models/cliente.model';
 
-// Importamos el modal y su interfaz de datos
 import {
   ConfirmarViajeModalComponent,
   ConfirmarViajeData,
@@ -51,7 +50,7 @@ function sanitizeString(value: string): string {
   standalone: true,
   templateUrl: './agregar-viaje.page.html',
   styleUrls: ['./agregar-viaje.page.scss'],
-  imports: [CommonModule, ReactiveFormsModule, IonicModule, ConfirmarViajeModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, IonicModule, ConfirmarViajeModalComponent],
 })
 export class AgregarViajePage implements OnInit {
   viajeForm: FormGroup;
@@ -63,10 +62,14 @@ export class AgregarViajePage implements OnInit {
   configuracionesUnidad: string[] = ['Configuración 1', 'Configuración 2', 'Configuración 3'];
   saving = false;
 
+  // ── Buscador de rutas ─────────────────────────────────────────────────────
+  rutaBusqueda = '';
+  rutasFiltradas: Ruta[] = [];
+  mostrarDropdown = false;
+
   // ── Estado del modal de confirmación ─────────────────────────────────────
   showConfirmModal = false;
   confirmData: ConfirmarViajeData | null = null;
-  // Payload listo para enviarse cuando el usuario confirme
   private pendingPayload: any = null;
 
   constructor(
@@ -119,6 +122,44 @@ export class AgregarViajePage implements OnInit {
     });
   }
 
+  // ── Buscador de rutas ─────────────────────────────────────────────────────
+
+  filtrarRutas(event: Event) {
+    const texto = (event.target as HTMLInputElement).value.toLowerCase().trim();
+    this.mostrarDropdown = true;
+
+    if (!texto) {
+      this.viajeForm.patchValue({ fk_ruta: '' });
+      this.rutaBusqueda = '';
+      this.rutasFiltradas = [];
+      this.mostrarDropdown = false;
+      return;
+    }
+
+    this.rutasFiltradas = this.rutas
+      .filter(r => r.nombre_ruta.toLowerCase().includes(texto))
+      .slice(0, 10);
+  }
+
+  seleccionarRuta(ruta: Ruta) {
+    this.viajeForm.patchValue({ fk_ruta: ruta.id_ruta });
+    this.rutaBusqueda = ruta.nombre_ruta;
+    this.rutasFiltradas = [];
+    this.mostrarDropdown = false;
+  }
+
+  cerrarDropdown() {
+    setTimeout(() => {
+      this.mostrarDropdown = false;
+      this.rutasFiltradas = [];
+      if (!this.viajeForm.get('fk_ruta')?.value) {
+        this.rutaBusqueda = '';
+      }
+    }, 200);
+  }
+
+  // ── Configuración de unidad ───────────────────────────────────────────────
+
   onConfiguracionUnidadChange(configId: string) {
     if (configId === 'Configuración 1' || configId === 'Configuración 2') {
       this.licenciasDisponibles = this.licencias.filter(
@@ -147,14 +188,14 @@ export class AgregarViajePage implements OnInit {
     this.viajeForm.patchValue({ certificaciones: [] });
   }
 
-  // ── Paso 1: Validar formulario y abrir modal de confirmación ─────────────
+  // ── Submit ────────────────────────────────────────────────────────────────
+
   onSubmit() {
     this.viajeForm.markAllAsTouched();
     if (this.viajeForm.invalid) return;
 
     const raw = this.viajeForm.value;
 
-    // Resolvemos nombres legibles para el resumen visual
     const rutaObj = this.rutas.find((r) => String(r.id_ruta) === String(raw.fk_ruta));
     const licenciaObj = this.licenciasDisponibles.find(
       (l) => String(l.id_licencia) === String(raw.fk_licencia_requerida),
@@ -163,7 +204,6 @@ export class AgregarViajePage implements OnInit {
       (c) => String(c.id_cliente) === String(raw.cliente),
     );
 
-    // IDs de certificaciones → nombres legibles
     const certIds: number[] = Array.isArray(raw.certificaciones)
       ? raw.certificaciones.map((x: any) => parseInt(x, 10)).filter((n: number) => !isNaN(n))
       : [];
@@ -175,7 +215,6 @@ export class AgregarViajePage implements OnInit {
       )
       .filter(Boolean);
 
-    // Datos para el modal de confirmación
     this.confirmData = {
       numero_viaje: sanitizeString(String(raw.numero_viaje ?? '')),
       rutaNombre: rutaObj?.nombre_ruta ?? String(raw.fk_ruta),
@@ -188,7 +227,6 @@ export class AgregarViajePage implements OnInit {
       pago_operador: parseFloat(raw.pago_operador),
     };
 
-    // Payload sanitizado listo para el POST
     this.pendingPayload = {
       numero_viaje: this.confirmData.numero_viaje,
       fk_ruta: parseInt(raw.fk_ruta, 10),
@@ -207,14 +245,12 @@ export class AgregarViajePage implements OnInit {
     this.showConfirmModal = true;
   }
 
-  // ── Paso 2a: El usuario cancela → cierra modal, formulario intacto ───────
   onModalCancelled() {
     this.showConfirmModal = false;
     this.confirmData = null;
     this.pendingPayload = null;
   }
 
-  // ── Paso 2b: El usuario confirma → ejecutamos el POST ────────────────────
   async onModalConfirmed() {
     if (!this.pendingPayload) return;
 
