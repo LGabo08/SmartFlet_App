@@ -5,7 +5,7 @@ import { Observable, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { BehaviorSubject } from 'rxjs';
 import type { LoginRequest, AuthResponse } from 'src/models/auth.model';
-import type { Usuario } from 'src/models/usuario.model'; // usa tu model real
+import type { Usuario } from 'src/models/usuario.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -32,10 +32,20 @@ export class AuthService {
     const body: LoginRequest = { email, contrasena };
     return this.http.post<AuthResponse>(url, body).pipe(
       tap(async (res) => {
-        if (res?.ok && res?.token) await this.setToken(res.token);
+        if (res?.ok && res?.token) {
+          await this.setToken(res.token);
+          // ── Dispara verificación en background sin bloquear el login ──
+          this.verificarSincronizacion().subscribe();
+        }
         this.setUsuario(res.usuario);
       })
     );
+  }
+
+  // ── Verifica si hay que sincronizar Oracle → MySQL ──────────────────────
+  verificarSincronizacion(): Observable<any> {
+    const url = `${this.baseUrl}/sincronizar/verificar`;
+    return this.http.get<any>(url);
   }
 
   me(): Observable<{ ok: boolean; usuario: Usuario }> {
@@ -47,11 +57,11 @@ export class AuthService {
     const url = `${this.baseUrl}/auth/logout`;
     return this.http.post<{ ok: boolean; message: string }>(url, {}).pipe(
       tap(async () => {
-  await this.clearToken();
-  this.setUsuario(null); // ✅ limpiar
-})
+        await this.clearToken();
+        this.setUsuario(null);
+      })
     );
-}
+  }
 
   refresh(): Observable<AuthResponse> {
     const url = `${this.baseUrl}/auth/refresh`;
@@ -61,13 +71,15 @@ export class AuthService {
       })
     );
   }
-  private _usuario$ = new BehaviorSubject<Usuario | null>(null);
-usuario$ = this._usuario$.asObservable();
 
-setUsuario(u: Usuario | null) {
-  this._usuario$.next(u);
-}
-getUsuarioSnapshot() {
-  return this._usuario$.value;
-}
+  private _usuario$ = new BehaviorSubject<Usuario | null>(null);
+  usuario$ = this._usuario$.asObservable();
+
+  setUsuario(u: Usuario | null) {
+    this._usuario$.next(u);
+  }
+
+  getUsuarioSnapshot() {
+    return this._usuario$.value;
+  }
 }
