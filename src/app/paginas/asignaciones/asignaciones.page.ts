@@ -320,30 +320,45 @@ export class AsignacionesPage {
   }
 
   asignarViaje(
-    id_viaje: number,
-    id_operador: number,
-    advertencias: string[]      = [],
-    viajePadreId: number | null = null,
-    rankingInfo:  any           = null
-  ) {
-    this.asignacionesViajeService
-      .aprobarViaje(id_viaje, id_operador, advertencias, viajePadreId ?? undefined, rankingInfo)
-      .subscribe({
-        next: (response: any) => {
-          if (response?.ok) {
-            const msg = response.data?.es_encadenado
-              ? 'Viaje encadenado y asignado exitosamente'
-              : 'Viaje asignado exitosamente';
-            alert(msg);
-            this.resetEstado();
-            this.cargarPendientes();
-          } else {
-            alert(response?.msg || response?.motivo || 'Error al asignar el viaje');
-          }
-        },
-        error: (err) => alert(err?.error?.message || 'Error HTTP al asignar el viaje'),
-      });
-  }
+  id_viaje: number,
+  id_operador: number,
+  advertencias: string[]      = [],
+  viajePadreId: number | null = null,
+  rankingInfo:  any           = null
+) {
+  console.log('📦 Payload aprobar:', {
+    id_viaje,
+    id_operador,
+    advertencias,
+    viajePadreId,
+    rankingInfo
+  });
+
+  this.asignacionesViajeService
+    .aprobarViaje(id_viaje, id_operador, advertencias, viajePadreId ?? undefined, rankingInfo)
+    .subscribe({
+      next: (response: any) => {
+        if (response?.ok) {
+          const msg = response.data?.es_encadenado
+            ? 'Viaje encadenado y asignado exitosamente'
+            : 'Viaje asignado exitosamente';
+          alert(msg);
+          this.resetEstado();
+          this.cargarPendientes();
+        } else {
+          alert(response?.msg || response?.motivo || 'Error al asignar el viaje');
+        }
+      },
+      error: (err) => {
+        console.error('❌ Error completo:', err);
+        const errores = err?.error?.errors;
+        const msg = errores
+          ? JSON.stringify(errores)
+          : err?.error?.message || err?.error?.msg || 'Error HTTP al asignar el viaje';
+        alert(msg);
+      },
+    });
+}
 
   rechazarViaje(id_viaje: number, id_operador: number) {
     this.viajeId           = id_viaje;
