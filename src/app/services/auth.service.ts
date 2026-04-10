@@ -34,17 +34,24 @@ export class AuthService {
       tap(async (res) => {
         if (res?.ok && res?.token) {
           await this.setToken(res.token);
-          // ── Dispara verificación en background sin bloquear el login ──
+          // ── Dispara ambas verificaciones en background sin bloquear el login ──
           this.verificarSincronizacion().subscribe();
+          this.verificarSincronizacionClientes().subscribe();
         }
         this.setUsuario(res.usuario);
       })
     );
   }
 
-  // ── Verifica si hay que sincronizar Oracle → MySQL ──────────────────────
+  // ── Verifica si hay que sincronizar Oracle → MySQL (rutas) ──────────────
   verificarSincronizacion(): Observable<any> {
     const url = `${this.baseUrl}/sincronizar/verificar`;
+    return this.http.get<any>(url);
+  }
+
+  // ── Verifica si hay que sincronizar SQL Server → MySQL (clientes) ───────
+  verificarSincronizacionClientes(): Observable<any> {
+    const url = `${this.baseUrl}/sincronizar/verificar-clientes`;
     return this.http.get<any>(url);
   }
 

@@ -1,0 +1,352 @@
+<div class="eic-overlay" (click)="$event.target === $event.currentTarget && cerrar.emit()">
+  <div class="eic-panel">
+
+    <!-- Header -->
+    <div class="eic-header">
+      <div class="eic-header__left">
+        <button class="eic-nav-btn" *ngIf="paso > 1 && !enviandoMasivo" (click)="volver()" type="button">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </button>
+        <div>
+          <div class="eic-header__brand">SMARTFLET</div>
+          <div class="eic-header__title">Importar Viajes desde Excel</div>
+        </div>
+      </div>
+      <button class="eic-close-btn" (click)="cerrar.emit()" type="button">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+
+    <!-- Stepper -->
+    <div class="eic-stepper">
+      <div class="eic-step" [class.active]="paso===1" [class.done]="paso>1">
+        <div class="eic-step__dot"><ion-icon *ngIf="paso>1" name="checkmark-outline"></ion-icon><span *ngIf="paso<=1">1</span></div>
+        <span>Archivo</span>
+      </div>
+      <div class="eic-step__line" [class.done]="paso>1"></div>
+      <div class="eic-step" [class.active]="paso===2" [class.done]="paso>2">
+        <div class="eic-step__dot"><ion-icon *ngIf="paso>2" name="checkmark-outline"></ion-icon><span *ngIf="paso<=2">2</span></div>
+        <span>Columnas</span>
+      </div>
+      <div class="eic-step__line" [class.done]="paso>2"></div>
+      <div class="eic-step" [class.active]="paso===3" [class.done]="paso>3">
+        <div class="eic-step__dot"><ion-icon *ngIf="paso>3" name="checkmark-outline"></ion-icon><span *ngIf="paso<=3">3</span></div>
+        <span>Datos fijos</span>
+      </div>
+      <div class="eic-step__line" [class.done]="paso>3"></div>
+      <div class="eic-step" [class.active]="paso===4">
+        <div class="eic-step__dot">4</div>
+        <span>Vista previa</span>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div class="eic-body">
+
+      <!-- PASO 1 -->
+      <ng-container *ngIf="paso === 1">
+        <p class="eic-section-title"><ion-icon name="cloud-upload-outline"></ion-icon> Selecciona tu archivo Excel</p>
+        <p class="eic-hint">Sube el Excel del coordinador en cualquier formato. En el siguiente paso mapearás las columnas.</p>
+
+        <p *ngIf="archivoNombre" style="color:#27ae60;font-weight:700">✓ {{ archivoNombre }}</p>
+
+        <button
+          type="button"
+          (click)="abrirSelectorBody()"
+          style="padding:14px 32px;background:#0b2c5d;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;margin:12px 0">
+          Seleccionar archivo Excel
+        </button>
+        <p style="font-size:12px;color:#888">Formatos: .xlsx · .xls</p>
+
+        <p class="eic-error-msg" *ngIf="errorArchivo">
+          <ion-icon name="alert-circle-outline"></ion-icon> {{ errorArchivo }}
+        </p>
+
+        <button class="eic-btn eic-btn--ghost eic-btn--sm" type="button" (click)="descargarPlantilla()">
+          <ion-icon name="download-outline"></ion-icon> Descargar plantilla de ejemplo
+        </button>
+      </ng-container>
+
+      <!-- PASO 2 -->
+      <ng-container *ngIf="paso === 2">
+        <p class="eic-section-title"><ion-icon name="git-compare-outline"></ion-icon> Configurar columnas</p>
+        <p class="eic-hint">Indica qué columna de tu Excel corresponde a cada campo. Los detectados automáticamente ya están preseleccionados.</p>
+
+        <div class="eic-chips">
+          <span class="eic-chip" *ngFor="let col of columnasExcel">{{ col }}</span>
+        </div>
+
+        <div class="eic-mapeo-list">
+          <div class="eic-mapeo-row" *ngFor="let c of camposConfig">
+            <div class="eic-mapeo-info">
+              <div class="eic-mapeo-label">
+                <ion-icon [name]="c.icono"></ion-icon>
+                {{ c.label }}
+                <span class="eic-req" *ngIf="c.requerido">*</span>
+              </div>
+              <div class="eic-mapeo-desc">{{ c.descripcion }}</div>
+            </div>
+            <div class="eic-mapeo-ctrl">
+              <select class="eic-select" [(ngModel)]="mapeo[c.campo]" [name]="'m_'+c.campo">
+                <option value="">— No mapear —</option>
+                <option *ngFor="let col of columnasExcel" [value]="col">{{ col }}</option>
+              </select>
+              <div class="eic-mapeo-ejemplo" *ngIf="mapeo[c.campo] && rawRows.length">
+                <span class="eic-mapeo-ejemplo__label">Ej:</span>
+                <span class="eic-mapeo-ejemplo__val">{{ rawRows[0][mapeo[c.campo]!] || '—' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="eic-info" *ngIf="mapeo['configuracion_unidad']">
+          <ion-icon name="bulb-outline"></ion-icon>
+          <span><strong>Detección automática:</strong> La licencia se asignará según si la unidad es <em>sencilla</em> o <em>doble/encortinado</em>.</span>
+        </div>
+        <div class="eic-info eic-info--warn" *ngIf="!mapeo['origen'] && !mapeo['destino']">
+          <ion-icon name="warning-outline"></ion-icon>
+          <span>Sin columna de origen/destino → deberás seleccionar la ruta en el paso siguiente.</span>
+        </div>
+
+        <div class="eic-footer">
+          <button class="eic-btn eic-btn--primary" type="button" (click)="irAPaso3()">
+            Continuar <ion-icon name="arrow-forward-outline"></ion-icon>
+          </button>
+        </div>
+      </ng-container>
+
+      <!-- PASO 3 -->
+      <ng-container *ngIf="paso === 3">
+        <p class="eic-section-title"><ion-icon name="options-outline"></ion-icon> Datos que no vienen en el Excel</p>
+        <p class="eic-hint">
+          Estos datos no pueden venir del Excel y se aplican a <strong>todos los viajes del lote</strong>.<br>
+          La <strong>licencia</strong> se detecta automáticamente por el tipo de unidad.<br>
+          Las <strong>certificaciones</strong> se cargan automáticamente según el cliente.
+        </p>
+
+        <div class="eic-fijos-grid">
+
+          <div class="eic-fijo-card" *ngIf="!rutaDesdeExcel">
+            <div class="eic-fijo-header">
+              <ion-icon name="map-outline"></ion-icon>
+              <div>
+                <div class="eic-fijo-title">Ruta <span class="eic-req">*</span></div>
+                <div class="eic-fijo-sub">No mapeaste columna de origen/destino.</div>
+              </div>
+            </div>
+            <select class="eic-select" [(ngModel)]="datosFijos.fk_ruta" name="fijo_ruta">
+              <option [ngValue]="undefined" disabled>Selecciona una ruta</option>
+              <option *ngFor="let r of rutas" [ngValue]="r.id_ruta">{{ r.nombre_ruta }}</option>
+            </select>
+          </div>
+
+          <div class="eic-fijo-card" *ngIf="!clienteDesdeExcel">
+            <div class="eic-fijo-header">
+              <ion-icon name="business-outline"></ion-icon>
+              <div>
+                <div class="eic-fijo-title">Cliente <span class="eic-req">*</span></div>
+                <div class="eic-fijo-sub">No mapeaste columna de cliente.</div>
+              </div>
+            </div>
+            <select class="eic-select" [(ngModel)]="datosFijos.id_cliente" name="fijo_cliente"
+                    (ngModelChange)="onClienteFijoChange($event)">
+              <option [ngValue]="undefined" disabled>Selecciona un cliente</option>
+              <option *ngFor="let c of clientes" [ngValue]="c.id_cliente">{{ c.nombre_cliente }}</option>
+            </select>
+          </div>
+
+          <div class="eic-fijo-card eic-fijo-card--full" *ngIf="!clienteDesdeExcel">
+            <div class="eic-fijo-header">
+              <ion-icon name="ribbon-outline"></ion-icon>
+              <div>
+                <div class="eic-fijo-title">Certificaciones requeridas</div>
+                <div class="eic-fijo-sub" *ngIf="!datosFijos.id_cliente">Selecciona un cliente para cargar sus certificaciones.</div>
+                <div class="eic-fijo-sub--ok" *ngIf="certsClienteFijo.length > 0">
+                  <ion-icon name="checkmark-circle-outline"></ion-icon>
+                  {{ certsClienteFijo.length }} certificacion(es) cargadas para este cliente.
+                </div>
+                <div class="eic-fijo-sub" *ngIf="datosFijos.id_cliente && certsClienteFijo.length === 0">Sin certificaciones para este cliente.</div>
+              </div>
+            </div>
+            <div class="eic-certs-grid" *ngIf="certsClienteFijo.length > 0">
+              <label class="eic-cert-check" *ngFor="let cert of certsClienteFijo">
+                <input type="checkbox" [checked]="isCertFijoSelected(cert.id_certificacion)" (change)="toggleCertFijo(cert.id_certificacion)" />
+                <span>{{ cert.nombre_certificacion }}</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="eic-info eic-info--full" *ngIf="clienteDesdeExcel">
+            <ion-icon name="information-circle-outline"></ion-icon>
+            <span>El cliente viene del Excel. Las certificaciones se cargarán automáticamente por cada fila.</span>
+          </div>
+
+          <!-- Pago al operador global -->
+          <div class="eic-fijo-card eic-fijo-card--full">
+            <div class="eic-fijo-header">
+              <ion-icon name="cash-outline"></ion-icon>
+              <div>
+                <div class="eic-fijo-title">Pago al Operador ($) <span style="font-weight:400;font-size:11px;color:#aaa">(opcional)</span></div>
+                <div class="eic-fijo-sub">Se aplicará igual a todos los viajes. Puedes editarlo por fila en el siguiente paso.</div>
+              </div>
+            </div>
+            <input class="eic-input" type="number" [(ngModel)]="pagoGlobal" name="pago_global"
+                   placeholder="Ej. 2500" min="0" max="9999999" step="0.01" />
+          </div>
+
+        </div>
+
+        <div class="eic-footer">
+          <button class="eic-btn eic-btn--primary" type="button" (click)="irAPaso4()">
+            Previsualizar viajes <ion-icon name="eye-outline"></ion-icon>
+          </button>
+        </div>
+      </ng-container>
+
+      <!-- PASO 4 -->
+      <ng-container *ngIf="paso === 4">
+        <div class="eic-paso4-header">
+          <p class="eic-section-title"><ion-icon name="list-outline"></ion-icon> Vista previa de viajes</p>
+          <button class="eic-btn eic-btn--ghost eic-btn--sm" type="button" (click)="paso = 2" [disabled]="enviandoMasivo">
+            <ion-icon name="git-compare-outline"></ion-icon> Volver a mapear
+          </button>
+        </div>
+
+        <div class="eic-summary">
+          <div class="eic-sum eic-sum--total"><span class="n">{{ filasProcessadas.length }}</span><span class="l">Total</span></div>
+          <div class="eic-sum eic-sum--ok">   <span class="n">{{ filasValidas }}</span>       <span class="l">Listos</span></div>
+          <div class="eic-sum eic-sum--warn"> <span class="n">{{ filasConAdvertencia }}</span> <span class="l">Advertencias</span></div>
+          <div class="eic-sum eic-sum--err">  <span class="n">{{ filasConError }}</span>       <span class="l">Errores</span></div>
+          <div class="eic-sum eic-sum--sent" *ngIf="filasOk > 0"><span class="n">{{ filasOk }}</span><span class="l">Enviados</span></div>
+        </div>
+
+        <div class="eic-table-wrap">
+          <table class="eic-table">
+            <thead>
+              <tr>
+                <th>#</th><th>No. Viaje</th><th>Ruta</th><th>Config</th><th>Licencia</th>
+                <th>Cliente</th><th>Producto</th><th>Pago ($)</th><th>Estado</th><th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngFor="let fila of filasProcessadas; let i = index; trackBy: trackByIdx">
+                <tr *ngIf="!fila._editando"
+                    [class.row-ok]="fila.estado==='ok'"
+                    [class.row-err]="fila.errores.length>0 && fila.estado!=='ok'"
+                    [class.row-warn]="fila.advertencias.length>0 && fila.errores.length===0 && fila.estado!=='ok'"
+                    [class.row-sending]="fila.estado==='enviando'">
+                  <td class="td-idx">{{ fila._idx }}</td>
+                  <td class="td-bold">{{ fila.numero_viaje || '—' }}</td>
+                  <td>
+                    <span class="ruta-ok" *ngIf="fila.rutaResuelta"><ion-icon name="checkmark-circle-outline"></ion-icon>{{ fila.rutaResuelta.nombre_ruta }}</span>
+                    <span class="ruta-miss" *ngIf="!fila.rutaResuelta"><ion-icon name="alert-circle-outline"></ion-icon>{{ fila.rutaTexto }}</span>
+                  </td>
+                  <td>{{ fila.configuracion }}</td>
+                  <td><span class="lic-badge" *ngIf="fila.licenciaAuto">{{ fila.licenciaAuto.descripcion_licencia }}</span></td>
+                  <td>{{ fila.clienteResuelto?.nombre_cliente || fila.clienteTexto }}</td>
+                  <td>{{ fila.producto }}</td>
+                  
+                  <td>
+                    <input class="eic-pago-input" type="number" [(ngModel)]="fila.pago_operador"
+                           [name]="'pago_'+fila._idx" placeholder="0" min="0"
+                           [disabled]="fila.estado==='ok' || fila.estado==='enviando'" />
+                  </td>
+                  <td>
+                    <div *ngIf="fila.errores.length>0 && fila.estado!=='ok'" class="eic-badge err">
+                      <ion-icon name="close-circle-outline"></ion-icon> {{ fila.errores.length }} error(es)
+                      <div class="tooltip"><ul><li *ngFor="let e of fila.errores">{{ e }}</li></ul></div>
+                    </div>
+                    <div *ngIf="fila.advertencias.length>0 && fila.errores.length===0 && fila.estado==='pendiente'" class="eic-badge warn">
+                      <ion-icon name="warning-outline"></ion-icon> {{ fila.advertencias.length }} aviso(s)
+                      <div class="tooltip"><ul><li *ngFor="let a of fila.advertencias">{{ a }}</li></ul></div>
+                    </div>
+                    <div *ngIf="fila.errores.length===0 && fila.estado==='pendiente' && fila.advertencias.length===0" class="eic-badge ready">
+                      <ion-icon name="checkmark-outline"></ion-icon> Listo
+                    </div>
+                    <div *ngIf="fila.estado==='enviando'" class="eic-badge sending">
+                      <ion-spinner name="crescent" style="width:12px;height:12px"></ion-spinner> Enviando…
+                    </div>
+                    <div *ngIf="fila.estado==='ok'" class="eic-badge ok">
+                      <ion-icon name="checkmark-circle-outline"></ion-icon> Registrado
+                    </div>
+                    <div *ngIf="fila.estado==='error' && fila.errores.length===0" class="eic-badge err">
+                      <ion-icon name="close-circle-outline"></ion-icon> {{ fila.mensajeApi }}
+                    </div>
+                  </td>
+                  <td class="td-actions">
+                    <button class="eic-icon-btn eic-icon-btn--edit" *ngIf="fila.estado!=='ok' && fila.estado!=='enviando'"
+                            (click)="toggleEdicion(fila)" type="button" title="Editar">
+                      <ion-icon name="create-outline"></ion-icon>
+                    </button>
+                    <button class="eic-icon-btn eic-icon-btn--del" *ngIf="fila.estado!=='ok' && fila.estado!=='enviando'"
+                            (click)="eliminarFila(i)" [disabled]="enviandoMasivo" type="button" title="Quitar">
+                      <ion-icon name="trash-outline"></ion-icon>
+                    </button>
+                  </td>
+                </tr>
+
+                <tr *ngIf="fila._editando" class="row-editing">
+                  <td class="td-idx">{{ fila._idx }}</td>
+                  <td><input class="eic-inline-input" type="text" [(ngModel)]="fila.numero_viaje" [name]="'nv_'+fila._idx" /></td>
+                  <td>
+                    <select class="eic-inline-select" [(ngModel)]="fila.fk_ruta_edit" [name]="'ruta_'+fila._idx">
+                      <option [ngValue]="undefined">— Ruta —</option>
+                      <option *ngFor="let r of rutas" [ngValue]="r.id_ruta">{{ r.nombre_ruta }}</option>
+                    </select>
+                  </td>
+                  <td>
+                    <select class="eic-inline-select" [(ngModel)]="fila.configuracion"
+                            [name]="'cfg_'+fila._idx"
+                            (ngModelChange)="onConfigFilaChange(fila, $event)">
+                      <option value="">— Config —</option>
+                      <option *ngFor="let c of configuracionesUnidad" [value]="c">{{ c }}</option>
+                    </select>
+                  </td>
+                  <td>
+                    <select class="eic-inline-select" [(ngModel)]="fila.fk_licencia_edit" [name]="'lic_'+fila._idx">
+                      <option [ngValue]="undefined">— Licencia —</option>
+                      <option *ngFor="let l of licencias" [ngValue]="l.id_licencia">{{ l.descripcion_licencia }}</option>
+                    </select>
+                  </td>
+                  <td>
+                    <select class="eic-inline-select" [(ngModel)]="fila.id_cliente_edit" [name]="'cli_'+fila._idx"
+                            (ngModelChange)="onClienteFilaChange(fila, $event)">
+                      <option [ngValue]="undefined">— Cliente —</option>
+                      <option *ngFor="let c of clientes" [ngValue]="c.id_cliente">{{ c.nombre_cliente }}</option>
+                    </select>
+                  </td>
+                  <td><input class="eic-inline-input" type="text" [(ngModel)]="fila.producto" [name]="'prod_'+fila._idx" /></td>
+                  
+                  <td><input class="eic-pago-input" type="number" [(ngModel)]="fila.pago_operador" [name]="'pago2_'+fila._idx" /></td>
+                  <td colspan="2">
+                    <div class="eic-edit-actions">
+                      <button class="eic-btn eic-btn--primary eic-btn--sm" type="button" (click)="guardarEdicion(fila)">
+                        <ion-icon name="checkmark-outline"></ion-icon> Guardar
+                      </button>
+                      <button class="eic-btn eic-btn--ghost eic-btn--sm" type="button" (click)="fila._editando=false">Cancelar</button>
+                    </div>
+                  </td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="eic-resultado" *ngIf="resultado">
+          <div class="ok"><ion-icon name="checkmark-circle"></ion-icon> <strong>{{ resultado.ok }}</strong> viajes registrados.</div>
+          <div class="err" *ngIf="resultado.errores > 0"><ion-icon name="warning"></ion-icon> <strong>{{ resultado.errores }}</strong> fallaron.</div>
+        </div>
+
+        <div class="eic-footer" *ngIf="!resultado">
+          <button class="eic-btn eic-btn--primary" type="button"
+                  [disabled]="enviandoMasivo || filasValidas === 0" (click)="enviarMasivo()">
+            <ion-spinner *ngIf="enviandoMasivo" name="crescent" style="width:16px;height:16px"></ion-spinner>
+            <ion-icon *ngIf="!enviandoMasivo" name="send-outline"></ion-icon>
+            {{ enviandoMasivo ? 'Registrando...' : 'Registrar ' + filasValidas + ' viaje(s)' }}
+          </button>
+        </div>
+      </ng-container>
+
+    </div>
+  </div>
+</div>

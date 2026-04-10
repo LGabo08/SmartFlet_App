@@ -308,3 +308,667 @@ ion-chip {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  agregar-viaje.page.scss  —  SmartFlet
+// ══════════════════════════════════════════════════════════════════════════════
+
+.sf-reg {
+  --background: var(--sf-bg, #f4f5f8);
+}
+
+.sf-reg-wrap {
+  min-height: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 28px 16px 48px;
+}
+
+.sf-reg-card {
+  width: 100%;
+  max-width: 880px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(13,13,13,.10);
+  overflow: hidden;
+}
+
+// ── Brand / Title ──────────────────────────────────────────────────────────────
+.sf-reg-brand {
+  padding: 20px 20px 0;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 2.5px;
+  color: var(--sf-red, #e8000f);
+  text-transform: uppercase;
+  border-bottom: 4px solid var(--sf-red, #e8000f);
+}
+
+.sf-reg-title {
+  padding: 18px 20px 6px;
+  font-size: clamp(18px, 2.2vw, 24px);
+  font-weight: 900;
+  color: var(--sf-text, #0d0d0d);
+}
+
+// ── Tabs ───────────────────────────────────────────────────────────────────────
+.sf-tabs {
+  display: flex;
+  padding: 0 20px;
+  border-bottom: 2px solid #e9eaee;
+  margin-bottom: 20px;
+}
+
+.sf-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 18px;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(13,13,13,.5);
+  cursor: pointer;
+  transition: color 150ms, border-color 150ms;
+
+  ion-icon { font-size: 16px; }
+
+  &--active {
+    color: var(--sf-red, #e8000f);
+    border-bottom-color: var(--sf-red, #e8000f);
+  }
+
+  &:hover:not(&--active) { color: rgba(13,13,13,.8); }
+}
+
+// ── Formulario manual ──────────────────────────────────────────────────────────
+.sf-form {
+  padding: 0 20px 22px;
+  display: grid;
+  gap: 14px;
+}
+
+.sf-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.sf-grid--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 680px) {
+  .sf-grid--2 { grid-template-columns: 1fr; }
+}
+
+.sf-field {
+  display: grid;
+  gap: 8px;
+}
+
+.sf-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: rgba(13,13,13,.75);
+}
+
+.sf-input {
+  height: 46px;
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid #dde0e8;
+  background: #fff;
+  color: var(--sf-text, #0d0d0d);
+  padding: 0 12px;
+  outline: none;
+  box-shadow: 0 6px 18px rgba(13,13,13,.06);
+  transition: border-color 140ms, box-shadow 140ms, transform 140ms;
+
+  &:focus {
+    border-color: rgba(5,17,242,.55);
+    box-shadow: 0 10px 26px rgba(5,17,242,.18);
+    transform: translateY(-1px);
+  }
+}
+
+select.sf-input {
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, rgba(13,13,13,.55) 50%),
+    linear-gradient(135deg, rgba(13,13,13,.55) 50%, transparent 50%);
+  background-position: calc(100% - 18px) 50%, calc(100% - 12px) 50%;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 44px;
+}
+
+.sf-error {
+  font-size: 11px;
+  color: var(--sf-red, #e8000f);
+  font-weight: 600;
+}
+
+.sf-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 50px;
+  border-radius: 14px;
+  border: none;
+  background: var(--sf-red, #e8000f);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: opacity 140ms, transform 140ms;
+  margin-top: 6px;
+
+  &:disabled { opacity: .5; cursor: not-allowed; }
+  &:not(:disabled):hover { opacity: .88; transform: translateY(-1px); }
+}
+
+// ── Panel CTA de Excel ─────────────────────────────────────────────────────────
+.sf-excel-cta-panel {
+  padding: 20px 20px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+// Botón grande de apertura
+.sf-excel-cta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 20px;
+  border: 2px solid #e2e4ea;
+  border-radius: 16px;
+  cursor: pointer;
+  background: #fafbfd;
+  transition: border-color 150ms, background 150ms, box-shadow 150ms;
+
+  &:hover {
+    border-color: var(--sf-red, #e8000f);
+    background: #fff5f5;
+    box-shadow: 0 8px 24px rgba(232,0,15,.08);
+  }
+
+  &__icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: var(--sf-red, #e8000f);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    ion-icon {
+      font-size: 24px;
+      color: #fff;
+    }
+  }
+
+  &__text {
+    flex: 1;
+  }
+
+  &__title {
+    font-size: 15px;
+    font-weight: 900;
+    color: var(--sf-text, #0d0d0d);
+    margin-bottom: 4px;
+  }
+
+  &__sub {
+    font-size: 12px;
+    color: rgba(13,13,13,.55);
+    line-height: 1.5;
+  }
+
+  &__arrow {
+    font-size: 20px;
+    color: rgba(13,13,13,.3);
+    flex-shrink: 0;
+  }
+}
+
+// Pasos informativos
+.sf-steps-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.sf-step-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+
+  &__num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--sf-red, #e8000f);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__label {
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(13,13,13,.5);
+    text-align: center;
+    white-space: nowrap;
+  }
+}
+
+.sf-step-arrow {
+  font-size: 16px;
+  color: rgba(13,13,13,.25);
+  flex-shrink: 0;
+}
+
+// ── Resultado de carga ─────────────────────────────────────────────────────────
+.sf-resultado {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #e9eaee;
+
+  &__ok {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    background: #eafaf1;
+    color: #27ae60;
+    font-size: 14px;
+    font-weight: 700;
+    ion-icon { font-size: 20px; }
+  }
+
+  &__err {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    background: #fdecea;
+    color: var(--sf-red, #e8000f);
+    font-size: 14px;
+    font-weight: 700;
+    border-top: 1px solid #f9cfcc;
+    ion-icon { font-size: 20px; }
+  }
+}
+
+// ── Toolbar ────────────────────────────────────────────────────────────────────
+.det-toolbar {
+  --background: #fff;
+  --border-color: transparent;
+  box-shadow: 0 2px 12px rgba(13,13,13,.08);
+}
+
+.back-btn {
+  --color: var(--sf-red, #e8000f);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  agregar-viaje.page.scss  —  SmartFlet
+// ══════════════════════════════════════════════════════════════════════════════
+
+.sf-reg {
+  --background: var(--sf-bg, #f4f5f8);
+}
+
+.sf-reg-wrap {
+  min-height: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 28px 16px 48px;
+}
+
+.sf-reg-card {
+  width: 100%;
+  max-width: 880px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(13,13,13,.10);
+  overflow: hidden;
+}
+
+// ── Brand / Title ──────────────────────────────────────────────────────────────
+.sf-reg-brand {
+  padding: 20px 20px 0;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 2.5px;
+  color: var(--sf-red, #e8000f);
+  text-transform: uppercase;
+  border-bottom: 4px solid var(--sf-red, #e8000f);
+}
+
+.sf-reg-title {
+  padding: 18px 20px 6px;
+  font-size: clamp(18px, 2.2vw, 24px);
+  font-weight: 900;
+  color: var(--sf-text, #0d0d0d);
+}
+
+// ── Tabs ───────────────────────────────────────────────────────────────────────
+.sf-tabs {
+  display: flex;
+  padding: 0 20px;
+  border-bottom: 2px solid #e9eaee;
+  margin-bottom: 20px;
+}
+
+.sf-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 18px;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(13,13,13,.5);
+  cursor: pointer;
+  transition: color 150ms, border-color 150ms;
+
+  ion-icon { font-size: 16px; }
+
+  &--active {
+    color: var(--sf-red, #e8000f);
+    border-bottom-color: var(--sf-red, #e8000f);
+  }
+
+  &:hover:not(&--active) { color: rgba(13,13,13,.8); }
+}
+
+// ── Formulario manual ──────────────────────────────────────────────────────────
+.sf-form {
+  padding: 0 20px 22px;
+  display: grid;
+  gap: 14px;
+}
+
+.sf-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.sf-grid--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 680px) {
+  .sf-grid--2 { grid-template-columns: 1fr; }
+}
+
+.sf-field {
+  display: grid;
+  gap: 8px;
+}
+
+.sf-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: rgba(13,13,13,.75);
+}
+
+.sf-input {
+  height: 46px;
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid #dde0e8;
+  background: #fff;
+  color: var(--sf-text, #0d0d0d);
+  padding: 0 12px;
+  outline: none;
+  box-shadow: 0 6px 18px rgba(13,13,13,.06);
+  transition: border-color 140ms, box-shadow 140ms, transform 140ms;
+
+  &:focus {
+    border-color: rgba(5,17,242,.55);
+    box-shadow: 0 10px 26px rgba(5,17,242,.18);
+    transform: translateY(-1px);
+  }
+}
+
+select.sf-input {
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, rgba(13,13,13,.55) 50%),
+    linear-gradient(135deg, rgba(13,13,13,.55) 50%, transparent 50%);
+  background-position: calc(100% - 18px) 50%, calc(100% - 12px) 50%;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 44px;
+}
+
+.sf-error {
+  font-size: 11px;
+  color: var(--sf-red, #e8000f);
+  font-weight: 600;
+}
+
+.sf-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 50px;
+  border-radius: 14px;
+  border: none;
+  background: var(--sf-red, #e8000f);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: opacity 140ms, transform 140ms;
+  margin-top: 6px;
+
+  &:disabled { opacity: .5; cursor: not-allowed; }
+  &:not(:disabled):hover { opacity: .88; transform: translateY(-1px); }
+}
+
+// ── Panel CTA de Excel ─────────────────────────────────────────────────────────
+.sf-excel-cta-panel {
+  padding: 20px 20px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+// Botón grande de apertura
+.sf-excel-cta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 20px;
+  border: 2px solid #e2e4ea;
+  border-radius: 16px;
+  cursor: pointer;
+  background: #fafbfd;
+  transition: border-color 150ms, background 150ms, box-shadow 150ms;
+
+  &:hover {
+    border-color: var(--sf-red, #e8000f);
+    background: #fff5f5;
+    box-shadow: 0 8px 24px rgba(232,0,15,.08);
+  }
+
+  &__icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: var(--sf-red, #e8000f);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    ion-icon {
+      font-size: 24px;
+      color: #fff;
+    }
+  }
+
+  &__text {
+    flex: 1;
+  }
+
+  &__title {
+    font-size: 15px;
+    font-weight: 900;
+    color: var(--sf-text, #0d0d0d);
+    margin-bottom: 4px;
+  }
+
+  &__sub {
+    font-size: 12px;
+    color: rgba(13,13,13,.55);
+    line-height: 1.5;
+  }
+
+  &__arrow {
+    font-size: 20px;
+    color: rgba(13,13,13,.3);
+    flex-shrink: 0;
+  }
+}
+
+// Pasos informativos
+.sf-steps-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.sf-step-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+
+  &__num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--sf-red, #e8000f);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__label {
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(13,13,13,.5);
+    text-align: center;
+    white-space: nowrap;
+  }
+}
+
+.sf-step-arrow {
+  font-size: 16px;
+  color: rgba(13,13,13,.25);
+  flex-shrink: 0;
+}
+
+// ── Resultado de carga ─────────────────────────────────────────────────────────
+.sf-resultado {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #e9eaee;
+
+  &__ok {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    background: #eafaf1;
+    color: #27ae60;
+    font-size: 14px;
+    font-weight: 700;
+    ion-icon { font-size: 20px; }
+  }
+
+  &__err {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    background: #fdecea;
+    color: var(--sf-red, #e8000f);
+    font-size: 14px;
+    font-weight: 700;
+    border-top: 1px solid #f9cfcc;
+    ion-icon { font-size: 20px; }
+  }
+}
+
+// ── Toolbar ────────────────────────────────────────────────────────────────────
+.det-toolbar {
+  --background: #fff;
+  --border-color: transparent;
+  box-shadow: 0 2px 12px rgba(13,13,13,.08);
+}
+
+.back-btn {
+  --color: var(--sf-red, #e8000f);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+// ── Certificaciones opcionales ──────────────────────────────────────────────
+.sf-label-opt {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(13,13,13,.4);
+  margin-left: 4px;
+}
+
+.sf-no-certs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 46px;
+  padding: 0 14px;
+  border-radius: 14px;
+  background: #f4f5f8;
+  border: 1px dashed #dde0e8;
+  font-size: 13px;
+  color: rgba(13,13,13,.45);
+  font-style: italic;
+
+  ion-icon {
+    font-size: 16px;
+    color: rgba(13,13,13,.3);
+  }
+}
